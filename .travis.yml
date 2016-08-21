@@ -9,4 +9,4 @@ node_js:
  - "iojs"
 before install:
  - npm install gulp -g
-script: "test.js"
+script: "node ./test/test.js"
