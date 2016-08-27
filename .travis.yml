@@ -1,12 +1,6 @@
 sudo: required
 dist: trusty
-languaje: node_js
-node_js:
- - "6"
- - "5"
- - "4"
- - "node"
- - "iojs"
-before install:
- - npm install gulp -g
-script: "node ./test/prueba.js"
+languaje: python
+python:
+ - "2.7"
+script: "node ./Tester/main.py"
