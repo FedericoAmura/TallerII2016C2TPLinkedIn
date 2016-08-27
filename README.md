@@ -6,6 +6,8 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 
 ###Dependencias###
 
+-gradle
+
 ###Compilación###
 
 ###Ejecucíón###
@@ -13,6 +15,8 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 ##App Server##
 
 ###Dependencias###
+
+-cpp build-essential cmake
 
 ###Compilación###
 
@@ -23,6 +27,9 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 ##Shared Server##
 
 ###Dependencias###
+
+-nodejs npm postgresql-9.5
+-grunt-cli bower express pg ejs
 
 ###Compilación###
 
