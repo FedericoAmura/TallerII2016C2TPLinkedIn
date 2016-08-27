@@ -1,27 +1,15 @@
 #Necesario para instalar cosas
 sudo: required
 dist: trusty
-#El Tester esta hecho en python, lo tomamos como base
-languaje: python
+languaje: python	#El Tester esta hecho en python, lo tomamos como base
 python:
  - "2.7"
-#instalamos dependencias de los demas lenguajes
 before install:
-##SharedServer
- - sudo apt-get install nodejs npm postgresql-9.5
- - npm install grunt-cli bower express pg ejs
-##AppServer
- - sudo apt-get install cpp build-essential cmake
-##ClientApp
- - sudo apt-get install gradle
+ - ./install-dependencies.sh	#instalamos dependencias de los demas lenguajes
 #install:
 before_script:
- - cd AppServer/
- - cmake .
- - make
- - ls
- - cd ..
-script: "./Tester/main.py"
+ - ./buildProject.sh	#compilamos todo lo que sea necesario
+script: "./Tester/main.py"	#corremos pruebas
 #after_success:after_failure:
 #before_deploy:
 #deploy:
