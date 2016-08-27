@@ -15,7 +15,11 @@ before install:
 ##ClientApp
  - sudo apt-get install gradle
 #install:
-#before_script:
+before_script:
+ - cd AppServer/
+ - cmake .
+ - make
+ - ls
 script: "./Tester/main.py"
 #after_success:after_failure:
 #before_deploy:
