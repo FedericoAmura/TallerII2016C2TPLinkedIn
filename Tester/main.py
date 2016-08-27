@@ -5,6 +5,7 @@ print "Hello Tester!!!"
 def fun(x):
     return x+1
 
-class MyTest(unittest.TestCase):
-    def test(self):
+class TestRunner(unittest.TestCase):
+    #cada funcion es un test
+    def prueba(self):
         self.assertEqual(fun(3), 4, "Test Prueba");

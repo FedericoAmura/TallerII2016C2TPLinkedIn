@@ -3,4 +3,4 @@ dist: trusty
 languaje: python
 python:
  - "2.7"
-script: "node ./Tester/main.py"
+script: "./Tester/main.py"
