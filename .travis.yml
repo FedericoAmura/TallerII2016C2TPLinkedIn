@@ -20,6 +20,7 @@ before_script:
  - cmake .
  - make
  - ls
+ - cd
 script: "./Tester/main.py"
 #after_success:after_failure:
 #before_deploy:
