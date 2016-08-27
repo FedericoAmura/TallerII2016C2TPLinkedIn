@@ -1,0 +1,19 @@
+{
+  "name": "NodePlusAngularJS",
+  "version": "0.0.0",
+  "authors": [
+    "Paul Verest <nodeclipse.org>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.0"
+  }
+}

@@ -1,0 +1,5 @@
+*.bowerrc
+/.jshintrc
+/.project
+/.sublime-project
+/.tern-project
