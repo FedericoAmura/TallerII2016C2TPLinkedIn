@@ -1,0 +1,4 @@
+node_modules/
+.settings/
+.sublime-project
+.tern-project
