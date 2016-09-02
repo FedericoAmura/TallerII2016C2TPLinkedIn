@@ -17,8 +17,7 @@ public class Cliente {
     public void enviarGet() {
         try {
 
-            URL url = new URL(
-                    "http://localhost:3000");
+            URL url = new URL("http://localhost:8080");
             //"http://localhost:3000/prueba");
             //Si corren el Shared Server 2 van a ver una salida mas linda y pueden probar esta URL tmb comentando la otra.
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();

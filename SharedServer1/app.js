@@ -29,9 +29,10 @@ if ('development' === app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
-app.get('/test_android', function(req, res){
-	console.log('Android device connected.');
-	res.send('Connected to SharedServer');
+
+app.get('/testing_appserver', function(req, res){
+	console.log('AppServer connected.');
+	res.send('Hi, I am the SharedServer');
 });
 
 http.createServer(app).listen(app.get('port'), function(){
