@@ -67,8 +67,10 @@ static void server_event_handler(struct mg_connection* c, int event, void* p){
 
 	    mg_send_head(c, 200, hm->message.len, "Content-Type: text/plain");
 	    mg_printf(c, "%.*s", hm->message.len, hm->message.p);
-	    //server_mode_running = false;
 	  }
+
+	  if (!client_mode_running)
+	    server_mode_running = false;
 
 }
 
@@ -81,7 +83,7 @@ static void client_event_handler(struct mg_connection* c, int event, void* p){
 	  if (event == MG_EV_HTTP_REPLY){
 		struct http_message *hm = (struct http_message *) p;
 		std::cout << "Got reply: " << hm->body.p <<std::endl;
-		//server_mode_running = false;
+		client_mode_running = false;
 	  }
 }
 
