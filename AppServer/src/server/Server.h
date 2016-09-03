@@ -10,8 +10,8 @@
 
 #include "../mongoose/mongoose.h"
 
-static const char* ip_sharedServer = "http://localhost:3000/testing_appserver";
-static const char* server_http_port = "8080";
+static const char* ip_sharedServer = "http://localhost:8080/skills";
+static const char* server_http_port = "8888";
 
 static bool client_mode_running = false;
 static bool server_mode_running = false;
