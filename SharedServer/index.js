@@ -2,6 +2,9 @@ var express = require('express');
 var app = express();
 app.use(express.static('public'));
 
+//Configuracion express
+app.set('port', (process.env.PORT || 5000));
+
 //seteamos rutas y respuestas del server en estas
 //Login
 app.get('/', function (req, res) {
@@ -101,7 +104,7 @@ app.delete('/skills/categories/:category/:skill', function (req, res) {
 
 
 //activamos server
-var server = app.listen(8080, function () {
+var server = app.listen(app.get('port'), function () {
 	var host = server.address().address;
 	var port = server.address().port;
 
