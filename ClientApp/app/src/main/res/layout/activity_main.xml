@@ -1,28 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.android.clientapp.MainActivity">
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:paddingBottom="@dimen/activity_vertical_margin"
+android:paddingLeft="@dimen/activity_horizontal_margin"
+android:paddingRight="@dimen/activity_horizontal_margin"
+android:paddingTop="@dimen/activity_vertical_margin"
+tools:context="com.example.android.clientapp.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Connected to AppServer"
-        android:id="@+id/textView"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+<Button
+    android:id="@+id/button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Conectar"
+    android:onClick="apretarBoton"
+    android:background="#196"
+    android:textColor="#FFFFFF"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Connect"
-        android:id="@+id/button"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="82dp" />
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:text="A la espera..."
+    android:textSize="20dp"
+    android:textColor="#196"
+    android:id="@+id/textViewRespuesta"
+    android:textIsSelectable="false"
+    android:layout_below="@+id/button"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Ingrese una URL"
+    android:textSize="30dp"
+    android:textColor="#1976D2"
+    android:id="@+id/textViewMensaje"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true" />
+
+<EditText
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/editTextUrl"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="79dp" />
+
 </RelativeLayout>

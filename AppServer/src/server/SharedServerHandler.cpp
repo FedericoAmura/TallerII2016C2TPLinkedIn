@@ -17,7 +17,7 @@ static void event_handler(struct mg_connection* c, int event, void* p){
 	  if (event == MG_EV_HTTP_REPLY){
 		struct http_message *hm = (struct http_message *) p;
 		std::cout << "reply: " << hm->body.p <<std::endl;
-		connected = false;
+		//connected = false; // Descomentar para evitar loop.
 	  }
 }
 

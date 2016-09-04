@@ -18,7 +18,7 @@ static void event_handler(struct mg_connection* c, int event, void* p){
 	    mg_send_head(c, 200, hm->message.len, "Content-Type: text/plain");
 	    mg_printf(c, "%.*s", hm->message.len, hm->message.p);
 	  }
-	  running = false;
+	  //running = false; // Descomentar para evitar loop.
 }
 
 ConnectionsHandler::ConnectionsHandler() {
