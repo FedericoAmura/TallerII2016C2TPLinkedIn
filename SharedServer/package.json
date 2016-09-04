@@ -12,10 +12,10 @@
   "dependencies": {
     "ejs": "2.4.1",
     "express": "4.13.3",
-    "body-parser":"x",
-    "cookie-parser":"x",
-    "multer":"x",
-    "pg":"x"
+    "body-parser": "x",
+    "cookie-parser": "x",
+    "multer": "x",
+    "pg": "x"
   },
   "repository": {
     "type": "git",
@@ -26,5 +26,6 @@
     "heroku",
     "express"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "author": ""
 }
