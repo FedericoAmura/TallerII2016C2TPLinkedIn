@@ -1,0 +1,30 @@
+{
+  "name": "JobifyG2",
+  "version": "0.2.5",
+  "description": "JobifyG2, a working connection social network",
+  "engines": {
+    "node": "5.9.1"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ejs": "2.4.1",
+    "express": "4.13.3",
+    "body-parser":"x",
+    "cookie-parser":"x",
+    "multer":"x",
+    "pg":"x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FedericoAmura/TallerII2016C2TPLinkedIn/tree/master/SharedServer"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
+}
