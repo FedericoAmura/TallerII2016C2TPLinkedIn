@@ -1,7 +1,7 @@
 {
   "name": "JobifyG2",
-  "version": "0.2.5",
   "description": "JobifyG2, a working connection social network",
+  "version": "0.0.5",
   "engines": {
     "node": "5.9.1"
   },
