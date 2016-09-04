@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 app.use(express.static('public'));
+var pg = require('pg');
 
 //Configuracion express
 app.set('port', (process.env.PORT || 5000));
@@ -28,7 +29,17 @@ app.get('/manager', function (req, res) {
 //Categorias
 //Get categorias
 app.get('/categories', function (req, res) {
-	res.send('{"categories":[{"name":"software","description":"software description"},{"name":"music",“description":"all kind of music"}],"metadata":{"version":"0.1","count":2}}');
+	pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+		client.query('SELECT * FROM categories', function (err, result) {
+			done();
+			if (err) {
+				console.log(err);
+				response.send("Error "+err);
+			} else {
+				response.send({results: result.rows});
+			}
+		});
+	});
 });
 
 //Alta categoria segun json
