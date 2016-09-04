@@ -1,13 +1,13 @@
 {
   "name": "JobifyG2",
-  "version": "0.2.5",
   "description": "JobifyG2, a working connection social network",
+  "version": "0.0.5",
   "engines": {
     "node": "5.9.1"
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node SharedServer/index.js"
   },
   "dependencies": {
     "ejs": "2.4.1",
