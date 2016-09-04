@@ -34,9 +34,9 @@ app.get('/categories', function (req, res) {
 			done();
 			if (err) {
 				console.log(err);
-				response.send("Error "+err);
+				res.send("Error "+err);
 			} else {
-				response.send({results: result.rows});
+				res.send({results: result.rows});
 			}
 		});
 	});
