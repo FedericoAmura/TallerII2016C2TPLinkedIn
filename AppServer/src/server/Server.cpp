@@ -6,25 +6,37 @@
  */
 
 #include "Server.h"
+#include <iostream>
+
+static void* serverHandler(void* arg){
+	ConnectionsHandler* c = (ConnectionsHandler*) arg;
+	char input = ' ';
+	while (input == ' '){
+		std::cin >> input;
+	}
+	c->stop();
+	return NULL;
+}
 
 Server::Server() {
-	sharedServerHandler = new SharedServerHandler();
 	connectionsHandler = new ConnectionsHandler();
 }
 
 bool Server::settting_ok(){
-	return (sharedServerHandler->isConnected() && connectionsHandler->isRunning());
+	return connectionsHandler->isRunning();
 }
 
 Server::~Server() {
-	delete sharedServerHandler;
 	delete connectionsHandler;
 }
 
 void Server::run(){
-	sharedServerHandler->start();
+	std::cout<<"...starting server..."<<std::endl;
 	connectionsHandler->start();
-
-	sharedServerHandler->join();
+	pthread_t t_handler;
+	pthread_create(&t_handler, NULL, serverHandler, connectionsHandler);
+	pthread_join(t_handler, NULL);
 	connectionsHandler->join();
+	std::cout<<"...shutting down server..."<<std::endl;
+	sleep(3);
 }

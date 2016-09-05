@@ -5,18 +5,17 @@
  *      Author: emanuel
  */
 
-#ifndef SERVER_CONNECTIONSHANDLER_H_
-#define SERVER_CONNECTIONSHANDLER_H_
+#ifndef HANDLERS_CONNECTIONSHANDLER_H_
+#define HANDLERS_CONNECTIONSHANDLER_H_
 
 #include "../common/Thread.h"
-#include "../mongoose/mongoose.h"
-
-static bool running = false;
+#include "../fossa/fossa.h"
 
 class ConnectionsHandler : public Thread{
 private:
-	struct mg_mgr mgr;
-	struct mg_connection* connection;
+	struct ns_mgr mgr;
+	struct ns_connection* connection;
+	bool running;
 
 public:
 	ConnectionsHandler();
@@ -25,7 +24,9 @@ public:
 
 	void run();
 
+	void stop();
+
 	virtual ~ConnectionsHandler();
 };
 
-#endif /* SERVER_CONNECTIONSHANDLER_H_ */
+#endif /* HANDLERS_CONNECTIONSHANDLER_H_ */

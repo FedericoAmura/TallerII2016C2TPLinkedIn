@@ -8,12 +8,10 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include "SharedServerHandler.h"
-#include "ConnectionsHandler.h"
+#include "../handlers/ConnectionsHandler.h"
 
 class Server {
 private:
-	SharedServerHandler* sharedServerHandler;
 	ConnectionsHandler* connectionsHandler;
 
 public:
