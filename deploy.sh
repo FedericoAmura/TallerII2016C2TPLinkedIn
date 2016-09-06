@@ -1,8 +1,10 @@
 # /usr/bin/env sh
 #Deployamos a heroku
-echo $PWD
-wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+echo "Estamos en: " $PWD
+travis setup heroku
+echo "Versiones:"
 heroku --version
 git --version
-git config --local remote.origin.url|sed -n 's#.*/\([^.]*\)\.git#\1#p'
+echo "Tratamos de commitear"
+#git config --local remote.origin.url|sed -n 's#.*/\([^.]*\)\.git#\1#p'
 git subtree push --prefix SharedServer heroku master
