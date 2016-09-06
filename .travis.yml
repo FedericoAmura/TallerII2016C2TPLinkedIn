@@ -10,12 +10,13 @@ before install:
 before_script:
 - "./buildProject.sh"	#compilamos todo lo que sea necesario
 script: "./Tester/main.py"	#corremos pruebas
-after_success:
-- "./deploy.sh"
+#after_success:
 #after_failure:
-#before_deploy:
+before_deploy:
+- "./before-deploy.sh"
 deploy:
   provider: script
-  script: deploy.sh
-#after_deploy:
+  script: "./deploy.sh"
+after_deploy:
+- "./after-deploy.sh"
 #after_script:
