@@ -15,10 +15,7 @@ after_success:
 #after_failure:
 #before_deploy:
 deploy:
-  provider: heroku
-  app: jobifyg2
+  provider: script
   script: deploy.sh
-  api_key:
-    secure: FVdYwBVMdszhu+j6+B/tGXJSDCFGNft4AOAY3SUl3BWoMJY6lEmJscnWUym7NWFWTNMxGndPPgxcrUYaIgTMlaU0aE0e/e/yC9vi6edQ9VgxEHo4gNi1vlaA1CaKie7lmgu/mNdf5ocst6Jpub44+ETjcBxTDc9CGrCS0zcW9Clp66GJzZJ6O61mFLz8wH5t8s/QtBhs2zxE2yCQ3Xe4wo7OfI28cvrxHyZ2sgkwehlpebaSO/vY6QvX9kuPfgoCeL9T0felIeBqz7/Fg/l3y5RGfSJqnEg+VNPh57dNSdus+lYRrhpJxiQ/9zoYP3kZpBSPt2yaN7U0wH1zzjHOpFYdXeaUb/7H0yLOXBUj/Tz+OX+maNgYVVkQsyYOeXm4R58R+6jWN2fB6RYduDtl9mV/d0+NKdg8B2FPxGMOSA0XjwAaUkcXRiS1X9juZ+Y1HEgk+e14AuX+WFrGzNYG79X8EbIk3rA9d9Cnnosnmwp9gObDV0dug3q2Wb9uqssZB33h9QZbjiVuOnHwbihOpdOUPmEQEj9ft5No26DLAmmSGtCJoC55QZOrw6T1DIV7BHsbZAuHl2VzY1QE1Pb41pNULhXmC8/xtOJ/AirJiCavmk1wX9W8AkZLyQwzKhexB+ePkoL6LMM/1/cWvh89AJCTfLgYMMsi2HPICZboEoE=
 #after_deploy:
 #after_script:
