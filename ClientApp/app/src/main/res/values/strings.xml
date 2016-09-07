@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">ClientApp</string>
+    <string name="facebook_app_id">1749832371922776</string>
+
+    #Main Activity:
+    <string name="boton_conectar">Conectar</string>
+    <string name="boton_login">Login FB</string>
+    <string name="tview_respuesta">A la espera...</string>
+    <string name="tview_mensaje">Ingrese una URL.</string>
+
+    #Login Activity:
+    <string name="nombre">Nombre:</string>
+    <string name="apellido">Apellido:</string>
+    <string name="user_id">User ID:</string>
+    <string name="cancel_login">Se canceló la operación</string>
+    <string name="error_login">Ocurrió un error al ingresar</string>
+    <string name="logout">Cerrar sesión</string>
 </resources>

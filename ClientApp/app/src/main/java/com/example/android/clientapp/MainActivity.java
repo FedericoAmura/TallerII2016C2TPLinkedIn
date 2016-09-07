@@ -1,6 +1,7 @@
 package com.example.android.clientapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -34,8 +35,17 @@ public class MainActivity extends AppCompatActivity {
         textViewRespuesta = (TextView) findViewById(R.id.textViewRespuesta);
     }
 
-    // Funcion a llamar al clickear boton.
-    public void apretarBoton(View view) {
+    //Funcion a llamar al clickear boton LoginActivity.
+    public void apretarBotonLogin(View view){
+        //if (AccessToken.getCurrentAccessToken() == null) {
+        //   Todo: ver si lo termino usando y donde exactamente.
+        // }
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    // Funcion a llamar al clickear boton Conectar.
+    public void apretarBotonConectar(View view) {
         // Obtengo URL:
         String stringUrl = urlText.getText().toString();
 
