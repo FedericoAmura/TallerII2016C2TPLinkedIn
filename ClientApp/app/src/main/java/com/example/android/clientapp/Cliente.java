@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Cliente {
+    // Por el momento no se usa esta clase.
 
     public void enviarGet() {
         try {
