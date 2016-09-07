@@ -5,8 +5,8 @@
  *      Author: emanuel
  */
 
-#include "../handlers/SharedServerHandler.h"
-#include "../server/API_Server.h"
+#include "../../include/handlers/SharedServerHandler.h"
+#include "../../include/server/API_Server.h"
 #include <iostream>
 using namespace std;
 

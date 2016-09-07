@@ -6,7 +6,7 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include "server/Server.h"
+#include "../include/server/Server.h"
 
 int main(){
 	Server* server = new Server();

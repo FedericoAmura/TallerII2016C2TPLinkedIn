@@ -5,7 +5,7 @@
  *      Author: emanuel
  */
 
-#include "Server.h"
+#include "../../include/server/Server.h"
 #include <iostream>
 
 static void* serverHandler(void* arg){

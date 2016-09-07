@@ -1,4 +1,4 @@
-#include "fossa.h"
+#include "../../include/fossa/fossa.h"
 #ifdef NS_MODULE_LINES
 #line 1 "src/internal.h"
 /**/

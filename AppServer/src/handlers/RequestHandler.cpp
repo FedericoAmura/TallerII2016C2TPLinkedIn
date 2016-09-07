@@ -5,8 +5,8 @@
  *      Author: emanuel
  */
 
-#include "RequestHandler.h"
-#include "SharedServerHandler.h"
+#include "../../include/handlers/RequestHandler.h"
+#include "../../include/handlers/SharedServerHandler.h"
 #include <iostream>
 
 RequestHandler::RequestHandler(http_request* req) : request(req) {

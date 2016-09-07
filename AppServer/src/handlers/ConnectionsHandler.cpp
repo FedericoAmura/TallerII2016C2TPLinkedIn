@@ -5,9 +5,9 @@
  *      Author: emanuel
  */
 
-#include "../handlers/ConnectionsHandler.h"
-#include "../server/API_Server.h"
-#include "../handlers/RequestHandler.h"
+#include "../../include/handlers/ConnectionsHandler.h"
+#include "../../include/server/API_Server.h"
+#include "../../include/handlers/RequestHandler.h"
 #include <iostream>
 
 /* communication between appclient and appserver*/
