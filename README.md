@@ -17,22 +17,30 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 ###Dependencias###
 
 -cpp build-essential cmake
-En carpeta /lib: libgtest.a libgmock.a
+En carpeta /lib: libgtest.a libgmock.a libleveldb.a
 Se provee install-dependencies.sh
 
 ###Compilación###
 
 Se provee ./buildServer.sh.
-Sino, asegurandose de tener todas las dependencias, ejecutar cmake seguido de make. 
+Sino, ejecutar cmake seguido de make. 
 
 ###Ejecucíón###
 
+Ejecutar AppServer
 
 ####Ejecución bajo docker####
 
+###LevelDB###
+
+Documentación de uso: https://rawgit.com/google/leveldb/master/doc/index.html
+
 ###Tests Unitarios###
+
 Se utiliza google test.
-Correr el ejecutable UnitTests, que se autogenera via cmake+make.
+
+Correr el ejecutable UnitTests, que se autogenera al compilar el proyecto.
+
 Para documentación sobre uso de gTest mirar https://github.com/google/googletest/blob/master/googletest/docs/Primer.md
 
 ##Shared Server##
