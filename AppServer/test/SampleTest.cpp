@@ -1,9 +1,6 @@
 #include "../include/test/SampleTest.h"
 
-SampleTest::SampleTest()
-{
-    EXPECT_TRUE(true);
-}
+SampleTest::SampleTest() {}
 
 TEST_F(SampleTest, ASampleTest) 
 {

@@ -1,24 +1,19 @@
 #include "../include/gtest/gtest.h"
 
-// The fixture for testing class Foo.
+// Test fixture de ejemplo
 class SampleTest : public ::testing::Test {
 
 protected:
 
-    // You can do set-up work for each test here.
+    // Aca se puede hacer setup vario. Notar que la clase se crea y se destruye por cada test.
     SampleTest();
 
-    // You can do clean-up work that doesn't throw exceptions here.
+    // Limpiar cosas que no tiren excepciones
     virtual ~SampleTest();
 
-    // If the constructor and destructor are not enough for setting up
-    // and cleaning up each test, you can define the following methods:
-
-    // Code here will be called immediately after the constructor (right
-    // before each test).
+    // Codigo que se llama inmediatamente despues del constructor, y antes de cada test
     virtual void SetUp();
 
-    // Code here will be called immediately after each test (right
-    // before the destructor).
+    // Codigo que se llama inmediatamente antes del destructor, despues de cada test 
     virtual void TearDown();
 };
