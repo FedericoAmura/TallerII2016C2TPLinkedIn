@@ -17,7 +17,7 @@
         android:text="@string/nombre"
         android:id="@+id/textView"
         android:textSize="20dp"
-        android:textColor="#196"
+        android:textColor="#1976D2"
         android:layout_above="@+id/tvApellido"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -38,7 +38,7 @@
         android:text="@string/apellido"
         android:id="@+id/textView2"
         android:textSize="20dp"
-        android:textColor="#196"
+        android:textColor="#1976D2"
         android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/tvApellido"
         android:textSize="20dp"
-        android:textColor="#1976D2"
+        android:textColor="#196"
         android:layout_below="@+id/tvNombre"
         android:layout_alignLeft="@+id/tvNombre"
         android:layout_alignStart="@+id/tvNombre" />
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/tvToken"
         android:textSize="20dp"
-        android:textColor="#1976D2"
+        android:textColor="#196"
         android:layout_below="@+id/tvApellido"
         android:layout_alignLeft="@+id/tvApellido"
         android:layout_alignStart="@+id/tvApellido" />
