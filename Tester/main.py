@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import unittest
-print "Hello Tester!!! Corremos automaticamente en un commit"
+print "Hello Tester!!!"
 
 def fun(x):
     return x+1
