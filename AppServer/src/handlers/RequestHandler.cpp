@@ -5,14 +5,14 @@
  *      Author: emanuel
  */
 
-#include "RequestHandler.h"
-#include "SharedServerHandler.h"
 #include <iostream>
+#include "../../include/handlers/RequestHandler.h"
+#include "../../include/handlers/SharedServerHandler.h"
 
 RequestHandler::RequestHandler(http_request* req) : request(req) {
 }
 
-void RequestHandler::process(){
+void RequestHandler::process() {
 	SharedServerHandler* sharedHandler = new SharedServerHandler(request);
 	sharedHandler->start();
 	sharedHandler->join();
@@ -26,7 +26,7 @@ void RequestHandler::process(){
 	              	  	  	  	       "Content-Length: %d\r\n"
 	              	  	  	  	  	   "\r\n"
 									   "%s",
-									   (int) strlen(reply->body.p), reply->body.p);
+									   static_cast<int>(strlen(reply->body.p)), reply->body.p);
 
 	else
 		ns_printf(request->connection, "HTTP/1.1 404 ERROR\r\n"
@@ -34,10 +34,10 @@ void RequestHandler::process(){
 									   "Content-Length: %d\r\n"
 									   "\r\n"
 									   "%s",
-									   (int) strlen("Not Found"), "Not Found");
+									   static_cast<int>(strlen("Not Found")), "Not Found");
 
-	std::cout<<"request: processed "<<std::endl;
-	std::cout<<std::endl;
+	std::cout << "request: processed " << std::endl;
+	std::cout << std::endl;
 	delete sharedHandler;
 }
 

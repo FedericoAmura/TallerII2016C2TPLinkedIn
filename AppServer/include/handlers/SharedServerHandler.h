@@ -5,8 +5,8 @@
  *      Author: emanuel
  */
 
-#ifndef HANDLERS_SHAREDSERVERHANDLER_H_
-#define HANDLERS_SHAREDSERVERHANDLER_H_
+#ifndef APPSERVER_INCLUDE_HANDLERS_SHAREDSERVERHANDLER_H_
+#define APPSERVER_INCLUDE_HANDLERS_SHAREDSERVERHANDLER_H_
 
 #include "../common/Thread.h"
 #include "../fossa/fossa.h"
@@ -16,17 +16,14 @@ static struct http_message* reply = NULL;
 static bool processed_request = false;
 
 class SharedServerHandler: public Thread {
-private:
+ private:
 	struct ns_mgr mgr;
 
-public:
-	SharedServerHandler(http_request* request);
-
+ public:
+	explicit SharedServerHandler(http_request* request);
 	void run();
-
 	http_message* getReply();
-
 	virtual ~SharedServerHandler();
 };
 
-#endif /* HANDLERS_SHAREDSERVERHANDLER_H_ */
+#endif  // APPSERVER_INCLUDE_HANDLERS_SHAREDSERVERHANDLER_H_

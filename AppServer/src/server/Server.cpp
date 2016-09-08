@@ -5,13 +5,13 @@
  *      Author: emanuel
  */
 
-#include "Server.h"
+#include "../../include/server/Server.h"
 #include <iostream>
 
-static void* serverHandler(void* arg){
-	ConnectionsHandler* c = (ConnectionsHandler*) arg;
+static void* serverHandler(void* arg) {
+	ConnectionsHandler* c = reinterpret_cast<ConnectionsHandler*>(arg);
 	char input = ' ';
-	while (input == ' '){
+	while (input == ' ') {
 		std::cin >> input;
 	}
 	c->stop();
@@ -22,7 +22,7 @@ Server::Server() {
 	connectionsHandler = new ConnectionsHandler();
 }
 
-bool Server::settting_ok(){
+bool Server::settting_ok() {
 	return connectionsHandler->isRunning();
 }
 
@@ -30,13 +30,13 @@ Server::~Server() {
 	delete connectionsHandler;
 }
 
-void Server::run(){
-	std::cout<<"...starting server..."<<std::endl;
+void Server::run() {
+	std::cout << "...starting server..." << std::endl;
 	connectionsHandler->start();
 	pthread_t t_handler;
 	pthread_create(&t_handler, NULL, serverHandler, connectionsHandler);
 	pthread_join(t_handler, NULL);
 	connectionsHandler->join();
-	std::cout<<"...shutting down server..."<<std::endl;
+	std::cout << "...shutting down server..." << std::endl;
 	sleep(3);
 }

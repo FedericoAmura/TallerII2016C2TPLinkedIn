@@ -5,7 +5,7 @@
  *      Author: nicolas
  */
 
-#include "Thread.h"
+#include "../../include/common/Thread.h"
 
 #include <cerrno>
 #include <cstring>

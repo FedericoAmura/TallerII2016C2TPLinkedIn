@@ -2,3 +2,7 @@
 /.settings
 /CMakeCache.txt
 /cmake_install.cmake
+/build
+AppServer
+UnitTest
+/lib

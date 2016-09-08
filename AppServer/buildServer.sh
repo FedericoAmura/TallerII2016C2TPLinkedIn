@@ -1,4 +1,9 @@
 # /usr/bin/env sh
-cmake .
+mkdir build
+cd build
+cmake ..
 make
-ls #TODO sacarlo, esta para verificar que este compilando
+mv AppServer ../AppServer
+mv UnitTest ../UnitTest
+cd ..
+rm -r ./build
