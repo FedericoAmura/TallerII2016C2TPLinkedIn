@@ -4,4 +4,6 @@ cd build
 cmake ..
 make
 mv AppServer ../AppServer
-#rm -R build
+mv UnitTest ../UnitTest
+cd ..
+rm -r ./build

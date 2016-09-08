@@ -5,13 +5,14 @@ then
 	exit 1
 fi
 
-sudo apt-get install cpp build-essential cmake unzip
+sudo apt-get install cpp build-essential cmake
 
 if [ ! -d ./lib ]; then mkdir lib; fi
 
 #gmock y gtest
 if [ ! -r ./lib/libgmock.a ] || [ ! -r ./lib/libgtest.a ]
 then
+	sudo apt-get install unzip
 	if [ ! -d ./libsrc ]; then mkdir libsrc; fi
 	cd libsrc
 	wget https://github.com/google/googletest/archive/master.zip
