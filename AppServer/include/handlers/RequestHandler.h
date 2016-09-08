@@ -5,21 +5,19 @@
  *      Author: emanuel
  */
 
-#ifndef HANDLERS_REQUESTHANDLER_H_
-#define HANDLERS_REQUESTHANDLER_H_
+#ifndef APPSERVER_INCLUDE_HANDLERS_REQUESTHANDLER_H_
+#define APPSERVER_INCLUDE_HANDLERS_REQUESTHANDLER_H_
 
 #include "../common/req_res.h"
 
 class RequestHandler{
-private:
+ private:
 	http_request* request;
 
-public:
-	RequestHandler(http_request* req);
-
+ public:
+	explicit RequestHandler(http_request* req);
 	void process();
-
 	virtual ~RequestHandler();
 };
 
-#endif /* HANDLERS_REQUESTHANDLER_H_ */
+#endif  // APPSERVER_INCLUDE_HANDLERS_REQUESTHANDLER_H_

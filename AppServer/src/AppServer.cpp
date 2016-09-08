@@ -3,12 +3,12 @@
 // Author      : Taller2
 // Version     :
 // Copyright   : Do not copy
-// Description : Hello World in C++, Ansi-style
+// Description : Jobify: Aplicación estilo linkedin, servidor de aplicación
 //============================================================================
 
 #include "../include/server/Server.h"
 
-int main(){
+int main() {
 	Server* server = new Server();
 	if (server->settting_ok())
 		server->run();

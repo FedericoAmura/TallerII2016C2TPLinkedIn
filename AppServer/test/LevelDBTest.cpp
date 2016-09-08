@@ -2,8 +2,7 @@
 
 LevelDBTest::LevelDBTest() {}
 
-TEST_F(LevelDBTest, TestCrearUnaBaseDeDatos) 
-{
+TEST_F(LevelDBTest, TestCrearUnaBaseDeDatos) {
 	leveldb::DB* db;
 	leveldb::Options options;
 	options.create_if_missing = true;

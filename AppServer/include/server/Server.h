@@ -5,23 +5,20 @@
  *      Author: emanuel
  */
 
-#ifndef SERVER_H_
-#define SERVER_H_
+#ifndef APPSERVER_INCLUDE_SERVER_SERVER_H_
+#define APPSERVER_INCLUDE_SERVER_SERVER_H_
 
 #include "../handlers/ConnectionsHandler.h"
 
 class Server {
-private:
+ private:
 	ConnectionsHandler* connectionsHandler;
 
-public:
+ public:
 	Server();
-
 	bool settting_ok();
-
 	void run();
-
 	virtual ~Server();
 };
 
-#endif /* SERVER_H_ */
+#endif  // APPSERVER_INCLUDE_SERVER_SERVER_H_

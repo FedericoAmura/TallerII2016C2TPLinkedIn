@@ -2,8 +2,7 @@
 
 SampleTest::SampleTest() {}
 
-TEST_F(SampleTest, ASampleTest) 
-{
+TEST_F(SampleTest, ASampleTest) {
     EXPECT_TRUE(true);
 }
 

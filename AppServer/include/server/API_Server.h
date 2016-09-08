@@ -5,8 +5,8 @@
  *      Author: emanuel
  */
 
-#ifndef SERVER_API_SERVER_H_
-#define SERVER_API_SERVER_H_
+#ifndef APPSERVER_INCLUDE_SERVER_API_SERVER_H_
+#define APPSERVER_INCLUDE_SERVER_API_SERVER_H_
 
 #define SHARED_SERVER_URL "http://127.0.0.1:5000"
 
@@ -20,4 +20,4 @@
 #define SKILLS 			"/skills"
 
 
-#endif /* SERVER_API_SERVER_H_ */
+#endif  // APPSERVER_INCLUDE_SERVER_API_SERVER_H_

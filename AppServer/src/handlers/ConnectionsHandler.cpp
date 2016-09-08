@@ -5,16 +5,16 @@
  *      Author: emanuel
  */
 
+#include <iostream>
 #include "../../include/handlers/ConnectionsHandler.h"
 #include "../../include/server/API_Server.h"
 #include "../../include/handlers/RequestHandler.h"
-#include <iostream>
 
 /* communication between appclient and appserver*/
-static void event_handler(struct ns_connection* c, int event, void* data){
+static void event_handler(struct ns_connection* c, int event, void* data) {
 	  struct http_message* message = (struct http_message*) data;
 
-	  switch (event){
+	  switch (event) {
 	  	  case NS_CONNECT:
 	  		  std::cout << "Advice connected." << std::endl;
 	  		  break;
@@ -37,21 +37,21 @@ ConnectionsHandler::ConnectionsHandler() {
 	if (!connection)
 		return;
 	ns_set_protocol_http_websocket(connection);
-	//ns_enable_multithreading(connection);		// TODO
+	// ns_enable_multithreading(connection);		// TODO
 	running = true;
 }
 
-bool ConnectionsHandler::isRunning(){
+bool ConnectionsHandler::isRunning() {
 	return running;
 }
 
-void ConnectionsHandler::run(){
-	while(running){
+void ConnectionsHandler::run() {
+	while(running) {
 		ns_mgr_poll(&mgr, 1000);
 	}
 }
 
-void ConnectionsHandler::stop(){
+void ConnectionsHandler::stop() {
 	running = false;
 }
 
