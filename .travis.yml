@@ -12,11 +12,7 @@ before_script:
 script: "./Tester/main.py"	#corremos pruebas
 #after_success:
 #after_failure:
-before_deploy:
-- "./before-deploy.sh"
-deploy:
-  provider: script
-  script: "./deploy.sh"
-after_deploy:
-- "./after-deploy.sh"
+#before_deploy:
+#deploy:
+#after_deploy:
 #after_script:

@@ -1,6 +1,5 @@
 # /usr/bin/env sh
-#Compilamos el AppServer
+echo "----- Building project"
 cd AppServer
 . ./buildServer.sh
 cd ..
-#Compilamos la ClientApp

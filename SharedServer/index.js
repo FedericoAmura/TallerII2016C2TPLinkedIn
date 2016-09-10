@@ -30,6 +30,10 @@ app.get('/manager', function (req, res) {
 //Get categorias
 app.get('/categories', function (req, res) {
 	pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+		if (err) {
+			res.send("Error: "+err);
+			return;
+		}
 		client.query('SELECT * FROM categories', function (err, result) {
 			done();
 			if (err) {
