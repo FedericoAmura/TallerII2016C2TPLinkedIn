@@ -3,6 +3,7 @@ import os
 import psycopg2
 import time
 import unittest
+import requests
 print "----- Starting python master"
 
 print "----- Creating database"
@@ -28,13 +29,17 @@ conn.close()
 
 print "Defining database environment variable for nodejs"
 os.environ["DATABASE_URL"] = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db"
+os.environ["PORT"] = port = 5000
 
 print "Running nodejs"
 nodepid = os.system('nodejs ./SharedServer/index.js &')
 print nodepid
 
 time.sleep(1)
-raw_input("Press Enter to continue...")
+
+print "Running tests agains SharedServer"
+req = requests.get("http://localhost:"+port+"/job_positions")
+print req.content
 
 
 '''

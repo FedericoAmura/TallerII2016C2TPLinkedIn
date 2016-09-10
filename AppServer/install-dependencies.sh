@@ -1,4 +1,5 @@
 # /usr/bin/env sh
+echo "----- Installing app server dependencies"
 if [ $0 != ./install-dependencies.sh ]
 then
 	echo "AppServer/install-dependencies.sh: Ejecute este script desde su ubicación."
