@@ -12,30 +12,41 @@
 RequestHandler::RequestHandler(http_request* req) : request(req) {
 }
 
+void RequestHandler::sendReply(http_response* res){
+	ns_printf(res->connection, "HTTP/1.1 %d\r\n"
+							   "Content-Type: application/json\r\n"
+							   "Content-Length: %d\r\n"
+							   "\r\n"
+							   "%s",
+							   res->status(), res->contentLength(), res->body());
+}
+
+void RequestHandler::sendBadRequest(){
+	ns_printf(request->connection, "HTTP/1.1 %d\r\n"
+								   "Content-Type: text/plain\r\n"
+							   	   "Content-Length: %d\r\n"
+							   	   "\r\n"
+							   	   "%s",
+								   404, sizeof("Not Found"), "Not Found");
+}
+
 void RequestHandler::process() {
+	if (!validate_uri(request->uri())){
+		sendBadRequest();
+		return;
+	}
 	SharedServerHandler* sharedHandler = new SharedServerHandler(request);
 	sharedHandler->start();
 	sharedHandler->join();
-	std::string uri;
-	uri.assign(request->message->uri.p, request->message->uri.len);
-	std::cout << "URI : " << uri << std::endl;
+	std::cout << request->method() << " " << request->uri() << std::endl;
 	http_message* reply = sharedHandler->getReply();
-	if (reply)
-		ns_printf(request->connection, "HTTP/1.1 200 OK\r\n"
-	              	  	  	  	  	   "Content-Type: application/json\r\n"
-	              	  	  	  	       "Content-Length: %d\r\n"
-	              	  	  	  	  	   "\r\n"
-									   "%s",
-									   static_cast<int>(strlen(reply->body.p)), reply->body.p);
-
-	else
-		ns_printf(request->connection, "HTTP/1.1 404 ERROR\r\n"
-									   "Content-Type: application/json\r\n"
-									   "Content-Length: %d\r\n"
-									   "\r\n"
-									   "%s",
-									   static_cast<int>(strlen("Not Found")), "Not Found");
-
+	if (reply){
+		std::cout << "status : " << reply->resp_code << std::endl;
+		std::cout << "length : " << reply->body.len << std::endl;
+		std::cout << "body : " << reply->body.p << std::endl;
+		http_response res(request->connection, reply);
+		sendReply(&res);
+	}
 	std::cout << "request: processed " << std::endl;
 	std::cout << std::endl;
 	delete sharedHandler;

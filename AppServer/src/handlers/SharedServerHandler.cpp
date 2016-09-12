@@ -17,9 +17,18 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 
 	  switch (event) {
 	  	  case NS_CONNECT:
-	  		  std::cout << "....communicating with SharedServer...." << std::endl;
+	  		  std::cout << "....connected with SharedServer...." << std::endl;
+     		  ns_printf(c, "%s %s HTTP/1.1\r\n"
+     				  	   "Host: %s\r\n"
+     				  	   "Content-Type: application/json\r\n"
+     				  	   "Content-Length: %d\r\n"
+     				  	   "\r\n"
+     				  	   "%s",
+						   request->method().c_str(), request->uri().c_str(), SHARED_SERVER_URL,
+						   request->message->body.len, request->message->body.p);
 	  		  break;
 	  	  case NS_HTTP_REPLY:
+	  		  std::cout << "....receiving reply from SharedServer...." << std::endl;
 	  		  reply = message;
 	  		  std::cout << "reply: " << message->body.p << std::endl;
 	  		  processed_request = true;
@@ -30,14 +39,11 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 	  }
 }
 
-SharedServerHandler::SharedServerHandler(http_request* request) {
+SharedServerHandler::SharedServerHandler(http_request* req) {
 	ns_mgr_init(&mgr, NULL);
-	std::string uri;
-	uri.assign(request->message->uri.p, request->message->uri.len);
+	request = req;
 	std::string request_url = SHARED_SERVER_URL;
-	request_url += uri;
-	struct ns_connection* c = ns_connect_http(&mgr, event_handler,
-					request_url.c_str(), NULL, NULL);
+	struct ns_connection* c = ns_connect_http(&mgr, event_handler, request_url.c_str(), NULL, NULL);
 	if (!c)
 		return;
 	processed_request = false;

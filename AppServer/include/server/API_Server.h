@@ -19,5 +19,14 @@
 #define JOB_POSITIONS 	"/job_positions"
 #define SKILLS 			"/skills"
 
+static bool validate_uri(std::string uri){
+	if (uri == SIGNIN ||
+		uri == SIGNUP ||
+		uri == CATEGORIES ||
+		uri == JOB_POSITIONS ||
+		uri == SKILLS)
+		return true;
+	return false;
+}
 
 #endif  // APPSERVER_INCLUDE_SERVER_API_SERVER_H_

@@ -14,6 +14,7 @@
 
 static struct http_message* reply = NULL;
 static bool processed_request = false;
+static http_request* request = NULL;
 
 class SharedServerHandler: public Thread {
  private:

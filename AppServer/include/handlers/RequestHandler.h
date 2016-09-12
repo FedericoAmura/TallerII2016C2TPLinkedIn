@@ -14,6 +14,9 @@ class RequestHandler{
  private:
 	http_request* request;
 
+	void sendReply(http_response* res);
+	void sendBadRequest();
+
  public:
 	explicit RequestHandler(http_request* req);
 	void process();
