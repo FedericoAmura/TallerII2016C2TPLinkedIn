@@ -19,6 +19,11 @@
 #define JOB_POSITIONS 	"/job_positions"
 #define SKILLS 			"/skills"
 
+#define GET		"GET"
+#define POST 	"POST"
+#define DELETE 	"DELETE"
+#define PUT 	"PUT"
+
 static bool validate_uri(std::string uri){
 	if (uri == SIGNIN ||
 		uri == SIGNUP ||
