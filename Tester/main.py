@@ -29,11 +29,10 @@ conn.close()
 
 print "Defining database environment variable for nodejs"
 os.environ["DATABASE_URL"] = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db"
-os.environ["PORT"] = port = 5000
+os.environ["PORT"] = port = "5000"
 
 print "Running nodejs"
-nodepid = os.system('nodejs ./SharedServer/index.js &')
-print nodepid
+os.system('nodejs ./SharedServer/index.js &')
 
 time.sleep(1)
 
