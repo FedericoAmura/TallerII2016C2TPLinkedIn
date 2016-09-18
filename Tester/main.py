@@ -7,7 +7,7 @@ import requests
 print "----- Starting python master"
 
 print "----- Creating database"
-os.system('./Tester/initiatepostgres.sh')
+os.system('sudo ./Tester/initiatepostgres.sh')
 
 print "----- Connecting to dabase"
 conn = psycopg2.connect(database="jobify_db", user="postgres_user", password="password", host="127.0.0.1", port="5432")
