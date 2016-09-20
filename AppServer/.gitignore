@@ -6,3 +6,4 @@
 AppServer
 UnitTest
 /lib
+/coverage
