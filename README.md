@@ -51,6 +51,10 @@ Correr el ejecutable UnitTests, que se autogenera al compilar el proyecto.
 
 Documentación de uso: https://github.com/google/googletest/blob/master/googletest/docs/Primer.md
 
+####Code Coverage####
+
+Se provee el script AppServer/coverage.sh que al ser ejecutado corre los tests y deja el output en html en AppServer/coverage. 
+
 ##Shared Server##
 
 ###Dependencias###
