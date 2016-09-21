@@ -12,7 +12,7 @@ file(GLOB_RECURSE TEST "test/*.cpp")
 add_executable(AppServer ${COMMONSRC} "src/AppServer.cpp")
 add_executable(UnitTest ${COMMONSRC} ${TEST} )
 
-set(COMMONLIBS pthread ${CMAKE_SOURCE_DIR}/lib/libleveldb.a)
+set(COMMONLIBS pthread ${CMAKE_SOURCE_DIR}/lib/libleveldb.a ${CMAKE_SOURCE_DIR}/lib/liblog4cpp.a)
 TARGET_LINK_LIBRARIES(AppServer ${COMMONLIBS})
 TARGET_LINK_LIBRARIES(UnitTest ${COMMONLIBS} --coverage ${CMAKE_SOURCE_DIR}/lib/libgtest.a)
 target_compile_options(UnitTest PUBLIC -O0 --coverage -g)
