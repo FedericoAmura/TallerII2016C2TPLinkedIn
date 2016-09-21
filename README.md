@@ -90,3 +90,9 @@ Syntaxis para dominio c++: Consultar http://www.sphinx-doc.org/en/stable/domains
 Syntaxis para dominio java: Consultar https://bronto.github.io/javasphinx/
 
 Syntaxis para dominio js: Consultar http://www.sphinx-doc.org/en/stable/domains.html#the-javascript-domain
+
+##Integración Continua##
+
+Travis CI: https://travis-ci.org/FedericoAmura/TallerII2016C2TPLinkedIn
+
+Documentación de Travis: https://docs.travis-ci.com/
