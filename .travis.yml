@@ -4,12 +4,14 @@ dist: trusty
 languaje: python	#El Tester esta hecho en python, lo tomamos como base
 python:
 - '2.7'
-before install:
-- "./install-dependencies.sh"	#instalamos dependencias de los demas lenguajes
+services:
+  - postgresql
+before_install:
+- "sudo ./install-dependencies.sh"	#instalamos dependencias de los demas lenguajes
 #install:
 before_script:
-- "./buildProject.sh"	#compilamos todo lo que sea necesario
-script: "./Tester/main.py"	#corremos pruebas
+- "sudo ./buildProject.sh"	#compilamos todo lo que sea necesario
+script: "sudo ./Tester/main.py"	#corremos pruebas
 #after_success:
 #after_failure:
 #before_deploy:

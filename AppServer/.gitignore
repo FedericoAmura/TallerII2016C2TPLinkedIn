@@ -6,3 +6,6 @@
 AppServer
 UnitTest
 /lib
+/coverage
+/.project
+/.cproject

@@ -7,7 +7,7 @@ import requests
 print "----- Starting python master"
 
 print "----- Creating database"
-os.system('./Tester/initiatepostgres.sh')
+os.system('sudo ./Tester/initiatepostgres.sh')
 
 print "----- Connecting to dabase"
 conn = psycopg2.connect(database="jobify_db", user="postgres_user", password="password", host="127.0.0.1", port="5432")
@@ -29,11 +29,10 @@ conn.close()
 
 print "Defining database environment variable for nodejs"
 os.environ["DATABASE_URL"] = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db"
-os.environ["PORT"] = port = 5000
+os.environ["PORT"] = port = "5000"
 
 print "Running nodejs"
-nodepid = os.system('nodejs ./SharedServer/index.js &')
-print nodepid
+os.system('nodejs ./SharedServer/index.js &')
 
 time.sleep(1)
 

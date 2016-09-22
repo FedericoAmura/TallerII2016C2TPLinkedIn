@@ -6,4 +6,4 @@ make
 mv AppServer ../AppServer
 mv UnitTest ../UnitTest
 cd ..
-rm -r ./build
+#rm -r ./build

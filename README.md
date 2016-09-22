@@ -17,7 +17,11 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 ###Dependencias###
 
 -cpp build-essential cmake
-En carpeta /lib: libgtest.a libgmock.a libleveldb.a
+
+En /lib: libleveldb.a liblog4cpp.a
+
+Para tests, en /lib: libgtest.a libgmock.a
+
 Se provee install-dependencies.sh
 
 ###Compilación###
@@ -35,13 +39,25 @@ Ejecutar AppServer
 
 Documentación de uso: https://rawgit.com/google/leveldb/master/doc/index.html
 
+###Log4cpp###
+
+Documentación de uso: https://log4cpp.sourceforge.net/
+
+###JSON11###
+
+Documentación de uso: https://github.com/dropbox/json11
+
 ###Tests Unitarios###
 
 Se utiliza google test.
 
 Correr el ejecutable UnitTests, que se autogenera al compilar el proyecto.
 
-Para documentación sobre uso de gTest mirar https://github.com/google/googletest/blob/master/googletest/docs/Primer.md
+Documentación de uso: https://github.com/google/googletest/blob/master/googletest/docs/Primer.md
+
+####Code Coverage####
+
+Se provee el script AppServer/coverage.sh que al ser ejecutado corre los tests y deja el output en html en AppServer/coverage. 
 
 ##Shared Server##
 
@@ -82,3 +98,9 @@ Syntaxis para dominio c++: Consultar http://www.sphinx-doc.org/en/stable/domains
 Syntaxis para dominio java: Consultar https://bronto.github.io/javasphinx/
 
 Syntaxis para dominio js: Consultar http://www.sphinx-doc.org/en/stable/domains.html#the-javascript-domain
+
+##Integración Continua##
+
+Travis CI: https://travis-ci.org/FedericoAmura/TallerII2016C2TPLinkedIn
+
+Documentación de Travis: https://docs.travis-ci.com/
