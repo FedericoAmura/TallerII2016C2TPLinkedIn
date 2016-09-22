@@ -10,7 +10,7 @@
 #include "../../include/server/API_Server.h"
 #include "../../include/handlers/RequestHandler.h"
 
-/* communication between appclient and appserver*/
+/* communication between clientapp and appserver*/
 static void event_handler(struct ns_connection* c, int event, void* data) {
 	  struct http_message* message = (struct http_message*) data;
 
@@ -22,7 +22,7 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 	  	  {
 	  		  http_request request(c, message);
 	  		  RequestHandler req_handler(&request);
-	  		  req_handler.process();
+	  		  req_handler.handle();
 	  	  }
 	  		  break;
 	      default:
