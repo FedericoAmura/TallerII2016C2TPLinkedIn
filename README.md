@@ -43,6 +43,10 @@ Documentación de uso: https://rawgit.com/google/leveldb/master/doc/index.html
 
 Documentación de uso: https://log4cpp.sourceforge.net/
 
+###JSON11###
+
+Documentación de uso: https://github.com/dropbox/json11
+
 ###Tests Unitarios###
 
 Se utiliza google test.
@@ -50,6 +54,10 @@ Se utiliza google test.
 Correr el ejecutable UnitTests, que se autogenera al compilar el proyecto.
 
 Documentación de uso: https://github.com/google/googletest/blob/master/googletest/docs/Primer.md
+
+####Code Coverage####
+
+Se provee el script AppServer/coverage.sh que al ser ejecutado corre los tests y deja el output en html en AppServer/coverage. 
 
 ##Shared Server##
 
@@ -90,3 +98,9 @@ Syntaxis para dominio c++: Consultar http://www.sphinx-doc.org/en/stable/domains
 Syntaxis para dominio java: Consultar https://bronto.github.io/javasphinx/
 
 Syntaxis para dominio js: Consultar http://www.sphinx-doc.org/en/stable/domains.html#the-javascript-domain
+
+##Integración Continua##
+
+Travis CI: https://travis-ci.org/FedericoAmura/TallerII2016C2TPLinkedIn
+
+Documentación de Travis: https://docs.travis-ci.com/
