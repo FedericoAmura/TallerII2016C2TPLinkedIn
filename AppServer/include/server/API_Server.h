@@ -19,5 +19,28 @@
 #define JOB_POSITIONS 	"/job_positions"
 #define SKILLS 			"/skills"
 
+#define GET		"GET"
+#define POST 	"POST"
+#define DELETE 	"DELETE"
+#define PUT 	"PUT"
+
+#define	CONTENT_TYPE_JSON	"application/json"
+#define CONTENT_TYPE_TEXT_PLAIN	"text/plain"
+
+#define STATUS_OK			200
+#define STATUS_CREATED		201
+#define STATUS_NO_CONTENT	204
+#define STATUS_BAD_REQUEST	400
+#define STATUS_NOT_FOUND	404
+
+static bool validate_uri(std::string uri){
+	if (uri == SIGNIN ||
+		uri == SIGNUP ||
+		uri == CATEGORIES ||
+		uri == JOB_POSITIONS ||
+		uri == SKILLS)
+		return true;
+	return false;
+}
 
 #endif  // APPSERVER_INCLUDE_SERVER_API_SERVER_H_

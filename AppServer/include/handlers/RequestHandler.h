@@ -14,9 +14,12 @@ class RequestHandler{
  private:
 	http_request* request;
 
+	void sendReply(std::string res, int status, std::string content_type);
+	void sendBadRequest();
+
  public:
 	explicit RequestHandler(http_request* req);
-	void process();
+	void handle();
 	virtual ~RequestHandler();
 };
 
