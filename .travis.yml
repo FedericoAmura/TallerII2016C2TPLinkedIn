@@ -12,7 +12,8 @@ before_install:
 before_script:
   - "sudo ./buildProject.sh"	#compilamos todo lo que sea necesario
 script: 
-  - "sudo ./run-tests.sh"  #tests
+  - "sudo ./Tester/main.py"   #tests
+#  - "sudo ./AppServer/UnitTest"   #no encuentra el test, posiblemente porque el lang es python
 cache:
   pip: true
   directories: 
