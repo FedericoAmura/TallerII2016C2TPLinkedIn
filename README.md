@@ -16,9 +16,9 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 
 ###Dependencias###
 
--cpp build-essential cmake
+-cpp build-essential cmake libcurl3 libcurl4-openssl-dev
 
-En /lib: libleveldb.a liblog4cpp.a
+En /lib: libleveldb.a liblog4cpp.a libcpr.a
 
 Para tests, en /lib: libgtest.a libgmock.a
 
