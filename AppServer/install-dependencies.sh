@@ -6,7 +6,7 @@ then
 	exit 1
 fi
 
-sudo apt-get install cpp build-essential cmake git
+sudo apt-get install cpp build-essential cmake git libcurl3 libcurl4-openssl-dev
 
 if [ ! -d ./lib ]; then mkdir lib; fi
 
@@ -54,4 +54,21 @@ then
 	mv ./src/.libs/liblog4cpp.a ../../lib/liblog4cpp.a
 	cd ../..
 	rm -f -r ./log4cppsrc	
+fi
+
+#curl for people
+if [ ! -r ./lib/libcpr.a ]
+then
+	if [ ! -d ./cprsrc ]; then mkdir cprsrc; fi
+	cd cprsrc
+	git clone --depth=1 https://github.com/whoshuu/cpr.git cpr
+	cd cpr
+	git submodule update --init --recursive #Falla si se hace un shallow update
+	mkdir build
+	cd build
+	cmake -BUILD_CPR_TESTS=OFF ..
+	make cpr
+	mv ./lib/libcpr.a ../../../lib/libcpr.a
+	cd ../../..
+	rm -f -r ./cprsrc
 fi

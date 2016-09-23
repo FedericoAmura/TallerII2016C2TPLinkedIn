@@ -59,3 +59,11 @@ TEST_F(LibTest, TestJSonParse) {
 	json11::Json json = json11::Json::parse(stringToParse, err);
 	EXPECT_STREQ(json["key1"].string_value().c_str(),"strvalue");
 }
+
+#include "../include/cpr/cpr.h"
+TEST_F(LibTest, TestCurl) {
+    auto getRequest = cpr::Get(cpr::Url{"http://httpbin.org/ip"});
+    EXPECT_EQ(getRequest.status_code, 200);
+    EXPECT_STREQ(getRequest.header["content-type"].c_str(), "application/json");
+    //getRequest.tex el contenido.;
+}

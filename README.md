@@ -10,7 +10,7 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 
 ###Compilación###
 
-###Ejecucíón###
+###Ejecución###
 
 ##App Server##
 
@@ -27,11 +27,12 @@ Se provee install-dependencies.sh
 ###Compilación###
 
 Se provee ./buildServer.sh.
-Sino, ejecutar cmake seguido de make. 
 
-###Ejecucíón###
+Sino, ejecutar cmake seguido de make.
 
-Ejecutar AppServer
+###Parámetros de ejecución###
+
+TODO: Nivel de log, archivos de log o consola
 
 ####Ejecución bajo docker####
 
@@ -46,6 +47,10 @@ Documentación de uso: https://log4cpp.sourceforge.net/
 ###JSON11###
 
 Documentación de uso: https://github.com/dropbox/json11
+
+###CPR: C++ Requests (Curl for People)###
+
+Documentación de uso: https://github.com/whoshuu/cpr
 
 ###Tests Unitarios###
 
@@ -68,7 +73,7 @@ Se provee el script AppServer/coverage.sh que al ser ejecutado corre los tests y
 
 ###Compilación###
 
-###Ejecucíón###
+###Ejecución###
 
 ####Ejecución bajo docker####
 
