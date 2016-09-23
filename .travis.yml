@@ -12,8 +12,7 @@ before_install:
 before_script:
   - "sudo ./buildProject.sh"	#compilamos todo lo que sea necesario
 script: 
-  - "sudo ./AppServer/UnitTest"	#corremos pruebas
-  - "sudo ./Tester/main.py"
+  - "sudo ./run-tests.sh"  #tests
 cache:
   pip: true
   directories: 
