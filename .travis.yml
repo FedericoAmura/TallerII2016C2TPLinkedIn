@@ -1,23 +1,23 @@
 #Necesario para instalar cosas
 sudo: required
 dist: trusty
-languaje: python	#El Tester esta hecho en python, lo tomamos como base
+language: python	#El Tester esta hecho en python, lo tomamos como base
 python:
-- '2.7'
+  - '2.7'
 services:
   - postgresql
 before_install:
-- "sudo ./install-dependencies.sh"	#instalamos dependencias de los demas lenguajes
+  - "sudo ./install-dependencies.sh"	#instalamos dependencias de los demas lenguajes
 #install:
 before_script:
-- "sudo ./buildProject.sh"	#compilamos todo lo que sea necesario
+  - "sudo ./buildProject.sh"	#compilamos todo lo que sea necesario
 script: 
-  "./AppServer/UnitTest"	#corremos pruebas
-  "sudo ./Tester/main.py"
+  - "./AppServer/UnitTest"	#corremos pruebas
+  - "sudo ./Tester/main.py"
 cache:
   pip: true
-  directories:
-  ./AppServer/lib	
+  directories: 
+  - ./AppServer/lib	
 #after_success:
 #after_failure:
 #before_deploy:
