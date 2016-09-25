@@ -31,7 +31,7 @@ print "Waiting for AppServer to become active"
 time.sleep(1)	#de nuevo, puede no ser necesario pero por las dudas lo esperamos 1 segundo
 
 print "----- Running tests against AppServer"
-#os.system("aca el comando para correr los test integradores")
+os.system("./AppServer/UnitTest")
 
 '''
 #ClientApp

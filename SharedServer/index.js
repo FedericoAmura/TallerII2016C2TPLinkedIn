@@ -52,7 +52,6 @@ app.get('/manager', function (req, res) {
 //Categorias
 //Get categorias
 app.get('/categories', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
@@ -133,7 +132,6 @@ app.delete('/categories/:categoria', function (req, res) {
 
 //Get JobPositions
 app.get('/job_positions', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
@@ -153,7 +151,6 @@ app.get('/job_positions', function (req, res) {
 
 //Get JobPositions de una categoria
 app.get('/job_positions/categories/:categoria', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
@@ -233,7 +230,6 @@ app.delete('/job_positions/categories/:categoria/:posicion', function (req, res)
 
 //Get Skills
 app.get('/skills', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
@@ -252,7 +248,6 @@ app.get('/skills', function (req, res) {
 
 //Get Skills de una categoria
 app.get('/skills/categories/:categoria', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
