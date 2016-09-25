@@ -4,6 +4,8 @@ app.use(express.static('public'));
 var pg = require('pg');
 var parser = require("body-parser");
 
+var urlencodedParser = parser.urlencoded({ extended: false })
+
 var pgurl = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
 var port = 5000
 
@@ -20,8 +22,7 @@ function errPGConn(err, res) {
 }
 
 function noContentTypeJSON(req, res) {
-	var contentType = req.headers['Content-Type'];
-	if (!contentType || contentType.indexOf('application/json') !== 0) {
+	if (req.get('Content-Type') != 'application/json') {
 		res.send('{"error":"Content Type must be application/json"}');
 		res.status(415);
 		return true;
@@ -35,10 +36,10 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname+'/public/index.html');
 });
 
-app.get('/login', function (req, res) {
+app.post('/login', urlencodedParser, function (req, res) {
 	response = {
-			first_name:req.query.first_name,
-			last_name:req.query.last_name
+			first_name:req.body.username,
+			last_name:req.body.password
 	};
 	console.log(response);
 	res.end(JSON.stringify(response));
