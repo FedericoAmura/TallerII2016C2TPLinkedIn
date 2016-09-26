@@ -10,7 +10,7 @@ print "----- Creating database locally"
 os.system('sudo ./Tester/initiatepostgres.sh')
 
 print "----- Defining database environment variable for use in SharedServer"
-os.environ["DATABASE_URL"] = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db"
+os.environ["DATABASE_URL"] = "postgresql://postgres@127.0.0.1:5432/jobify_db"
 os.environ["PORT"] = port = "5000"
 
 #SharedServer

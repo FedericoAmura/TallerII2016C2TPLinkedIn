@@ -6,7 +6,7 @@ var parser = require("body-parser");
 
 var urlencodedParser = parser.urlencoded({ extended: false })
 
-var pgurl = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
+var pgurl = "postgresql://postgres@127.0.0.1:5432/jobify_db";
 var port = 5000
 
 var appversion = 0.2
@@ -53,9 +53,6 @@ app.get('/manager', function (req, res) {
 //Categorias
 //Get categorias
 app.get('/categories', function (req, res) {
-	console.log(pgurl);
-	console.log(process.env.DATABASE_URL);
-	console.log(pg);
 	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
