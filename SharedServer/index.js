@@ -6,7 +6,7 @@ var parser = require("body-parser");
 
 var urlencodedParser = parser.urlencoded({ extended: false })
 
-var pgurl = "postgresql://postgres@127.0.0.1:5432/jobify_db";
+var pgurl = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
 var port = 5000
 
 var appversion = 0.2
