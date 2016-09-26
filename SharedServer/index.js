@@ -53,6 +53,9 @@ app.get('/manager', function (req, res) {
 //Categorias
 //Get categorias
 app.get('/categories', function (req, res) {
+	console.log(pgurl);
+	console.log(process.env.DATABASE_URL);
+	console.log(pg);
 	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
