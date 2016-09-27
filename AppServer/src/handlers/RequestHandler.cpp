@@ -26,10 +26,13 @@ void RequestHandler::sendBadRequest(){
 }
 
 void RequestHandler::handle() {
+
 	if (!validate_uri(request->uri())){
 		sendBadRequest();
 		return;
 	}
+
+	/* TODO mejorar lo de abajo, quitar*/
 	SharedServerHandler* sharedHandler = new SharedServerHandler(request);
 	sharedHandler->start();
 	sharedHandler->join();
