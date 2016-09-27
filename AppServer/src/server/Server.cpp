@@ -19,7 +19,8 @@ static void* serverHandler(void* arg) {
 }
 
 Server::Server() {
-	connectionsHandler = new ConnectionsHandler();
+	server_db = new DataBases();
+	connectionsHandler = new ConnectionsHandler(server_db);
 }
 
 bool Server::settting_ok() {
@@ -28,10 +29,12 @@ bool Server::settting_ok() {
 
 Server::~Server() {
 	delete connectionsHandler;
+	delete server_db;
 }
 
 void Server::run() {
 	std::cout << "...starting server..." << std::endl;
+	std::cout << "...to stop the server press a key..." << std::endl;
 	connectionsHandler->start();
 	pthread_t t_handler;
 	pthread_create(&t_handler, NULL, serverHandler, connectionsHandler);

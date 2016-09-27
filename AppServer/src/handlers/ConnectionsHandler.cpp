@@ -20,6 +20,8 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 	  		  break;
 	  	  case NS_HTTP_REQUEST:
 	  	  {
+	  		  DataBases* db = (DataBases*)c->user_data;
+	  		  std::cout << "DataBases : " << db->toString() <<std::endl;
 	  		  http_request request(c, message);
 	  		  RequestHandler req_handler(&request);
 	  		  req_handler.handle();
@@ -30,7 +32,7 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 	  }
 }
 
-ConnectionsHandler::ConnectionsHandler() {
+ConnectionsHandler::ConnectionsHandler(DataBases* db) {
 	ns_mgr_init(&mgr, NULL);
 	running = false;
 	connection = ns_bind(&mgr, DEFAULT_PORT, event_handler);
@@ -39,6 +41,7 @@ ConnectionsHandler::ConnectionsHandler() {
 	ns_set_protocol_http_websocket(connection);
 	// ns_enable_multithreading(connection);		// TODO
 	running = true;
+	connection->user_data = db;
 }
 
 bool ConnectionsHandler::isRunning() {

@@ -13,6 +13,7 @@
 class Server {
  private:
 	ConnectionsHandler* connectionsHandler;
+	DataBases* server_db;
 
  public:
 	Server();
