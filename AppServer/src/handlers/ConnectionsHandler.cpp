@@ -23,6 +23,7 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 	  		  DataBases* db = (DataBases*)c->user_data;
 	  		  std::cout << "DataBases : " << db->toString() <<std::endl;
 	  		  http_request request(c, message);
+	  		  std::cout << "URI: " << request.uri() <<std::endl;
 	  		  RequestHandler req_handler(&request);
 	  		  req_handler.handle();
 	  	  }

@@ -14,8 +14,19 @@ class RequestHandler{
  private:
 	http_request* request;
 
-	void sendReply(std::string res, int status, std::string content_type);
+	void sendReply(std::string res, int status);
 	void sendBadRequest();
+	void closeConnection();
+	bool validToken();
+
+	void handleLogIn();
+	void handleSignUp();
+	void handleRecommendations();
+	void handleProfessionals();
+	void handleAddContact();
+	void handlePopular();
+	void handleProfile();
+	void handleChat();
 
  public:
 	explicit RequestHandler(http_request* req);
