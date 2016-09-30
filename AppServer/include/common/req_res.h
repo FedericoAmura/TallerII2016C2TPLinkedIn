@@ -20,16 +20,16 @@ struct http_request{
 		message = msg;
 	}
 
-	std::string method(){
+	METHOD method(){
 		if (ns_vcmp(&message->method, GET) == 0)
-			return GET;
+			return _GET;
 		if (ns_vcmp(&message->method, POST) == 0)
-			return POST;
+			return _POST;
 		if (ns_vcmp(&message->method, DELETE) == 0)
-			return DELETE;
+			return _DELETE;
 		if (ns_vcmp(&message->method, PUT) == 0)
-			return PUT;
-		return PUT;		//hardcode
+			return _PUT;
+		return _INVALID_METHOD;
 	}
 
 	std::string uri(){

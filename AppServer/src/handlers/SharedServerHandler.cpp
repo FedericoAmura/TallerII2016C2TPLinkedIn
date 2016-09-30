@@ -24,7 +24,7 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
      				  	   "Content-Length: %d\r\n"
      				  	   "\r\n"
      				  	   "%s",
-						   request->method().c_str(), request->uri().c_str(), SHARED_SERVER_URL,
+						   request->message->method.p, request->uri().c_str(), SHARED_SERVER_URL,
 						   request->message->body.len, request->message->body.p);
 	  		  break;
 	  	  case NS_HTTP_REPLY:

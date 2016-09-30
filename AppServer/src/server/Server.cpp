@@ -19,8 +19,8 @@ static void* serverHandler(void* arg) {
 }
 
 Server::Server() {
-	server_db = new DataBases();
-	connectionsHandler = new ConnectionsHandler(server_db);
+	db_handler = new DataBasesHandler();
+	connectionsHandler = new ConnectionsHandler(db_handler);
 }
 
 bool Server::settting_ok() {
@@ -29,7 +29,7 @@ bool Server::settting_ok() {
 
 Server::~Server() {
 	delete connectionsHandler;
-	delete server_db;
+	delete db_handler;
 }
 
 void Server::run() {

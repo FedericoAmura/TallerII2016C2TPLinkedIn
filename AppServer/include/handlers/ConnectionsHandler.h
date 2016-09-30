@@ -10,7 +10,7 @@
 
 #include "../common/Thread.h"
 #include "../fossa/fossa.h"
-#include "../database/DataBases.h"
+#include "../handlers/DataBasesHandler.h"
 
 class ConnectionsHandler : public Thread {
  private:
@@ -19,7 +19,7 @@ class ConnectionsHandler : public Thread {
 	bool running;
 
  public:
-	ConnectionsHandler(DataBases* db);
+	ConnectionsHandler(DataBasesHandler* db_handler);
 	bool isRunning();
 	void run();
 	void stop();
