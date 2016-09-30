@@ -1,0 +1,12 @@
+#ifndef APPSERVER_INCLUDE_DATABASE_DBJSON_H_
+#define APPSERVER_INCLUDE_DATABASE_DBJSON_H_
+
+class DBJSON {
+ private:
+
+ public:
+	DBJSON();
+	virtual ~DBJSON();
+};
+
+#endif  /* APPSERVER_INCLUDE_DATABASE_DBJSON_H_ */
