@@ -1,12 +1,10 @@
-#include "../include/test/LibTest.h"
-
-LibTest::LibTest() {}
+#include "../include/gtest/gtest.h"
 
 /**
  * Test de LevelDB correctamente integrado
  */
 #include "../include/leveldb/db.h"
-TEST_F(LibTest, TestCrearUnaBaseDeDatos) {
+TEST(LibTest, TestCrearUnaBaseDeDatos) {
 	leveldb::DB* db;
 	leveldb::Options options;
 	options.create_if_missing = true;
@@ -25,7 +23,7 @@ TEST_F(LibTest, TestCrearUnaBaseDeDatos) {
 #include "../include/log4cpp/BasicLayout.hh"
 #include "../include/log4cpp/Priority.hh"
 #include <sstream>
-TEST_F(LibTest, TestLogger) {
+TEST(LibTest, TestLogger) {
 	std::stringstream sstream;
 	std::string mensaje("Test");
 
@@ -43,7 +41,7 @@ TEST_F(LibTest, TestLogger) {
  * Test de libreria de JSon y ejemplo de uso
  */
 #include "../include/json11/json11.hpp"
-TEST_F(LibTest, TestJSonBuild) {
+TEST(LibTest, TestJSonBuild) {
 	json11::Json json = json11::Json::object {
 	    { "key1", "strvalue" },
 	    { "key2", false },
@@ -53,7 +51,7 @@ TEST_F(LibTest, TestJSonBuild) {
 	EXPECT_FALSE(json["key2"].bool_value());
 	EXPECT_EQ(json["key3"][0].int_value(), 1);
 }
-TEST_F(LibTest, TestJSonParse) {
+TEST(LibTest, TestJSonParse) {
 	std::string stringToParse("{\"key1\": \"strvalue\"}");
 	std::string err;
 	json11::Json json = json11::Json::parse(stringToParse, err);
@@ -61,7 +59,7 @@ TEST_F(LibTest, TestJSonParse) {
 }
 
 #include "../include/cpr/cpr.h"
-TEST_F(LibTest, TestCurl) {
+TEST(LibTest, TestCurl) {
     auto getRequest = cpr::Get(cpr::Url{"http://httpbin.org/ip"});
     EXPECT_EQ(getRequest.status_code, 200);
     EXPECT_STREQ(getRequest.header["content-type"].c_str(), "application/json");
