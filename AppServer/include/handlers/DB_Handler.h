@@ -5,18 +5,18 @@
  *      Author: emanuel
  */
 
-#ifndef APPSERVER_INCLUDE_HANDLERS_DATABASESHANDLER_H_
-#define APPSERVER_INCLUDE_HANDLERS_DATABASESHANDLER_H_
+#ifndef APPSERVER_INCLUDE_HANDLERS_DB_HANDLER_H_
+#define APPSERVER_INCLUDE_HANDLERS_DB_HANDLER_H_
 
 #include <iostream>
 
-class DataBasesHandler {
+class DB_Handler {
 public:
-	DataBasesHandler();
+	DB_Handler();
 
 	std::string toString();
 
-	virtual ~DataBasesHandler();
+	virtual ~DB_Handler();
 };
 
 #endif /* APPSEVER_INCLUDE_HANDLERS_DATABASESHANDLER_H_ */

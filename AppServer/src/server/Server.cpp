@@ -19,7 +19,7 @@ static void* serverHandler(void* arg) {
 }
 
 Server::Server() {
-	db_handler = new DataBasesHandler();
+	db_handler = new DB_Handler();
 	connectionsHandler = new ConnectionsHandler(db_handler);
 }
 

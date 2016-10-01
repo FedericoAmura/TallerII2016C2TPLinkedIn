@@ -5,18 +5,18 @@
  *      Author: emanuel
  */
 
-#include "../../include/handlers/DataBasesHandler.h"
+#include "../../include/handlers/DB_Handler.h"
 
-DataBasesHandler::DataBasesHandler() {
+DB_Handler::DB_Handler() {
 	// TODO Auto-generated constructor stub
 
 }
 
-std::string DataBasesHandler::toString(){
+std::string DB_Handler::toString(){
 	return "Hola, soy en handler de bases de datos";
 }
 
-DataBasesHandler::~DataBasesHandler() {
+DB_Handler::~DB_Handler() {
 	// TODO Auto-generated destructor stub
 }
 

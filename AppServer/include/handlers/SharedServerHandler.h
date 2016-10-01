@@ -8,22 +8,15 @@
 #ifndef APPSERVER_INCLUDE_HANDLERS_SHAREDSERVERHANDLER_H_
 #define APPSERVER_INCLUDE_HANDLERS_SHAREDSERVERHANDLER_H_
 
-#include "../common/Thread.h"
-#include "../fossa/fossa.h"
 #include "../common/req_res.h"
 
-static struct http_message* reply = NULL;
-static bool processed_request = false;
-static http_request* request = NULL;
-
-class SharedServerHandler: public Thread {
- private:
-	struct ns_mgr mgr;
+class SharedServerHandler {
+private:
+	http_request* request;
 
  public:
-	explicit SharedServerHandler(http_request* request);
-	void run();
-	http_message* getReply();
+	explicit SharedServerHandler(http_request* req);
+
 	virtual ~SharedServerHandler();
 };
 

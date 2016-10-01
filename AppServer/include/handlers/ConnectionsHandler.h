@@ -9,8 +9,7 @@
 #define APPSERVER_INCLUDE_HANDLERS_CONNECTIONSHANDLER_H_
 
 #include "../common/Thread.h"
-#include "../fossa/fossa.h"
-#include "../handlers/DataBasesHandler.h"
+#include "../../include/handlers/RequestHandler.h"
 
 class ConnectionsHandler : public Thread {
  private:
@@ -19,7 +18,7 @@ class ConnectionsHandler : public Thread {
 	bool running;
 
  public:
-	ConnectionsHandler(DataBasesHandler* db_handler);
+	ConnectionsHandler(DB_Handler* db_handler);
 	bool isRunning();
 	void run();
 	void stop();
