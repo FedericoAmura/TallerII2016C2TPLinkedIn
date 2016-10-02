@@ -1,0 +1,15 @@
+db:
+  build: .
+  dockerfile: SharedServer/SharedDBDockerfile
+  ports:
+   - "5432:5432"
+sharedserver:
+  build: .
+  dockerfile: SharedServer/SharedDockerfile
+  ports:
+   - "5000:5000"
+  links:
+    - db
+  environment:
+    - PGHOST=db
+    - DATABASE_URL=postgresql://postgres@db:5432

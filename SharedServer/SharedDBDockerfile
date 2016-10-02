@@ -1,0 +1,6 @@
+#Arrancamos desde la ultima version de postgres
+FROM postgres:latest
+
+#copiamos los files para iniciar la db
+RUN mkdir -p /docker-entrypoint-initdb.d
+ADD ./Tester/jobify_db.sql /docker-entrypoint-initdb.d

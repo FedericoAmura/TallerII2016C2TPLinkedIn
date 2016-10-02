@@ -7,8 +7,6 @@ CREATE TABLE categories
 ) WITH (
 	OIDS=FALSE
 );
-ALTER TABLE categories
-OWNER TO postgres_user;
 
 CREATE TABLE skills
 (
@@ -23,8 +21,6 @@ CREATE TABLE skills
 ) WITH (
 	OIDS=FALSE
 );
-ALTER TABLE skills
-OWNER TO postgres_user;
 
 CREATE TABLE jobs
 (
@@ -39,5 +35,3 @@ CREATE TABLE jobs
 ) WITH (
 	OIDS=FALSE
 );
-ALTER TABLE jobs
-OWNER TO postgres_user;

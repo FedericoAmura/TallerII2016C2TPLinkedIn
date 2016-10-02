@@ -1,0 +1,24 @@
+#Si nos tira error de que el daemon de docker no esta activo corremos esto
+#tambien tenemos que tener nuestro usuario agregado al grupo docker
+#sudo usermod -aG docker $(whoami)
+
+#Arrancamos desde la version argon de node
+FROM node:argon
+
+#Creamos el directorio para la app y lo definimos como workdir
+RUN mkdir -p /usr/src/SharedServer/public
+WORKDIR /usr/src/SharedServer
+
+#Instalamos las dependencias
+COPY ./SharedServer/package.json /usr/src/SharedServer
+COPY ./SharedServer/public /usr/src/SharedServer/public
+RUN npm install
+
+#Metemos el codigo fuente
+COPY ./SharedServer/index.js /usr/src/SharedServer
+
+#Abrimos el puerto 5000
+EXPOSE 5000
+
+#Ejecutamos el SharedServer en el docker
+CMD ["nodejs", "index.js"]
