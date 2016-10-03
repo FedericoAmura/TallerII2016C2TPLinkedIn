@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+     android:orientation="vertical"
+    >
+
+    <!-- CARD INFORMACION PERSONAL -->
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvInfo"
+        android:padding="30dp"
+        card_view:cardElevation="4dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_name"
+                android:layout_toRightOf="@+id/person_photo"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="30dp"
+                android:textSize="30sp"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_photo"
+                android:src="@drawable/messi"
+                android:layout_marginTop="30dp"
+                android:maxHeight="200px"
+                android:maxWidth="200px"
+                android:minHeight="200px"
+                android:minWidth="200px"
+                android:adjustViewBounds="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="16dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_age"
+                android:layout_toRightOf="@+id/person_photo"
+                android:layout_below="@+id/person_name"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text=" INFORMACION PERSONAL"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tituloInfo"
+
+            />
+
+    </android.support.v7.widget.CardView>
+
+
+    <!-- CARD RESUMEN -->
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvResumen"
+        android:padding="30dp"
+        card_view:cardElevation="4dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvResumen"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="30dp"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text=" RESUMEN"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tituloResumen"
+
+            />
+
+    </android.support.v7.widget.CardView>
+
+    <!-- CARD SKILLS -->
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvSkills"
+        android:padding="30dp"
+        card_view:cardElevation="4dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvSkills"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="30dp"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text=" SKILLS"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tituloSkills"
+
+            />
+
+    </android.support.v7.widget.CardView>
+
+    <!-- CARD EXPERIENCIA LABORAL -->
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvExperiencia"
+        android:padding="30dp"
+        card_view:cardElevation="4dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvExperiencia"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="30dp"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text=" EXPERIENCIA LABORAL"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tituloExperiencia"
+
+            />
+
+    </android.support.v7.widget.CardView>
+
+
+    <!-- CARD UBICACION -->
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cvUbicacion"
+        android:padding="30dp"
+        card_view:cardElevation="4dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvUbicacion"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="30dp"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text=" UBICACION"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tituloUbicacion"
+
+            />
+
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>
+</ScrollView>

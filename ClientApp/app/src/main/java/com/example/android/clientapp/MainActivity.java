@@ -7,12 +7,15 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.os.Handler;
+import android.support.annotation.BoolRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "ConexionHTTP";
     private EditText urlText;
     private TextView textViewRespuesta;
+    private Boolean exit = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,12 +39,31 @@ public class MainActivity extends AppCompatActivity {
         textViewRespuesta = (TextView) findViewById(R.id.textViewRespuesta);
     }
 
+    @Override
+    public void onBackPressed(){
+        if (exit){
+            finish();
+        }
+        else {
+            Toast.makeText(this, "Presione de nuevo para Salir.",
+                    Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run(){
+                    exit= false;
+                }
+            }, 3 * 1000);
+        }
+    }
+
     //Funcion a llamar al clickear boton LoginActivity.
     public void apretarBotonLogin(View view){
         //if (AccessToken.getCurrentAccessToken() == null) {
         //   Todo: ver si lo termino usando y donde exactamente.
         // }
-        Intent intent = new Intent(this, LoginActivity.class);
+        //Intent intent = new Intent(this, LoginActivity.class); // Descomentar para activity posta de login
+        Intent intent = new Intent(this, PestaniasActivity.class);
         startActivity(intent);
     }
 
