@@ -6,13 +6,13 @@ var parser = require("body-parser");
 
 var urlencodedParser = parser.urlencoded({ extended: false })
 
-var pgurl = "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
-var port = 5000
+var pgurl = process.env.DATABASE_URL || "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
+var port = process.env.PORT || 5000;
 
-var appversion = 0.2
+var appversion = 0.2;
 
 //Configuracion express
-app.set('port', (process.env.PORT || port));
+app.set('port', (port));
 app.use(parser.json());
 
 function errPGConn(err, res) {
@@ -53,7 +53,7 @@ app.get('/manager', function (req, res) {
 //Categorias
 //Get categorias
 app.get('/categories', function (req, res) {
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -73,7 +73,7 @@ app.get('/categories', function (req, res) {
 //Alta categoria segun json
 app.post('/categories', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -93,7 +93,7 @@ app.post('/categories', function (req, res) {
 //Modificacion de categoria SIN USO
 app.put('/categories/:categoria', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -113,7 +113,7 @@ app.put('/categories/:categoria', function (req, res) {
 //Baja de categoria SIN USO
 app.delete('/categories/:categoria', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -133,7 +133,7 @@ app.delete('/categories/:categoria', function (req, res) {
 
 //Get JobPositions
 app.get('/job_positions', function (req, res) {
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -152,7 +152,7 @@ app.get('/job_positions', function (req, res) {
 
 //Get JobPositions de una categoria
 app.get('/job_positions/categories/:categoria', function (req, res) {
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -172,7 +172,7 @@ app.get('/job_positions/categories/:categoria', function (req, res) {
 //Alta JobPosition segun JSON
 app.post('/job_positions/categories/:categoria', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -192,7 +192,7 @@ app.post('/job_positions/categories/:categoria', function (req, res) {
 //Modificacion de una JobPosition segun JSON
 app.put('/job_positions/categories/:categoria/:posicion', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -212,7 +212,7 @@ app.put('/job_positions/categories/:categoria/:posicion', function (req, res) {
 //Baja de una JobPosition SIN USO
 app.delete('/job_positions/categories/:categoria/:posicion', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -231,7 +231,7 @@ app.delete('/job_positions/categories/:categoria/:posicion', function (req, res)
 
 //Get Skills
 app.get('/skills', function (req, res) {
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -249,7 +249,7 @@ app.get('/skills', function (req, res) {
 
 //Get Skills de una categoria
 app.get('/skills/categories/:categoria', function (req, res) {
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -269,7 +269,7 @@ app.get('/skills/categories/:categoria', function (req, res) {
 //Alta Skill segun JSON
 app.post('/skills/categories/:categoria', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -289,7 +289,7 @@ app.post('/skills/categories/:categoria', function (req, res) {
 //Modificacion de una Skill segun JSON
 app.put('/skills/categories/:categoria/:habilidad', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
@@ -309,7 +309,7 @@ app.put('/skills/categories/:categoria/:habilidad', function (req, res) {
 //Baja de una Skill SIN USO
 app.delete('/skills/categories/:categoria/:habilidad', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	pg.connect(process.env.DATABASE_URL || pgurl, function (err, client, done) {
+	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
