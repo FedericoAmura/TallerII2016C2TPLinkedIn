@@ -11,9 +11,10 @@ RequestHandler::RequestHandler(http_request* req) : HTTPRequestHandler(req) {
 	http_handler = 0;
 }
 
-void RequestHandler::handleRequest() {
+http_response RequestHandler::handleRequest() {
+	http_response res;
 	METHOD method = request->method();
-	bool uri_ok = true;
+	bool method_ok = true;
 	switch (method){
 		case _GET:
 			http_handler = new GET_Handler(request);
@@ -25,20 +26,18 @@ void RequestHandler::handleRequest() {
 			http_handler = new PUT_Handler(request);
 			break;
 		case _DELETE:
-		{
 			http_handler = new DELETE_Handler(request);
-		}
 			break;
 		default:
-			uri_ok = false;
-			sendReply("", STATUS_BAD_REQUEST);
+			method_ok = false;
+			res = http_response("", STATUS_BAD_REQUEST);
 			break;
 	}
 
-	if (uri_ok)
-		http_handler->handleRequest();
+	if (method_ok)
+		res = http_handler->handleRequest();
 
-	closeConnection();
+	return res;
 }
 
 RequestHandler::~RequestHandler() {

@@ -12,14 +12,14 @@
 
 class PUT_Handler : public HTTPRequestHandler {
 private:
-	void handleUsers();
-	void handleJobPositions();
-	void handleSkills();
+	http_response handleUsers();
+	http_response handleJobPositions();
+	http_response handleSkills();
 
 public:
 	PUT_Handler(http_request* req);
 
-	void handleRequest();
+	http_response handleRequest();
 
 	virtual ~PUT_Handler();
 };

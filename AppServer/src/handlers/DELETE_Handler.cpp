@@ -10,33 +10,35 @@
 DELETE_Handler::DELETE_Handler(http_request* req) : HTTPRequestHandler(req) {
 }
 
-void DELETE_Handler::handleRequest() {
+http_response DELETE_Handler::handleRequest() {
+	http_response res;
 	switch (uri){
 		case _JOB_POSITIONS:
-			handleJobPositions();
+			res = handleJobPositions();
 			break;
 		case _SKILLS:
-			handleSkills();
+			res = handleSkills();
 			break;
 		case _CATEGORIES:
-			handleCategories();
+			res = handleCategories();
 			break;
 		default:
-			sendReply("", STATUS_BAD_REQUEST);
+			return http_response("", STATUS_BAD_REQUEST);
 			break;
 	}
+	return res;
 }
 
-void DELETE_Handler::handleJobPositions() {
-	sendReply("", STATUS_NO_CONTENT);
+http_response DELETE_Handler::handleJobPositions() {
+	return http_response("", STATUS_NO_CONTENT);
 }
 
-void DELETE_Handler::handleSkills() {
-	sendReply("", STATUS_NO_CONTENT);
+http_response DELETE_Handler::handleSkills() {
+	return http_response("", STATUS_NO_CONTENT);
 }
 
-void DELETE_Handler::handleCategories() {
-	sendReply("", STATUS_NO_CONTENT);
+http_response DELETE_Handler::handleCategories() {
+	return http_response("", STATUS_NO_CONTENT);
 }
 
 DELETE_Handler::~DELETE_Handler() {

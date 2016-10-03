@@ -15,20 +15,15 @@ int HttpParser::parse_header(struct ns_str *hdr, const char* var_name, char* buf
 	return ns_http_parse_header(hdr, var_name, buffer, buf_size);
 }
 
-bool HttpParser::parse_username_password(struct http_message* msg, std::string &username, std::string &password, int flag) {
+bool HttpParser::parse_username_password(struct http_message* msg, std::string &username, std::string &password) {
 	struct ns_str* hdr = HttpParser::get_header(msg, AUTHORIZATION);
 	if (!hdr)
 		return false;
 	int BUFFER_SIZE = 100;
 	char buf_user[BUFFER_SIZE], buf_pass[BUFFER_SIZE];
-	std::string value1 = USERNAME;
-	std::string value2 = PASSWORD;
-	if (flag == 1) {
-		value1 = NEW_USERNAME;
-		value2 = NEW_PASSWORD;
-	}
-	int parsed_user = HttpParser::parse_header(hdr, value1.c_str(), buf_user, BUFFER_SIZE);
-	int parsed_pass = HttpParser::parse_header(hdr, value2.c_str(), buf_pass, BUFFER_SIZE);
+
+	int parsed_user = HttpParser::parse_header(hdr, USERNAME, buf_user, BUFFER_SIZE);
+	int parsed_pass = HttpParser::parse_header(hdr, PASSWORD, buf_pass, BUFFER_SIZE);
 
 	if (!parsed_user || !parsed_pass)
 		return false;

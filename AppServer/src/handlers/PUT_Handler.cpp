@@ -10,34 +10,36 @@
 PUT_Handler::PUT_Handler(http_request* req) : HTTPRequestHandler(req) {
 }
 
-void PUT_Handler::handleRequest() {
+http_response PUT_Handler::handleRequest() {
+	http_response res;
 	switch (uri){
 		case _USERS:
 			/* update profile */
-			handleUsers();
+			res = handleUsers();
 			break;
 		case _JOB_POSITIONS:
-			handleJobPositions();
+			res = handleJobPositions();
 			break;
 		case _SKILLS:
-			handleSkills();
+			res = handleSkills();
 			break;
 		default:
-			sendReply("", STATUS_BAD_REQUEST);
+			return http_response("", STATUS_BAD_REQUEST);
 			break;
 	}
+	return res;
 }
 
-void PUT_Handler::handleUsers() {
-	sendReply("{\"msg\":\"Users\"}", STATUS_OK);
+http_response PUT_Handler::handleUsers() {
+	return http_response("{\"msg\":\"Users\"}", STATUS_OK);
 }
 
-void PUT_Handler::handleJobPositions() {
-	sendReply("{\"msg\":\"Positions\"}", STATUS_OK);
+http_response PUT_Handler::handleJobPositions() {
+	return http_response("{\"msg\":\"Positions\"}", STATUS_OK);
 }
 
-void PUT_Handler::handleSkills() {
-	sendReply("{\"msg\":\"Skills\"}", STATUS_OK);
+http_response PUT_Handler::handleSkills() {
+	return http_response("{\"msg\":\"Skills\"}", STATUS_OK);
 }
 
 PUT_Handler::~PUT_Handler() {

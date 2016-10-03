@@ -12,14 +12,14 @@
 
 class DELETE_Handler : public HTTPRequestHandler {
 private:
-	void handleJobPositions();
-	void handleSkills();
-	void handleCategories();
+	http_response handleJobPositions();
+	http_response handleSkills();
+	http_response handleCategories();
 
 public:
 	DELETE_Handler(http_request* req);
 
-	void handleRequest();
+	http_response handleRequest();
 
 	virtual ~DELETE_Handler();
 };

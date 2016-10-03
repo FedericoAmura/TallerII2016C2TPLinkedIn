@@ -13,15 +13,25 @@
 #include "../handlers/PUT_Handler.h"
 #include "../handlers/DELETE_Handler.h"
 
-class RequestHandler : HTTPRequestHandler {
+class RequestHandler : public HTTPRequestHandler {
  private:
 	HTTPRequestHandler* http_handler;
 
  public:
+	/*
+	 * Constructor
+	 * @param req	petición http que se desea manejar.
+	 * */
 	explicit RequestHandler(http_request* req);
 
-	void handleRequest();
+	/*
+	 * Manejar Request
+	 * */
+	http_response handleRequest();
 
+	/*
+	 * Destructor
+	 * */
 	virtual ~RequestHandler();
 };
 

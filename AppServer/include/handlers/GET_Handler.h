@@ -12,18 +12,225 @@
 
 class GET_Handler : public HTTPRequestHandler {
 private:
-	void handleUsers();
-	void handleProfessionals();
-	void handlePopular();
-	void handleJobPositions();
-	void handleSkills();
-	void handleCategories();
+	/*
+	 * Busqueda de usuarios
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre los usuarios que cumplan con los parametros específicados
+	 * 			en la uri y el código de respuesta, sino devuelve una respuesta
+	 * 			vacía y el código de respuesta queda específicado en http_response.res_code
+	 * */
+	http_response handleUsers();
+
+	/*
+	 * Perfil de un usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre el perfil del usuario solicitado y el código de respuesta,
+	 * 			sino devuelve una respuesta vacía y el código de respuesta
+	 * 			queda específicado en http_response.res_code
+	 * */
+	http_response handleUserProfile();
+
+	/*
+	 * Résumen de un usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			resumida sobre sobre el usuario solicitado y el código de respuesta,
+	 * 			sino devuelve una respuesta vacía y el código de respuesta
+	 * 			queda específicado en http_response.res_code
+	 * */
+	http_response handleUserSummary();
+
+	/*
+	 * Foto de un usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre la foto de un usuario solicitado y el código de respuesta,
+	 * 			sino devuelve una respuesta vacía y el código de respuesta queda
+	 * 			específicado en http_response.res_code
+	 * */
+	http_response handleUserPhoto();
+
+	/*
+	 * Thumbnail de la foto
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre el thumbnail de la foto de un usuario y el código de respuesta,
+	 * 			sino devuelve una respuesta	vacía y el código de respuesta
+	 * 			queda específicado en http_response.res_code
+	 * */
+	http_response handleUserThumb();
+
+	/*
+	 * Bief de un usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre el nombre/popularidad/ciudad/thumbnail_foto del usuario
+	 * 			y código de respuesta, sino devuelve una respuesta	vacía y
+	 * 			el código de respuesta queda específicado en http_response.res_code
+	 * */
+	http_response handleUserBief();
+
+	/*
+	 * Notificaciones de un usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre las notificaciones de contacto pendiente (sólo las recibidas, sólo
+	 * 			si está autenticado) y código de respuesta, sino devuelve una respuesta	vacía y
+	 * 			el código de respuesta queda específicado en http_response.res_code
+	 * */
+	http_response handleUsersNotif();
+
+	/*
+	 * Notificaciones pendiente de un usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre el #  de notificaciones de contacto pendiente y
+	 * 			código de respuesta, sino devuelve una respuesta vacía y
+	 * 			el código de respuesta queda específicado en http_response.res_code
+	 * */
+	http_response handleUsersNewNotif();
+
+	/*
+	 * Notificación sobre solicitud de contacto
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre la solicitud (si es que existe) y el
+	 * 			código de respuesta, sino devuelve una respuesta vacía y
+	 * 			el código de respuesta queda específicado en http_response.res_code
+	 * */
+	http_response handleUsersReqNotif();
+
+	/*
+	 * Contactos de un usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			sobre los contactos de un usuario y el código de respuesta,
+	 * 			sino devuelve una respuesta vacía y	el código de respuesta
+	 * 			queda específicado en http_response.res_code
+	 * */
+	http_response handleUsersContacts();
+
+	/*
+	 * Consulta sobre conexión con otro usuario
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			si los usuarios están conectados o no y el código de respuesta,
+	 * 			sino devuelve una respuesta vacía y	el código de respuesta
+	 * 			queda específicado en http_response.res_code
+	 * */
+	http_response handleUsersReqContacts();
+
+	/*
+	 * Usuarios más populares
+	 * @return	en caso de éxito, retorna los 10 usuarios más populares
+	 * 			sino devuelve "" y el código de respuesta queda específicado
+	 * 			en http_response.res_code
+	 * */
+	http_response handlePopular();
+
+	/*
+	 * Recomendación entre usuarios
+	 * @return	en caso de éxito, retorna información de si un usuario recomendó
+	 * 			a otro, sino devuelve "" y el código de respuesta queda específicado
+	 * 			en http_response.res_code
+	 * */
+	http_response handlePopularRecommend();
+
+	/*
+	 * Populares por posición
+	 * @return	en caso de éxito, retorna información sobre los usuarios más populares
+	 * 			por la posición específicada y el código de respuesta queda específicado
+	 * 			en http_response.res_code, sino retorna información nula.
+	 * */
+	http_response handlePopularByPosition();
+
+	/*
+	 * Populares por skill
+	 * @return	en caso de éxito, retorna información sobre los usuarios más populares
+	 * 			por la skill específicada y el código de respuesta queda específicado
+	 * 			en http_response.res_code, sino retorna información nula.
+	 * */
+	http_response handlePopularBySkill();
+
+	/*
+	 * Notificaciones del Chat
+	 * @return	en caso de éxito, retorna información sobre mensajes sin leer del usuario
+	 * 			(si está autenticado) y el código de respuesta queda específicado
+	 * 			en http_response.res_code, sino retorna información nula.
+	 * */
+	http_response handleChatNew();
+
+	/*
+	 * Ultimo mensaje de la conversación
+	 * @return	en caso de éxito, retorna información sobre el # del último
+	 * 			mensaje en la conversación (si está autenticado y son contactos)
+	 * 			y el código de respuesta queda específicado	en http_response.res_code,
+	 * 			sino retorna información nula.
+	 * */
+	http_response handleChatLastMsg();
+
+	/*
+	 * Mensajes comprendidos entre un período
+	 * @return	en caso de éxito, retorna los mensajes comprendidos entre los parametros
+	 * 			recibidos (si el usuario está autenticado y son contactos)
+	 * 			y el código de respuesta queda específicado	en http_response.res_code,
+	 * 			sino retorna información nula.
+	 * */
+	http_response handleChatIncMsg();
+
+	/*
+	 * Posiciones de Trabajo
+	 * @return	retorna un http_response con todas las posiciones de trabajo disponible.
+	 * */
+	http_response handleJobPositions();
+
+	/*
+	 * Posición de Trabajo en particular
+	 * @return	en caso de éxito, retorna un http_response con información sobre una
+	 * 			posición de trabajo en particular.
+	 * */
+	http_response handleJobPosition();
+
+	/*
+	 * Posiciones de Trabajo de una Categoría
+	 * @return	en caso de éxito, retorna un http_response con información sobre
+	 * 			las posiciones de trabajo para una categoría.
+	 * */
+	http_response handleJobPositionsByCategory();
+
+	/*
+	 * Skills
+	 * @return	retorna un http_response con todas las skills disponibles.
+	 * */
+	http_response handleSkills();
+
+	/*
+	 * Skill en particular
+	 * @return	retorna un http_response con todas las skills disponibles.
+	 * */
+	http_response handleSkill();
+
+	/*
+	 * Skills por Categoría
+	 * @return	retorna un http_response con todas las skills disponibles.
+	 * */
+	http_response handleSkillsByCategory();
+
+	/*
+	 * Categorías
+	 * @return	retorna un http_response con todas las categorías disponibles.
+	 * */
+	http_response handleCategories();
 
 public:
+	/*
+	 * Constructor
+	 * @param req	petición http que se desea manejar.
+	 * */
 	GET_Handler(http_request* request);
 
-	void handleRequest();
+	/*
+	 * Manejar Request
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			y código de respuesta correctamente, sino la información es
+	 * 			vacía y el código de respuesta queda específicado en http_response.res_code
+	 * */
+	http_response handleRequest();
 
+	/*
+	 * Destructor
+	 * */
 	virtual ~GET_Handler();
 };
 

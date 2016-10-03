@@ -39,4 +39,19 @@ struct http_request{
 	}
 };
 
+struct http_response {
+	std::string message;
+	int res_code;
+
+	http_response() {
+		message = "";
+		res_code = 0;
+	}
+
+	http_response(std::string msg, int status) {
+		message = msg;
+		res_code = status;
+	}
+};
+
 #endif /* COMMON_REQ_RES_H_ */

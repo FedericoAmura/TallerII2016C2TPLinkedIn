@@ -13,13 +13,22 @@ HTTPRequestHandler::HTTPRequestHandler(http_request* req){
 	this->uri = validate_uri(req->uri());
 }
 
-void HTTPRequestHandler::sendReply(std::string msg, int status) {
+bool HTTPRequestHandler::validToken() {
+	std::string token = "";
+	bool parsed = HttpParser::parse_token(request->message, token);
+	if (!parsed)
+		return false;
+	/* TODO validar token en la base de datos */
+	return true;
+}
+
+void HTTPRequestHandler::sendReply(http_response* res) {
 	ns_printf(request->connection, "HTTP/1.1 %d\r\n"
 								   "Content-Type: application/json\r\n"
 								   "Content-Length: %d\r\n"
 								   "\r\n"
 								   "%s",
-								   status, msg.size(), msg.c_str());
+								   res->res_code, res->message.size(), res->message.c_str());
 }
 
 void HTTPRequestHandler::closeConnection() {

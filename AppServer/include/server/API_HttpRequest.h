@@ -9,5 +9,3 @@
 #define USERNAME		"username"
 #define PASSWORD		"password"
 #define TOKEN			"token"
-#define NEW_USERNAME    "new_username"
-#define NEW_PASSWORD	"new_password"

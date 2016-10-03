@@ -12,20 +12,20 @@
 
 class POST_Handler : public HTTPRequestHandler {
 private:
-	void handleLogIn();
-	void handleSignUp();
-	void handleUsers();
-	void handleRecommendations();
-	void handleAddContact();
-	void handleChat();
-	void handleJobPositions();
-	void handleSkills();
-	void handleCategories();
+	http_response handleLogIn();
+	http_response handleSignUp();
+	http_response handleUsers();
+	http_response handleRecommendations();
+	http_response handleAddContact();
+	http_response handleChat();
+	http_response handleJobPositions();
+	http_response handleSkills();
+	http_response handleCategories();
 
 public:
 	POST_Handler(http_request* req);
 
-	void handleRequest();
+	http_response handleRequest();
 
 	virtual ~POST_Handler();
 };

@@ -10,6 +10,7 @@
 
 #include "../common/req_res.h"
 #include "../parsers/HttpParser.h"
+//#include "../cpr/cpr.h"
 #include "DB_Handler.h"
 
 class HTTPRequestHandler {
@@ -18,15 +19,41 @@ protected:
 	DB_Handler* db_handler;
 	URI uri;
 
+	bool validToken();
+
 public:
+	/*
+	 * Constructor
+	 * @param req	petición http que se desea manejar.
+	 * */
 	HTTPRequestHandler(http_request* req);
 
-	virtual void handleRequest() = 0;
+	/*
+	 * Manejar Request
+	 * Maneja la petición http retornando
+	 * una respuesta que contiene el mensaje y
+	 * el código de la operación.
+	 * */
+	virtual http_response handleRequest() = 0;
 
-	void sendReply(std::string msg, int status);
+	/*
+	 * Enviar Respuesta
+	 * Envía una respuesta http a aquel que realizó
+	 * la petición.
+	 * @param res	respuesta http que se enviará.
+	 * */
+	void sendReply(http_response* res);
 
+
+	/*
+	 * Cerrar Conexión
+	 * Cierra la conexión establecida
+	 * */
 	void closeConnection();
 
+	/*
+	 * Destructor
+	 * */
 	virtual ~HTTPRequestHandler(){};
 };
 

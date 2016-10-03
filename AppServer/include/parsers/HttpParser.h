@@ -19,7 +19,7 @@ public:
 
 	static int parse_header(struct ns_str *hdr, const char* var_name, char* buffer, size_t buf_size);
 
-	static bool parse_username_password(struct http_message* msg, std::string &username, std::string &password, int flag);
+	static bool parse_username_password(struct http_message* msg, std::string &username, std::string &password);
 
 	static bool parse_token(struct http_message* msg, std::string &token);
 };

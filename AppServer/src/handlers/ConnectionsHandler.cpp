@@ -16,9 +16,11 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 	  	  case NS_HTTP_REQUEST:
 	  	  {
 	  		  http_request request(c, message);
-	  		  std::cout << "URI: "<< request.uri() <<std::endl;
+	  		  std::cout << MethodtoString(request.method()) << "\t" << request.uri() <<std::endl;
 	  		  RequestHandler req_handler(&request);
-	  		  req_handler.handleRequest();
+	  		  http_response response = req_handler.handleRequest();
+	  		  req_handler.sendReply(&response);
+	  		  req_handler.closeConnection();
 	  	  }
 	  		  break;
 	      default:

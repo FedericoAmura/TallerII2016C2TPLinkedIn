@@ -8,13 +8,19 @@
 #ifndef APPSERVER_INCLUDE_HANDLERS_DB_HANDLER_H_
 #define APPSERVER_INCLUDE_HANDLERS_DB_HANDLER_H_
 
-#include <iostream>
+#include <string>
+#include "../json11/json11.hpp"
+#include "../common/Exceptions.h"
 
 class DB_Handler {
 public:
 	DB_Handler();
 
-	std::string toString();
+	bool validateUserPass(std::string user, std::string pass);
+
+	std::string generateToken(std::string user, std::string pass);
+
+	void registerNewUser(json11::Json jsonNewUser);
 
 	virtual ~DB_Handler();
 };
