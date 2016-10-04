@@ -91,7 +91,7 @@ private:
 	 * 			código de respuesta, sino devuelve una respuesta vacía y
 	 * 			el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handleUsersReqNotif();
+	http_response handleUsersNotifyRequest();
 
 	/*
 	 * Contactos de un usuario
@@ -109,7 +109,7 @@ private:
 	 * 			sino devuelve una respuesta vacía y	el código de respuesta
 	 * 			queda específicado en http_response.res_code
 	 * */
-	http_response handleUsersReqContacts();
+	http_response handleUsersContactManagement();
 
 	/*
 	 * Usuarios más populares
@@ -168,50 +168,6 @@ private:
 	 * 			sino retorna información nula.
 	 * */
 	http_response handleChatIncMsg();
-
-	/*
-	 * Posiciones de Trabajo
-	 * @return	retorna un http_response con todas las posiciones de trabajo disponible.
-	 * */
-	http_response handleJobPositions();
-
-	/*
-	 * Posición de Trabajo en particular
-	 * @return	en caso de éxito, retorna un http_response con información sobre una
-	 * 			posición de trabajo en particular.
-	 * */
-	http_response handleJobPosition();
-
-	/*
-	 * Posiciones de Trabajo de una Categoría
-	 * @return	en caso de éxito, retorna un http_response con información sobre
-	 * 			las posiciones de trabajo para una categoría.
-	 * */
-	http_response handleJobPositionsByCategory();
-
-	/*
-	 * Skills
-	 * @return	retorna un http_response con todas las skills disponibles.
-	 * */
-	http_response handleSkills();
-
-	/*
-	 * Skill en particular
-	 * @return	retorna un http_response con todas las skills disponibles.
-	 * */
-	http_response handleSkill();
-
-	/*
-	 * Skills por Categoría
-	 * @return	retorna un http_response con todas las skills disponibles.
-	 * */
-	http_response handleSkillsByCategory();
-
-	/*
-	 * Categorías
-	 * @return	retorna un http_response con todas las categorías disponibles.
-	 * */
-	http_response handleCategories();
 
 public:
 	/*

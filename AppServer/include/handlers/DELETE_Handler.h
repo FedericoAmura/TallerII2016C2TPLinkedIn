@@ -12,15 +12,42 @@
 
 class DELETE_Handler : public HTTPRequestHandler {
 private:
-	http_response handleJobPositions();
-	http_response handleSkills();
-	http_response handleCategories();
+	/*
+	 * Cerrar sesión
+	 * @return
+	 * */
+	http_response handleCloseSession();
+
+	/*
+	 * Rechazar solicitud de contacto
+	 * @return
+	 * */
+	http_response handleRejectContactRequest();
+
+	/*
+	 * Eliminar contacto
+	 * @return
+	 * */
+	http_response handleDeleteContact();
 
 public:
+	/*
+	 * Constructor
+	 * @param req	petición http que se desea manejar.
+	 * */
 	DELETE_Handler(http_request* req);
 
+	/*
+	 * Manejar Request
+	 * @return	en caso de éxito, retorna un http_response con información
+	 * 			y código de respuesta correctamente, sino la información es
+	 * 			vacía y el código de respuesta queda específicado en http_response.res_code
+	 * */
 	http_response handleRequest();
 
+	/*
+	 * Destructor
+	 * */
 	virtual ~DELETE_Handler();
 };
 

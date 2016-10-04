@@ -26,9 +26,9 @@ enum URI {	_LOGIN,
 			_USER_BIEF,
 			_USERS_NOTIF,
 			_USERS_NEW_NOTIF,
-			_USERS_REQ_NOTIF,
+			_USERS_REQ_CONTACT,
 			_USERS_CONTACTS,
-			_USERS_REQ_CONTACTS,
+			_USERS_ADM_CONTACTS,
 			_POPULAR,
 			_POPULAR_RECOMMEND,
 			_POPULAR_POS,
@@ -37,13 +37,6 @@ enum URI {	_LOGIN,
 			_CHAT_CHATS,
 			_CHAT_LAST_MSG,
 			_CHAT_INC_MSG,
-			_JOB_POSITION,
-			_JOB_POSITIONS,
-			_JOB_POSITION_CAT,
-			_SKILL,
-			_SKILLS,
-			_SKILL_CAT,
-			_CATEGORIES,
 			_INVALID_URI};
 
 static URI validate_uri(std::string uri){
@@ -57,9 +50,9 @@ static URI validate_uri(std::string uri){
 
 	if (std::regex_match(uri, std::regex(USERS_NOTIF_URI)))		return _USERS_NOTIF;
 	if (std::regex_match(uri, std::regex(USERS_NEW_NOTIF_URI)))	return _USERS_NEW_NOTIF;
-	if (std::regex_match(uri, std::regex(USERS_REQ_NOTIF_URI)))	return _USERS_REQ_NOTIF;
+	if (std::regex_match(uri, std::regex(USERS_REQ_NOTIF_URI)))	return _USERS_REQ_CONTACT;
 	if (std::regex_match(uri, std::regex(USERS_CONTACTS_URI)))	return _USERS_CONTACTS;
-	if (std::regex_match(uri, std::regex(USERS_REQ_CONTACTS_URI)))	return _USERS_REQ_CONTACTS;
+	if (std::regex_match(uri, std::regex(USERS_REQ_CONTACTS_URI)))	return _USERS_ADM_CONTACTS;
 
 	if (uri == POPULAR_URI)		 								return _POPULAR;
 	if (std::regex_match(uri, std::regex(POPULAR_RECOMMED_URI)))return _POPULAR_RECOMMEND;
@@ -72,16 +65,6 @@ static URI validate_uri(std::string uri){
 	if (std::regex_match(uri, std::regex(CHAT_CHATS_URI))) 		return _CHAT_CHATS;
 	if (std::regex_match(uri, std::regex(CHAT_LAST_MSG_URI))) 	return _CHAT_LAST_MSG;
 	if (std::regex_match(uri, std::regex(CHAT_INC_MSG_URI))) 	return _CHAT_INC_MSG;
-
-	if (uri == JOB_POSITIONS_URI)								return _JOB_POSITIONS;
-	if (std::regex_match(uri, std::regex(JOB_POSITION_URI))) 	return _JOB_POSITION;
-	if (std::regex_match(uri, std::regex(JOB_POSITION_CAT_URI)))return _JOB_POSITION_CAT;
-
-	if (uri == SKILLS_URI) 		 								return _SKILLS;
-	if (std::regex_match(uri, std::regex(SKILL_URI))) 		 	return _SKILL;
-	if (std::regex_match(uri, std::regex(SKILL_CAT_URI))) 		return _SKILL_CAT;
-
-	if (uri == CATEGORIES_URI) 	 return _CATEGORIES;
 
 	return _INVALID_URI;
 }

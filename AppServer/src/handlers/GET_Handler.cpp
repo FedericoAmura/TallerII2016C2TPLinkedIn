@@ -15,81 +15,79 @@ http_response GET_Handler::handleRequest() {
 	http_response res;
 	switch (uri){
 		case _USERS:
+			// /users/?category=...&skill=...
 			res = handleUsers();
 			break;
 		case _USER_PROFILE:
+			// /users/<user_id>
 			res = handleUserProfile();
 			break;
 		case _USER_SUMMARY:
+			// /users/<user_id>/summary
 			res = handleUserSummary();
 			break;
 		case _USER_PHOTO:
+			// /users/<user_id>/photo
 			res = handleUserPhoto();
 			break;
 		case _USER_THUMB:
+			// /users/<user_id>/thumb
 			res = handleUserThumb();
 			break;
 		case _USER_BIEF:
+			// /users/<user_id>/bief
 			res = handleUserBief();
 			break;
 		case _USERS_NOTIF:
+			// /users/<user_id>/notif
 			res = handleUsersNotif();
 			break;
 		case _USERS_NEW_NOTIF:
+			// /users/<user_id>/notif/new
 			res = handleUsersNewNotif();
 			break;
-		case _USERS_REQ_NOTIF:
-			res = handleUsersReqNotif();
+		case _USERS_REQ_CONTACT:
+			// /users/<user_id1>/notif/<user_id2>
+			res = handleUsersNotifyRequest();
 			break;
 		case _USERS_CONTACTS:
+			// /users/<user_id>/contacts
 			res = handleUsersContacts();
 			break;
-		case _USERS_REQ_CONTACTS:
-			res = handleUsersReqContacts();
+		case _USERS_ADM_CONTACTS:
+			// /users/<user_id1>/contacts/<user_id2>
+			res = handleUsersContactManagement();
 			break;
 		case _POPULAR:
+			// /users/popular
 			res = handlePopular();
 			break;
 		case _POPULAR_RECOMMEND:
+			// /users/popular/<user_id1>/<user_id2>
 			res = handlePopularRecommend();
 			break;
 		case _POPULAR_POS:
+			// /users/popular/position/<position>
 			res = handlePopularByPosition();
 			break;
 		case _POPULAR_SKILL:
+			// /users/popular/skill/<skill>
 			res = handlePopularBySkill();
 			break;
 		case _CHAT_NEW:
+			// /chat/<user_id>/new
 			res = handleChatNew();
 			break;
 		case _CHAT_LAST_MSG:
+			// /chat/<user_id>/last
 			res = handleChatLastMsg();
 			break;
 		case _CHAT_INC_MSG:
+			// /chat/<user_id1>/<user_id2>/?ini=a&fin=b
 			res = handleChatIncMsg();
 			break;
-		case _JOB_POSITIONS:
-			res = handleJobPositions();
-			break;
-		case _JOB_POSITION:
-			res = handleJobPosition();
-			break;
-		case _JOB_POSITION_CAT:
-			res = handleJobPositionsByCategory();
-			break;
-		case _SKILLS:
-			res = handleSkills();
-			break;
-		case _SKILL:
-			res = handleSkill();
-			break;
-		case _SKILL_CAT:
-			res = handleSkillsByCategory();
-			break;
-		case _CATEGORIES:
-			res = handleCategories();
-			break;
 		default:
+			std::cout << "ERROR >> Invalid uri " << std::endl;
 			res = http_response("", STATUS_BAD_REQUEST);
 			break;
 	}
@@ -128,16 +126,16 @@ http_response GET_Handler::handleUsersNewNotif() {
 	return http_response("{\"msg\":\"New Notif\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUsersReqNotif() {
-	return http_response("{\"msg\":\"Req Notif\"}\n", STATUS_OK);
+http_response GET_Handler::handleUsersNotifyRequest() {
+	return http_response("{\"msg\":\"Notify Request\"}\n", STATUS_OK);
 }
 
 http_response GET_Handler::handleUsersContacts() {
 	return http_response("{\"msg\":\"Contacts\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUsersReqContacts() {
-	return http_response("{\"msg\":\"Req Contacts\"}\n", STATUS_OK);
+http_response GET_Handler::handleUsersContactManagement() {
+	return http_response("{\"msg\":\"Contact Management\"}\n", STATUS_OK);
 }
 
 http_response GET_Handler::handlePopular() {
@@ -166,64 +164,6 @@ http_response GET_Handler::handleChatLastMsg() {
 
 http_response GET_Handler::handleChatIncMsg() {
 	return http_response("{\"chat\":\"{including msg}\"}\n", STATUS_OK);
-}
-
-http_response GET_Handler::handleJobPositions() {
-/*
-	std::string url = SHARED_SERVER_URL;
-	url.append(JOB_POSITIONS_URI);
-	auto response = cpr::Get(cpr::Url{url});
-	if (response.status_code != STATUS_OK){
-		sendReply("", STATUS_INT_SERVER_ERR);
-		return;
-	}
-	sendReply(response.text, STATUS_OK);
-*/
-	return http_response("{\"job_positions\":\"{set JobPosition}\"}\n",STATUS_OK);
-}
-
-http_response GET_Handler::handleJobPosition() {
-	return http_response("{\"job_position\":\"{job position}\"}\n", STATUS_OK);
-}
-
-http_response GET_Handler::handleJobPositionsByCategory() {
-	return http_response("{\"job_position\":\"{job position by category}\"}\n", STATUS_OK);
-}
-
-http_response GET_Handler::handleSkills() {
-/*
-	std::string url = SHARED_SERVER_URL;
-	url.append(SKILLS_URI);
-	auto response = cpr::Get(cpr::Url{uri});
-	if (response.status_code != STATUS_OK){
-		sendReply("", STATUS_INT_SERVER_ERR);
-		return;
-	}
-	sendReply(response.text, STATUS_OK);
-*/
-	return http_response("{\"skills\":\"{set Skills}\"}\n", STATUS_OK);
-}
-
-http_response GET_Handler::handleSkill() {
-	return http_response("{\"skill\":\"{skill}\"}\n", STATUS_OK);
-}
-
-http_response GET_Handler::handleSkillsByCategory() {
-	return http_response("{\"skills\":\"{skills by category}\"}\n", STATUS_OK);
-}
-
-http_response GET_Handler::handleCategories() {
-/*
-	std::string url = SHARED_SERVER_URL;
-	url.append(CATEGORIES_URI);
-	auto response = cpr::Get(cpr::Url{url});
-	if (response.status_code != STATUS_OK){
-		sendReply("", STATUS_INT_SERVER_ERR);
-		return;
-	}
-	sendReply(response.text, STATUS_OK);
-*/
-	return http_response("{\"categories\":\"{set Categories}\"}\n", STATUS_OK);
 }
 
 GET_Handler::~GET_Handler() {

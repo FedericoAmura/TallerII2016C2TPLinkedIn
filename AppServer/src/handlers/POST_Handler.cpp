@@ -15,30 +15,31 @@ http_response POST_Handler::handleRequest() {
 	http_response res;
 	switch (uri){
 		case _LOGIN:
+			// /login
 			res = handleLogIn();
 			break;
 		case _SIGNUP:
+			// /signup
 			res = handleSignUp();
 			break;
-		case _POPULAR_RECOMMEND:
-			res = handleRecommendations();
+		case _USERS_REQ_CONTACT:
+			// /users/<user_id>/notif/<user_id_contact>
+			res = handleAcceptReqContact();
 			break;
 		case _USERS_CONTACTS:
-			res = handleAddContact();
+			// /users/<user_id>/contacts
+			res = handleReqContact();
 			break;
 		case _CHAT_NEW:
-			res = handleChat();
+			// /chat/<user_id>/new
+			res = handleChatNotifMsgSeen();
 			break;
-		case _JOB_POSITIONS:
-			res = handleJobPositions();
-			break;
-		case _SKILLS:
-			res = handleSkills();
-			break;
-		case _CATEGORIES:
-			res = handleCategories();
+		case _CHAT_CHATS:
+			// /chat/<user_id1>/<user_id2>
+			res = handleChatSendMsg();
 			break;
 		default:
+			std::cout << "ERROR >> Invalid uri " << std::endl;
 			res = http_response("", STATUS_BAD_REQUEST);
 			break;
 	}
@@ -64,7 +65,7 @@ http_response POST_Handler::handleLogIn() {
 	}
 
 	std::string token = db_handler->generateToken(username, password);
-	std::string msg = "{\"token\":\"" + token + "\"}";
+	std::string msg = "{\"token\":\"" + token + "\"}\n";
 	return http_response(msg, STATUS_OK);
 }
 
@@ -90,33 +91,24 @@ http_response POST_Handler::handleSignUp() {
 	std::string pass = _json["register"]["pass"].string_value();
 
 	std::string token = db_handler->generateToken(user,pass);
-	std::string msg = "{\"token\":\"" + token + "\"}";
+	std::string msg = "{\"token\":\"" + token + "\"}\n";
 	return http_response(msg, STATUS_CREATED);
 }
 
-http_response POST_Handler::handleRecommendations() {
-	std::cout << request->message->body.p << std::endl;
-	return http_response("{\"msg\":\"Recommendations\"}", STATUS_CREATED);
+http_response POST_Handler::handleAcceptReqContact() {
+	return http_response("{\"msg\":\"Contact request accepted\"}\n", STATUS_CREATED);
 }
 
-http_response POST_Handler::handleAddContact() {
-	return http_response("{\"msg\":\"AddContact\"}", STATUS_CREATED);
+http_response POST_Handler::handleReqContact() {
+	return http_response("{\"msg\":\"Contact Request\"}\n", STATUS_CREATED);
 }
 
-http_response POST_Handler::handleChat() {
-	return http_response("{\"msg\":\"Chat\"}", STATUS_CREATED);
+http_response POST_Handler::handleChatNotifMsgSeen() {
+	return http_response("{\"msg\":\"Message seen\"}\n", STATUS_CREATED);
 }
 
-http_response POST_Handler::handleJobPositions() {
-	return http_response("{\"msg\":\"JobPositions\"}", STATUS_CREATED);
-}
-
-http_response POST_Handler::handleSkills() {
-	return http_response("{\"msg\":\"Skills\"}", STATUS_CREATED);
-}
-
-http_response POST_Handler::handleCategories() {
-	return http_response("{\"msg\":\"Categories\"}", STATUS_CREATED);
+http_response POST_Handler::handleChatSendMsg() {
+	return http_response("{\"msg\":\"Send message\"}\n", STATUS_CREATED);
 }
 
 POST_Handler::~POST_Handler() {

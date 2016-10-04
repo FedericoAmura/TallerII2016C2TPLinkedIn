@@ -34,23 +34,21 @@
 /* Popularity / Recommendations */
 #define POPULAR_URI			"/users/popular"
 #define POPULAR_RECOMMED_URI "/users/popular/.*/.*"
-#define POPULAR_POS_URI		"/users/popular/position/.*"
-#define POPULAR_SKILL_URI	"/users/popular/skill/.*"
+#define POPULAR_POS_URI		"/users/popular/position/.*"	// TODO problemas con GET (POPULAR_RECOMMED_URI los toma primero)
+#define POPULAR_SKILL_URI	"/users/popular/skill/.*"		// TODO problemas con GET (POPULAR_RECOMMED_URI los toma primero)
 
 /* Chat */
 #define CHAT_NEW_URI		"/chat/.*/new"
 #define CHAT_CHATS_URI		"/chat/.*/.*"
-#define CHAT_LAST_MSG_URI	"/chat/.*/last"
-#define CHAT_INC_MSG_URI	"/chat/.*/.*/?.*"
+#define CHAT_LAST_MSG_URI	"/chat/.*/last"		// TODO problemas con GET (CHAT_CHATS_URI los toma primero)
+#define CHAT_INC_MSG_URI	"/chat/.*/.*/?.*"	// TODO problemas con GET (CHAT_CHATS_URI los toma primero)
 
 /* SharedServer */
 #define CATEGORIES_URI  	"/categories"
 #define JOB_POSITIONS_URI 	"/job_positions"
-#define JOB_POSITION_URI	"/job_positions/.*"
-#define JOB_POSITION_CAT_URI "/job_positions/categories/.*"
+#define JOB_POSITIONS_CAT_URI "/job_positions/categories"
 #define SKILLS_URI 			"/skills"
-#define SKILL_URI	 		"/skills/.*"
-#define SKILL_CAT_URI 		"/skills/categories/.*"
+#define SKILLS_CAT_URI 		"/skills/categories"
 
 /* HTTP Methods */
 #define GET		"GET"
