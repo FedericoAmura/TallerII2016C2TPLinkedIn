@@ -2,6 +2,8 @@
 #define APPSERVER_INCLUDE_DATABASE_DBRAW_H_
 
 #include "../leveldb/db.h"
+#include "../../include/log4cpp/Appender.hh"
+#include "../include/log4cpp/Category.hh"
 
 /**
  * Clase wrapper de levelDB con el modelo de datos propio de la aplicación
@@ -9,18 +11,24 @@
  */
 class DBRaw {
  private:
-
+	leveldb::DB* db;
+	log4cpp::Appender *dbLogAppender;
+	log4cpp::Category *dbLog;
+	std::ostream *logStream;
  public:
 	/**
 	 * Constructor
-	 * @param rutaArchivo 		Ruta al archivo, si no existe se crea
+	 * @param rutaArchivo		Ruta al archivo de base de datos, si no existe se crea
+	 * @param logStream			Stream al cual logear, se elimina al eliminarse
+	 * 							El logstream se autoelimina al eliminar esta instancia
+	 * @exception				Si falla algo al abrir la base de datos
 	 */
-	DBRaw(const std::string &rutaArchivo);
+	DBRaw(const std::string &rutaArchivo, std::ostream *logStream);
 	virtual ~DBRaw();
 	/**
 	 * Registrar un nuevo usuario
-	 * @exception		Si hay errores en los datos provistos
-	 * @return			El uID (user ID) del nuevo usuario creado
+	 * @exception			Si hay errores en los datos provistos
+	 * @return				El uID (user ID) del nuevo usuario creado
 	 */
 	uint32_t registrarse();
 	/**
@@ -180,20 +188,22 @@ class DBRaw {
 	 * @exception				Alguno de los uIDs es inválido
 	 */
 	void solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino, const std::string &mensaje);
+	// TODO crear struct solicitudes
+	void getSolicitudes();
 	/**
 	 * Elimina la solicitud de contacto y vuelve a ambos contactos uno del otro
 	 * @param uIDFuente			User ID de quien pide agregar contacto
 	 * @param uIDDestino		User ID de quien será agregado
 	 * @exception				Alguno de los uIDs es inválido
 	 */
-	void aceptarContacto(uint32_t uIDFuente, uint32_t uIDDestino);
+	void aceptarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino);
 	/**
 	 * Elimina la solicitud de contacto
 	 * @param uIDFuente			User ID de quien pide agregar contacto
 	 * @param uIDDestino		User ID de quien será agregado
 	 * @exception				Alguno de los uIDs es inválido
 	 */
-	void declinarContactor(uint32_t uIDFuente, uint32_t uIDDestino);
+	void declinarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino);
 	/**
 	 * Devuelve la lista de contactos del usuario
 	 * @param uID			User ID
@@ -227,9 +237,10 @@ class DBRaw {
 	 * @param numPrimMensaje	#Primer mensaje
 	 * @return					Vector de tuplas<uIDsender,mensaje>
 	 */
-	std::vector<std::pair(uint32_t,std::string)> getMensajes(uint32_t uID1,
+	std::vector<std::pair<uint32_t,std::string> > getMensajes(uint32_t uID1,
 			uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje);
-
+private:
+	void eliminarSolicitud();
 };
 
 #endif  /* APPSERVER_INCLUDE_DATABASE_DBRAW_H_ */
