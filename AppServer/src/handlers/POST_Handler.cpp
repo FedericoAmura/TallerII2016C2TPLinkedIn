@@ -24,15 +24,15 @@ http_response POST_Handler::handleRequest() {
 			break;
 		case _USERS_REQ_CONTACT:
 			// /users/<user_id>/notif/<user_id_contact>
-			res = handleAcceptReqContact();
+			res = handleAcceptContactRequest();
 			break;
 		case _USERS_CONTACTS:
 			// /users/<user_id>/contacts
-			res = handleReqContact();
+			res = handleContactRequest();
 			break;
 		case _CHAT_NEW:
 			// /chat/<user_id>/new
-			res = handleChatNotifMsgSeen();
+			res = handleChatNotifyMsgSeen();
 			break;
 		case _CHAT_CHATS:
 			// /chat/<user_id1>/<user_id2>
@@ -40,7 +40,7 @@ http_response POST_Handler::handleRequest() {
 			break;
 		default:
 			std::cout << "ERROR >> Invalid uri " << std::endl;
-			res = http_response("", STATUS_BAD_REQUEST);
+			res = http_response("", STATUS_NOT_FOUND);
 			break;
 	}
 	return res;
@@ -56,7 +56,8 @@ http_response POST_Handler::handleLogIn() {
 	}
 
 	/* TODO validar el username y password en la base de datos
-	 * y generar un token de sesión (en caso de que todo salga bien, enviar el token)
+	 * y generar un token de sesión y un user_id (en caso de que todo
+	 * salga bien, enviar el token y el user_id)
 	 * */
 	bool valid_user = db_handler->validateUserPass(username, password);
 	if (!valid_user) {
@@ -65,7 +66,7 @@ http_response POST_Handler::handleLogIn() {
 	}
 
 	std::string token = db_handler->generateToken(username, password);
-	std::string msg = "{\"token\":\"" + token + "\"}\n";
+	std::string msg = "{\"userID\":\"" + username + "\", \"token\":\"" + token + "\"}\n";
 	return http_response(msg, STATUS_OK);
 }
 
@@ -83,27 +84,21 @@ http_response POST_Handler::handleSignUp() {
 		db_handler->registerNewUser(_json);
 	} catch (InvalidJsonException &e) {
 		std::cout << "Invalid Json Format" << std::endl;
-		return http_response("", STATUS_BAD_REQUEST);
+		return http_response("", STATUS_UNPROCCESABLE);
 	}
 
-	/* TODO generar un token desde la base de datos con el username y la password */
-	std::string user = _json["register"]["email"].string_value();
-	std::string pass = _json["register"]["pass"].string_value();
-
-	std::string token = db_handler->generateToken(user,pass);
-	std::string msg = "{\"token\":\"" + token + "\"}\n";
-	return http_response(msg, STATUS_CREATED);
+	return http_response("", STATUS_CREATED);
 }
 
-http_response POST_Handler::handleAcceptReqContact() {
+http_response POST_Handler::handleAcceptContactRequest() {
 	return http_response("{\"msg\":\"Contact request accepted\"}\n", STATUS_CREATED);
 }
 
-http_response POST_Handler::handleReqContact() {
+http_response POST_Handler::handleContactRequest() {
 	return http_response("{\"msg\":\"Contact Request\"}\n", STATUS_CREATED);
 }
 
-http_response POST_Handler::handleChatNotifMsgSeen() {
+http_response POST_Handler::handleChatNotifyMsgSeen() {
 	return http_response("{\"msg\":\"Message seen\"}\n", STATUS_CREATED);
 }
 

@@ -30,19 +30,19 @@ private:
 	 * Aceptar una solicitud de contacto
 	 * @return
 	 * */
-	http_response handleAcceptReqContact();
+	http_response handleAcceptContactRequest();
 
 	/*
 	 * Solicitud para agregar un contacto
 	 * @return
 	 * */
-	http_response handleReqContact();
+	http_response handleContactRequest();
 
 	/*
 	 * Notificar que el mensaje fue visto
 	 * @return
 	 * */
-	http_response handleChatNotifMsgSeen();
+	http_response handleChatNotifyMsgSeen();
 
 	/*
 	 * Enviar un mensaje a un chat
