@@ -21,21 +21,25 @@ Métodos
     Maneja una petición HTTP de tipo DELETE.
 
     :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+              En caso de éxito, retorna una respuesta vacía y un código de respuesta HTTP 204.
 
 .. cpp:function:: http_response handleCloseSession()
 
-    Maneja una petición HTTP de tipo DELETE.
+    Cierra la conexión establecida.
 
     :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+              En caso de éxito, retorna una respuesta vacía y un código de respuesta HTTP 204.
 
 .. cpp:function:: http_response handleRejectContactRequest()
 
-    Maneja una petición HTTP de tipo DELETE.
+    Maneja rechazos de solicitud de contacto.
 
     :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+              En caso de éxito, retorna una respuesta vacía y un código de respuesta HTTP 204.
 
 .. cpp:function:: http_response handleDeleteContact()
 
-    Maneja una petición HTTP de tipo DELETE.
+    Elimina un contacto.
 
     :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+              En caso de éxito, retorna una respuesta vacía y un código de respuesta HTTP 204.

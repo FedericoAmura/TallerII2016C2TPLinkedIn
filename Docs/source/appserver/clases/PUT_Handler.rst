@@ -21,18 +21,21 @@ Métodos
     Maneja una petición HTTP de tipo PUT.
 
     :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+              En caso de éxito, retorna una respuesta vacía y un código de respuesta HTTP 200.
 
 .. cpp:function:: http_response handleProfile()
 
-    Maneja una petición HTTP de tipo PUT.
+    Actualización de perfil
 
     :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+              En caso de éxito, retorna una respuesta vacía y un código de respuesta HTTP 200.
 
 .. cpp:function:: http_response handleSummary()
 
-    Maneja una petición HTTP de tipo PUT.
+    Actualización de resumen de usuario
 
     :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+              En caso de éxito, retorna una respuesta vacía y un código de respuesta HTTP 200.
 
 .. cpp:function:: http_response handlePhoto()
 
