@@ -36,7 +36,7 @@ Métodos estáticos
     en la petición http.
 
     :param msg: Petición http de la cual se desea obtener información sobre el nombre de usuario y password.
-    :param usernae: Variable donde se guardará el valor de nombre de usuario.
+    :param username: Variable donde se guardará el valor de nombre de usuario.
     :param password: Variable donde se guardará el valor de la password.
     :returns: Devuelve true si pudó parsear los valores de las variables, sino false.
 

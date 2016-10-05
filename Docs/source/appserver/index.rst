@@ -8,11 +8,11 @@ Alguna información técnica sobre el app server.
 Contenidos:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    implementacion
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    API
