@@ -10,5 +10,9 @@ Contenidos:
 .. toctree::
    :maxdepth: 2
 
-   claseejemplocpp
+   implementacion
 
+.. toctree::
+   :maxdepth: 2
+
+   API
