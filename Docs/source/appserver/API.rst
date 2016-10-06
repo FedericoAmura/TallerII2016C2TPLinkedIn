@@ -2,6 +2,10 @@ Especificación de REST API
 ======================================================================
 A continuación se detalla la API para realizar la comunicación entre ClientApp y el AppServer
 
+Notar, el campo AUTH, en caso de ser obligatorio debe contener:
+
+username=<mi_username> password=<mi_password>
+
 Versión 1.
 
 .. contents::
@@ -22,9 +26,8 @@ PARAMETROS           	| {
 			| “last_name” : “<apellido>”,
 			| “birth” : “<DD/MM/YYYY>”,
 			| “email” : “<email>”,
-			| “user_name” : “<nombreusuariol>”,
-			| “pass1” : “<contraseña>”,
-			| “pass2” : “<contraseñarepetida>”,
+			| “user_name” : “<nombre de usuario>”,
+			| “pass” : “<contraseña>”,
 			| “city” : “<ciudad>”,
 			| “longitude” : <longitud>,
 			| “latitude” : <latitud>
@@ -46,7 +49,6 @@ Usuario y contraserña se envia en el campo auth.
 ======================  ===========================================
 URL                  	| \http://<appserver>/login
 AUTH                 	| Si
-                        | **Authorization:** username=<mi_username> password=<mi_password>
 VERB                 	| POST
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 401 - Usuario o pass incorrectos
@@ -64,7 +66,6 @@ Pide al servidor que se cierre la sesión actual. Es decir, que invalide el toke
 ======================  ===========================================
 URL                  	| \http://<appserver>/login
 AUTH                 	| Si
-                        | **Authorization:** username=<mi_username> password=<mi_password 
 VERB                 	| DELETE
 PARAMETROS           	| a
 POSIBLES RESPUESTAS	| 204 - OK
