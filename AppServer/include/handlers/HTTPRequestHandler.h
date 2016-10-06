@@ -10,6 +10,7 @@
 
 #include "../common/req_res.h"
 #include "../parsers/HttpParser.h"
+#include "../parsers/JsonParser.h"
 //#include "../cpr/cpr.h"
 #include "DB_Handler.h"
 

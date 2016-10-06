@@ -80,6 +80,9 @@ http_response POST_Handler::handleSignUp() {
 		return http_response("", STATUS_BAD_REQUEST);
 	}
 
+	user_record new_user;
+	bool parsed = JsonParser::parse_user_data(new_user, _json);
+
 	try {
 		db_handler->registerNewUser(_json);
 	} catch (InvalidJsonException &e) {

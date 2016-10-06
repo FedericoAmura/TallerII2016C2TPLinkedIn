@@ -53,5 +53,4 @@ struct http_response {
 		res_code = status;
 	}
 };
-
 #endif /* COMMON_REQ_RES_H_ */

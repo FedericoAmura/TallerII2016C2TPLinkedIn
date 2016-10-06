@@ -46,3 +46,42 @@ bool HttpParser::parse_token(struct http_message* msg, std::string &token) {
 	return true;
 }
 
+bool HttpParser::parse_user_properties(struct http_message* msg, struct user_properties &prop) {
+	bool parsed = false;
+	int BUFFER_SIZE = 100;
+	char buffer[BUFFER_SIZE];
+	int found;
+
+	found = ns_get_http_var(&msg->query_string, CATEGORY, buffer, BUFFER_SIZE);
+	if (found > 0) {
+		prop.category = std::string(buffer);
+		parsed = true;
+	}
+
+	memset(buffer, 0, BUFFER_SIZE);
+	found = ns_get_http_var(&msg->query_string, SKILL, buffer, BUFFER_SIZE);
+	if (found > 0) {
+		prop.skill = std::string(buffer);
+		parsed = true;
+	}
+	memset(buffer, 0, BUFFER_SIZE);
+	found = ns_get_http_var(&msg->query_string, JOB_POSITION, buffer, BUFFER_SIZE);
+	if (found > 0) {
+		prop.job_position = std::string(buffer);
+		parsed = true;
+	}
+	memset(buffer, 0, BUFFER_SIZE);
+	found = ns_get_http_var(&msg->query_string, GEOLOCATION, buffer, BUFFER_SIZE);
+	if (found > 0) {
+		prop.geolocation = std::string(buffer);
+		parsed = true;
+	}
+	memset(buffer, 0, BUFFER_SIZE);
+	found = ns_get_http_var(&msg->query_string, DISTANCE, buffer, BUFFER_SIZE);
+	if (found > 0) {
+		prop.distance = strtof(std::string(buffer).c_str(), 0);
+		parsed = true;
+	}
+	return parsed;
+}
+

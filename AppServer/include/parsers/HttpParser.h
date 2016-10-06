@@ -10,7 +10,9 @@
 
 #include "../fossa/fossa.h"
 #include "../server/API_HttpRequest.h"
+#include "../common/User.h"
 #include <string>
+#include <stdlib.h>
 
 class HttpParser {
 public:
@@ -22,6 +24,8 @@ public:
 	static bool parse_username_password(struct http_message* msg, std::string &username, std::string &password);
 
 	static bool parse_token(struct http_message* msg, std::string &token);
+
+	static bool parse_user_properties(struct http_message* msg, struct user_properties &prop);
 };
 
 #endif /* APPSERVER_INCLUDE_PARSERS_HTTPPARSER_H_ */
