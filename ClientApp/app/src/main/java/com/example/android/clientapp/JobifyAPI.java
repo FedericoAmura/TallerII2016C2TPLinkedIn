@@ -6,7 +6,7 @@ package com.example.android.clientapp;
 
 public class JobifyAPI {
 
-    private static final String APPSERVER_IP = "192.168.0.102";
+    private static final String APPSERVER_IP = "10.1.72.159";
     private static final String APPSERVER_PUERTO = "8888";
     private static final String APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
 

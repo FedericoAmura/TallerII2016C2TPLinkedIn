@@ -68,6 +68,7 @@ http_response POST_Handler::handleLogIn() {
 	}
 
 	json11::Json data = db_handler->generateJsonWithTokenAndUserID(username, password);
+	std::cout << "Info: LogIn OK" << std::endl;
 	return http_response(data.dump(), STATUS_OK);
 }
 
@@ -96,6 +97,7 @@ http_response POST_Handler::handleSignUp() {
 		return http_response("", STATUS_BAD_REQUEST);
 	}
 
+	std::cout << "Info: SignUp OK" << std::endl;
 	return http_response("", STATUS_CREATED);
 }
 
@@ -117,4 +119,3 @@ http_response POST_Handler::handleChatSendMsg() {
 
 POST_Handler::~POST_Handler() {
 }
-
