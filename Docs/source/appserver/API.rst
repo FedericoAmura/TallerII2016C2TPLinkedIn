@@ -2,9 +2,9 @@ Especificación de REST API
 ======================================================================
 A continuación se detalla la API para realizar la comunicación entre ClientApp y el AppServer
 
-Notar, el campo AUTH, en caso de ser obligatorio debe contener:
+Notar, el campo AUTH, en caso de ser obligatorio debe contener un token de autenticación.
 
-username=<mi_username> password=<mi_password>
+A excepción del caso de LOGIN, donde contendra username y password.
 
 Versión 1.
 
@@ -48,7 +48,7 @@ Usuario y contraserña se envia en el campo auth.
 
 ======================  ===========================================
 URL                  	| \http://<appserver>/login
-AUTH                 	| Si
+AUTH                 	| Si: username=<mi_username> password=<mi_password>
 VERB                 	| POST
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 401 - Usuario o pass incorrectos
@@ -69,7 +69,7 @@ AUTH                 	| Si
 VERB                 	| DELETE
 PARAMETROS           	| a
 POSIBLES RESPUESTAS	| 204 - OK
-			| 401 - Usuario o pass incorrectos
+			| 401 - No autorizado
 ======================  ===========================================
 
 --------------------------------------------------------

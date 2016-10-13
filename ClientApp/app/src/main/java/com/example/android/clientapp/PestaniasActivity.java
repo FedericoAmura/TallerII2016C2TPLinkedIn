@@ -283,6 +283,7 @@ public class PestaniasActivity extends AppCompatActivity {
 
 //VERSION TABS CON SWAP, TABLAYOUT
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -292,6 +293,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class PestaniasActivity extends AppCompatActivity {
+    boolean exit = false;
     ViewPager pager;
     TabLayout tabLayout;
     @Override
@@ -355,5 +357,24 @@ public class PestaniasActivity extends AppCompatActivity {
         //}
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed(){
+        if (exit){
+            finish();
+        }
+        else {
+            Toast.makeText(this, "Presione de nuevo para Salir.",
+                    Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run(){
+                    exit = false;
+                }
+            }, 3 * 1000);
+        }
     }
 }

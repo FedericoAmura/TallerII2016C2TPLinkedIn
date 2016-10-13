@@ -60,6 +60,52 @@
                 android:layout_below="@+id/person_name"
                 />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_email"
+                android:layout_below="@+id/person_age"
+                />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/person_email">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_relaciones_black"
+                    android:id="@+id/relaciones_foto"
+                    android:maxHeight="40px"
+                    android:maxWidth="40px"
+                    android:minHeight="40px"
+                    android:minWidth="40px"
+                    android:adjustViewBounds="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/person_relaciones" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_recomendacion"
+                    android:id="@+id/recomendaciones_foto"
+                    android:maxHeight="40px"
+                    android:maxWidth="40px"
+                    android:minHeight="40px"
+                    android:minWidth="40px"
+                    android:adjustViewBounds="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/person_fav" />
+            </LinearLayout>
+
         </RelativeLayout>
 
         <TextView

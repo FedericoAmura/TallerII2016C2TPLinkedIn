@@ -58,6 +58,15 @@ public class RegistroActivity extends AppCompatActivity {
 
         });
 
+        botonEnviar = (Button) findViewById(R.id.botonAceptar);
+        botonEnviar.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                apretarBotonEnviar(v);
+            }
+
+        });
+
 
         etNombre = (EditText) findViewById(R.id.campo_nombre);
         etApellido = (EditText) findViewById(R.id.campo_apellido);
@@ -143,5 +152,14 @@ public class RegistroActivity extends AppCompatActivity {
     //Funcion a llamar al clickear boton Cancelar.
     public void apretarBotonCancelar(View view){
         super.onBackPressed();
+    }
+
+
+    //Funcion a llamar al clickear boton Cancelar.
+    public void apretarBotonEnviar(View view){
+        //JSONObject obj = new JSONObject();
+        //PostData sender = new PostData(obj);
+        //sender.timer();
+
     }
 }
