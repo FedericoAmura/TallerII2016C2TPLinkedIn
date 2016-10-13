@@ -64,7 +64,7 @@ private:
 	 * 			y código de respuesta, sino devuelve una respuesta	vacía y
 	 * 			el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handleUserBief();
+	http_response handleUserBrief();
 
 	/*
 	 * Notificaciones de un usuario
@@ -168,6 +168,38 @@ private:
 	 * 			sino retorna información nula.
 	 * */
 	http_response handleChatIncMsg();
+
+	/*
+	 * Categorías
+	 * @return	en caso de éxito, retorna todas las categorías disponibles.
+	 * */
+	http_response handleCategories();
+
+	/*
+	 * Posición de trabajo por categoría
+	 * @return	en caso de éxito, retorna las posiciones de trabajo asociadas a una
+	 *			categoría.
+	 * */
+	http_response handleJobPositionsByCategory();
+
+	/*
+	 * Posición de trabajo particular
+	 * @return	en caso de éxito, retorna información sobre una posición de trabajo
+	 *			en particular.
+	 * */
+	http_response handleJobPosition();
+
+	/*
+	 * Skills por categoría
+	 * @return	en caso de éxito, retorna los skills asociadas a una categoría.
+	 * */
+	http_response handleSkillsByCategory();
+
+	/*
+	 * Skill particular
+	 * @return	en caso de éxito, retorna información sobre una skill en particular.
+	 * */
+	http_response handleSkill();
 
 public:
 	/*

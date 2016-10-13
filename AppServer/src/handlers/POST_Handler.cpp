@@ -39,7 +39,7 @@ http_response POST_Handler::handleRequest() {
 			res = handleChatSendMsg();
 			break;
 		default:
-			std::cout << "ERROR >> Invalid uri " << std::endl;
+			std::cout << "Error: Invalid uri " << std::endl;
 			res = http_response("", STATUS_NOT_FOUND);
 			break;
 	}
@@ -48,10 +48,12 @@ http_response POST_Handler::handleRequest() {
 
 http_response POST_Handler::handleLogIn() {
 	std::string username, password;
-	bool parsed = HttpParser::parse_username_password(request->message, username, password);
+	bool parsed_username = HttpParser::parse_variable_from_authorization_header(request->message, USERNAME, username);
+	bool parsed_password = HttpParser::parse_variable_from_authorization_header(request->message, PASSWORD, password);
+	//bool parsed = HttpParser::parse_username_password(request->message, username, password);
 
-	if (!parsed) {
-		std::cout << "LogIn failed" << std::endl;
+	if (!parsed_username || !parsed_password) {
+		std::cout << "Error: username and/or password not found to parse. LogIn failed" << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
@@ -61,13 +63,12 @@ http_response POST_Handler::handleLogIn() {
 	 * */
 	bool valid_user = db_handler->validateUserPass(username, password);
 	if (!valid_user) {
-		std::cout << "LogIn failed" << std::endl;
+		std::cout << "Error: User unauthorized. LogIn failed" << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
-	std::string token = db_handler->generateToken(username, password);
-	std::string msg = "{\"userID\":\"" + username + "\", \"token\":\"" + token + "\"}\n";
-	return http_response(msg, STATUS_OK);
+	json11::Json data = db_handler->generateJsonWithTokenAndUserID(username, password);
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response POST_Handler::handleSignUp() {
@@ -76,18 +77,23 @@ http_response POST_Handler::handleSignUp() {
 	json11::Json _json = json11::Json::parse(json_string, err);
 
 	if (!err.empty()){
-		std::cout << "SignUp failed" << std::endl;
-		return http_response("", STATUS_BAD_REQUEST);
+		std::cout << "Error: Invalid Json Format. Sign Up failed." << std::endl;
+		return http_response("", STATUS_UNPROCCESABLE);
 	}
 
 	user_record new_user;
 	bool parsed = JsonParser::parse_user_data(new_user, _json);
 
-	try {
-		db_handler->registerNewUser(_json);
-	} catch (InvalidJsonException &e) {
-		std::cout << "Invalid Json Format" << std::endl;
+	if (!parsed) {
+		std::cout << "Error: Missing Data to register. Sign Up failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
+	}
+
+	try {
+		db_handler->registerNewUser(new_user);
+	} catch (ExistingUserException &e) {
+		std::cout << "Error: Existing User. Sing Up failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
 	}
 
 	return http_response("", STATUS_CREATED);

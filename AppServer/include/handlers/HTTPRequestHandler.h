@@ -13,6 +13,7 @@
 #include "../parsers/JsonParser.h"
 //#include "../cpr/cpr.h"
 #include "DB_Handler.h"
+#include "../common/Utils.h"
 
 class HTTPRequestHandler {
 protected:
@@ -20,7 +21,7 @@ protected:
 	DB_Handler* db_handler;
 	URI uri;
 
-	bool validToken();
+	//bool validToken();
 
 public:
 	/*

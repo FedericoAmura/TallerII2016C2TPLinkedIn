@@ -10,10 +10,7 @@ Contenidos:
 .. toctree::
    :maxdepth: 1
 
+   herramientas
    implementacion
-
-.. toctree::
-   :maxdepth: 1
-
    API
    modelodatosbdd

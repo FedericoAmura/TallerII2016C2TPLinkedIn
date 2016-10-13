@@ -32,7 +32,7 @@ Métodos
 .. cpp:function:: void registerNewUser(json11::Json data)
 
     Alta de nuevo usuario.
-    
+
     :param data: Información del nuevo usuario a dar de alta.
     :returns: void.
     :throws: En caso que datos faltantes se lanza una excepción.

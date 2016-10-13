@@ -11,7 +11,7 @@ Miembros
 
 .. cpp:member::  HTTPRequestHandler* RequestHandler::http_handler
 
-    Dependiendo del tipo de método HTTP empleado http_handler se comportará de manera diferente
+    Dependiendo del tipo de verbo HTTP empleado para la petición, http_handler se comportará de manera diferente
     para atender dicha petición.
 
 ----------------
@@ -22,11 +22,11 @@ Métodos
 
     Constructor. Llama al constructor de la clase base.
 
-    :param req: Petición HTTP que se quiere procesar.
+    :param req: Petición HTTP que será gestionada.
     :returns: Devuelve un objeto de tipo RequestHandler.
 
 .. cpp:function:: http_response handleRequest()
 
-    Maneja una petición HTTP
+    Maneja una petición HTTP según verbo empleado.
 
-    :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta.
+    :returns: Devuelve un http_response que contiene una respuesta y un código de respuesta HTTP.

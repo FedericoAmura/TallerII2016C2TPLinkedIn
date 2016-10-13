@@ -16,6 +16,7 @@
 class JsonParser {
 
 public:
+	static json11::Json parseStringToJson(std::string data);
 
 	static bool parse_user_data(struct user_record &rec, json11::Json data);
 

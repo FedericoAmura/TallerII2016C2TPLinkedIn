@@ -7,6 +7,15 @@
 
 #include "../../include/parsers/JsonParser.h"
 
+json11::Json JsonParser::parseStringToJson(std::string data) {
+	std::string err = "";
+	json11::Json json = json11::Json::parse(data.c_str(), err);
+	if (!err.empty())
+		return json11::Json::object {};
+	return json;
+}
+
+
 bool JsonParser::parse_user_data(struct user_record &rec, json11::Json data) {
 	if (data[FIRST_NAME].is_null()) return false;
 		rec.first_name = data[FIRST_NAME].string_value();

@@ -43,12 +43,17 @@
 #define CHAT_LAST_MSG_URI	"/chat/.*/last"		// TODO problemas con GET (CHAT_CHATS_URI los toma primero)
 #define CHAT_INC_MSG_URI	"/chat/.*/.*/?.*"	// TODO problemas con GET (CHAT_CHATS_URI los toma primero)
 
+/* categories, job_positions, skills */
+#define JOB_POS_BY_CAT_URI  "/job_positions/categories/.*"
+#define JOB_POS_URI         "/job_positions/.*"
+#define SKILLS_BY_CAT_URI   "/skills/categories/.*"
+#define SKILL_URI           "/skills/.*"
+
+
 /* SharedServer */
 #define CATEGORIES_URI  	"/categories"
 #define JOB_POSITIONS_URI 	"/job_positions"
-#define JOB_POSITIONS_CAT_URI "/job_positions/categories"
 #define SKILLS_URI 			"/skills"
-#define SKILLS_CAT_URI 		"/skills/categories"
 
 /* HTTP Methods */
 #define GET		"GET"

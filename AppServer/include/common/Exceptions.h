@@ -15,7 +15,9 @@ public:
 	InvalidJsonException(){};
 };
 
-
-
+class ExistingUserException : public std::exception {
+public:
+	ExistingUserException(){};
+};
 
 #endif /* APPSERVER_INCLUDE_COMMON_EXCEPTIONS_H_ */

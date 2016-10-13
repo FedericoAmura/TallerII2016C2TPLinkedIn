@@ -5,7 +5,7 @@ Server
 
    Clase encargada de gestionar las tareas de servidor. Una vez iniciado el
    servidor, empezará a escuchar conexiones y gestionar peticiones. Para detener
-   el servidor se debe presionar una tecla (+ Enter).
+   el servidor se debe presionar una tecla (seguida de Enter).
 
 ----------------
 Miembros
@@ -25,13 +25,13 @@ Métodos
 
 .. cpp:function:: bool settting_ok()
 
-    Método utilizado para chequear si el servidor está en un estado válido para
-    luego poder iniciar el servicio.
+    Chequea si el servidor está en un estado válido para
+    luego poder iniciar su servicio.
 
     :returns: Devuelve true si el servidor fue creado correctamente, sino false.
 
 .. cpp:function:: void run()
 
-    Método utilizado para iniciar el servidor para poder escuchar conexiones.
+    Inicia su servicio.
 
     :returns: void

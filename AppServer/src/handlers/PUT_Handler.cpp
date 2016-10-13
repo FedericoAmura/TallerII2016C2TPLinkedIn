@@ -31,7 +31,7 @@ http_response PUT_Handler::handleRequest() {
 			res = handleRecommend();
 			break;
 		default:
-			std::cout << "ERROR >> Invalid uri " << std::endl;
+			std::cout << "Error: Invalid uri. " << std::endl;
 			return http_response("", STATUS_BAD_REQUEST);
 			break;
 	}
@@ -39,6 +39,29 @@ http_response PUT_Handler::handleRequest() {
 }
 
 http_response PUT_Handler::handleProfile() {
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string userID = vec_uri[1];
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+
+	if (!db_handler->validateTokenAndUserID(token, userID)) {
+		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+
+	std::string json_string(request->message->body.p);
+	json11::Json _json = JsonParser::parseStringToJson(json_string);
+	if (_json.is_null()) {
+
+	}
+	user_update user;
+	parsed = JsonParser::parse_user_update(user, _json);
+
+
 	return http_response("{\"msg\":\"Edit my profile\"}\n", STATUS_OK);
 }
 

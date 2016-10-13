@@ -15,6 +15,21 @@ int HttpParser::parse_header(struct ns_str *hdr, const char* var_name, char* buf
 	return ns_http_parse_header(hdr, var_name, buffer, buf_size);
 }
 
+bool HttpParser::parse_variable_from_authorization_header(struct http_message* msg, std::string var_name, std::string &buffer) {
+	struct ns_str* hdr = HttpParser::get_header(msg, AUTHORIZATION);
+	if (!hdr)
+		return false;
+	int BUFFER_SIZE = 100;
+	char buf[BUFFER_SIZE];
+
+	int parsed_var = HttpParser::parse_header(hdr, var_name.c_str(), buf, BUFFER_SIZE);
+	if (!parsed_var)
+		return false;
+
+	buffer = std::string(buf);
+	return true;
+}
+/*
 bool HttpParser::parse_username_password(struct http_message* msg, std::string &username, std::string &password) {
 	struct ns_str* hdr = HttpParser::get_header(msg, AUTHORIZATION);
 	if (!hdr)
@@ -45,7 +60,7 @@ bool HttpParser::parse_token(struct http_message* msg, std::string &token) {
 	token = std::string(buf_token);
 	return true;
 }
-
+*/
 bool HttpParser::parse_user_properties(struct http_message* msg, struct user_properties &prop) {
 	bool parsed = false;
 	int BUFFER_SIZE = 100;

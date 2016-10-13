@@ -36,7 +36,7 @@ http_response GET_Handler::handleRequest() {
 			break;
 		case _USER_BIEF:
 			// /users/<user_id>/bief
-			res = handleUserBief();
+			res = handleUserBrief();
 			break;
 		case _USERS_NOTIF:
 			// /users/<user_id>/notif
@@ -86,6 +86,26 @@ http_response GET_Handler::handleRequest() {
 			// /chat/<user_id1>/<user_id2>/?ini=a&fin=b
 			res = handleChatIncMsg();
 			break;
+		case _CATEGORIES:
+			// /categories
+			res = handleCategories();
+			break;
+		case _JOB_POS_BY_CAT:
+			// /job_positions/caterories/<category>
+			res = handleJobPositionsByCategory();
+			break;
+		case _JOB_POSITION:
+			// /job_positions/<job_position>
+			res = handleJobPosition();
+			break;
+		case _SKILLS_BY_CAT:
+			// /skills/categories/<category>
+			res = handleSkillsByCategory();
+			break;
+		case _SKILL:
+			// /skills/<skill>
+			res = handleSkill();
+			break;
 		default:
 			std::cout << "ERROR >> Invalid uri " << std::endl;
 			res = http_response("", STATUS_BAD_REQUEST);
@@ -114,7 +134,7 @@ http_response GET_Handler::handleUserThumb() {
 	return http_response("{\"msg\":\"Thumb\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUserBief() {
+http_response GET_Handler::handleUserBrief() {
 	return http_response("{\"msg\":\"Bief\"}\n", STATUS_OK);
 }
 
@@ -164,6 +184,26 @@ http_response GET_Handler::handleChatLastMsg() {
 
 http_response GET_Handler::handleChatIncMsg() {
 	return http_response("{\"chat\":\"{including msg}\"}\n", STATUS_OK);
+}
+
+http_response GET_Handler::handleCategories() {
+	return http_response("{\"categories\":\"{categories}\"}\n", STATUS_OK);
+}
+
+http_response GET_Handler::handleJobPositionsByCategory() {
+	return http_response("{\"job_positions\":\"{job positions by category}\"}\n", STATUS_OK);
+}
+
+http_response GET_Handler::handleJobPosition() {
+	return http_response("{\"job_position\":\"{job position}\"}\n", STATUS_OK);
+}
+
+http_response GET_Handler::handleSkillsByCategory() {
+	return http_response("{\"skills\":\"{skills by category}\"}\n", STATUS_OK);
+}
+
+http_response GET_Handler::handleSkill() {
+	return http_response("{\"skill\":\"{skill}\"}\n", STATUS_OK);
 }
 
 GET_Handler::~GET_Handler() {
