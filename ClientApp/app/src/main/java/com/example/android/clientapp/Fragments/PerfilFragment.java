@@ -28,8 +28,14 @@ import java.util.concurrent.TimeoutException;
 
 public class PerfilFragment extends Fragment {
 
+    //Info personal:
     private TextView tvNombre;
     private TextView tvEdad;
+    private TextView tvCorreo;
+    private TextView tvFav;
+    private TextView tvRelaciones;
+
+    //Resumen:
     private TextView tvResumen;
 
     @Override
@@ -44,6 +50,9 @@ public class PerfilFragment extends Fragment {
         try {
             obj.put("first_name", "Carlos Bianchi");
             obj.put("birth", "22/10/1951");
+            obj.put("email", "lio_kpo2005@gmail.com");
+            obj.put("fav", "100");
+            obj.put("relaciones", "200");
         } catch (JSONException e) {}
 
         Perfil perfil = new Perfil();
@@ -53,13 +62,16 @@ public class PerfilFragment extends Fragment {
 
         tvEdad = (TextView) view.findViewById(R.id.person_age);
         tvEdad.setText(perfil.getFechaNacimiento());
+
+        tvCorreo = (TextView) view.findViewById(R.id.person_email);
+        tvCorreo.setText(perfil.getCorreo());
+
+        tvFav = (TextView) view.findViewById(R.id.person_fav);
+        tvFav.setText(perfil.getCantRecomendaciones());
+
+        tvRelaciones = (TextView) view.findViewById(R.id.person_relaciones);
+        tvRelaciones.setText(perfil.getCantContactos());
         ///////////////
-
-        //tvNombre = (TextView) view.findViewById(R.id.person_name);
-        //tvNombre.setText("Carlos Bianchi");
-
-        //tvEdad = (TextView) view.findViewById(R.id.person_age);
-        //tvEdad.setText("22/10/1950");
 
         tvResumen = (TextView) view.findViewById(R.id.tvResumen);
         tvResumen.setText("Creador de Facebook y Twitter");

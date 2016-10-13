@@ -19,8 +19,8 @@ public class Perfil {
     private String apellido;
     private String fecha_nacimiento;
     private String correo;
-    private int cant_contactos;
-    private int cant_recomendaciones;
+    private String cant_contactos;
+    private String cant_recomendaciones;
 
     // Resumen:
     private String resumen;
@@ -41,8 +41,11 @@ public class Perfil {
             Log.d(DEBUG_TAG, "Cargando datos del Perfil desde Json");
             nombre = object.getString("first_name");
             //apellido = object.getString("last_name");
-            //correo = object.getString("email");
             fecha_nacimiento = object.getString("birth");
+            correo = object.getString("email");
+            cant_contactos = object.getString("relaciones");
+            cant_recomendaciones = object.getString("fav");
+
 
 
         } catch (JSONException e) {
@@ -71,10 +74,10 @@ public class Perfil {
         return correo;
     }
 
-    public int getCantContactos(){
+    public String getCantContactos(){
         return cant_contactos;
     }
 
-    public int getCantRecomendaciones() {
+    public String getCantRecomendaciones() {
         return cant_recomendaciones; }
 }

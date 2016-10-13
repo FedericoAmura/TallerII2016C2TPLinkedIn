@@ -17,12 +17,9 @@
             android:value="@string/facebook_app_id" />
 
         <activity android:name=".MainActivity" />
+
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/IntroTheme" />
-        <activity android:name=".PestaniasActivity" />
-        <activity
-            android:name=".IntroActivity"
             android:theme="@style/IntroTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +27,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".PestaniasActivity" />
+
+        <activity
+            android:name=".IntroActivity"
+            android:theme="@style/IntroTheme">
+        </activity>
+
         <activity
             android:name=".RegistroActivity"
             android:theme="@style/IntroTheme" />

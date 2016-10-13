@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public void enviarDatosAlServer(final String username, final String password){
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://192.168.0.102:8888/login",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, JobifyAPI.getLoginURL(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
