@@ -112,3 +112,7 @@ CONV_MSG[1] uID1[4] uID2[4] idmsg[4] = uIDsender[4] msg[VAR]
 **Último mensaje leido en una conversacion** (uID1 es el supuesto lector)
 
 CONV_LAST_READ[1] uID1[4] uID2[4] = idmsg[4]
+
+**Conversaciones con mensajes aun no leidos**
+
+CONV_PENDING_READ[1] uid1[4] = uid1[4] uid2[4] …
