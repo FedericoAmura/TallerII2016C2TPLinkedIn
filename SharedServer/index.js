@@ -9,10 +9,13 @@ var urlencodedParser = parser.urlencoded({ extended: false })
 var pgurl = process.env.DATABASE_URL || "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
 var port = process.env.PORT || 5000;
 
+var loginUsername = "admin";
+var loginPassword = "admin";
+
 var appversion = 0.2;
 
 //Configuracion express
-app.set('port', (port));
+app.set('port', port);
 app.use(parser.json());
 
 function errPGConn(err, res) {
@@ -37,17 +40,12 @@ app.get('/', function (req, res) {
 });
 
 app.post('/login', urlencodedParser, function (req, res) {
-	response = {
-			first_name:req.body.username,
-			last_name:req.body.password
-	};
-	console.log(response);
-	res.end(JSON.stringify(response));
-});
-
-//Database Manager
-app.get('/manager', function (req, res) {
-	res.sendFile(__dirname+'/public/databaseManager/index.html');
+	if (loginUsername==req.body.username && loginPassword==req.body.password) {
+		res.sendFile(__dirname+'/public/app.html');
+	} else {
+		res.sendFile(__dirname+'/public/index.html');
+		console.log("Wrong login with: "+req.body.username+":"+req.body.password);
+	}
 });
 
 //Categorias
