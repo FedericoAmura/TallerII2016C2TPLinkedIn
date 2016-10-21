@@ -127,6 +127,14 @@ public:
 };
 
 /**
+ * No existe contacto entre dos usuarios
+ */
+class NonexistentContact: public BadInputException {
+public:
+	NonexistentContact(const std::string what_arg) : BadInputException(what_arg) {}
+};
+
+/**
  * No existe ningun chat entre dos usuarios para una operacion que requiere exista
  */
 class NonexistentChat: public BadInputException {
