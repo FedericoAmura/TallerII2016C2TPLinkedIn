@@ -25,6 +25,10 @@ Para fechas "infinitas" se usará el numero máximo de 32 bits en 1.
 Estructura
 ----------------
 
+**Contador de User IDs**
+
+LAST_UID[1] = uid[4]
+
 **Login**
 
 LOG[1] username[VAR] = passwordHash[32] uID[4]

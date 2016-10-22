@@ -27,6 +27,33 @@ class DBRaw {
 	log4cpp::Category *dbLog;
 	std::ostream *logStream;
 	SharedServerHandler* sharedServerHandler;
+
+	/**
+	 * Inicializa los user IDs en caso de no estar inicializados
+	 */
+	void inicializarUID();
+
+	/**
+	 * Devuelve el proximo user ID a usar
+	 * @param log			Si se debe logear en caso de error
+	 * @return				UID deseado
+	 */
+	uint32_t uIDActual(bool log = true);
+
+	/**
+	 * Incrementa el contador de user IDs
+	 */
+	void incrementarUID();
+
+	/**
+	 * Dado un codigo de estado de leveldb, arroja una excepcion si algo fallo
+	 * @param status						Status devuelto por leveldb
+	 * @param mensajeError					Contexto del error
+	 * @param log							Si se debe logear el error en caso de existir
+	 * @exception LevelDBException			Si algo fallo
+	 */
+	void verificarEstadoDB(leveldb::Status status, const char *mensajeError, bool log = true);
+
  public:
 	/**
 	 * Constructor
@@ -41,10 +68,14 @@ class DBRaw {
 
 	/**
 	 * Registrar un nuevo usuario
+	 * @param datos						Datos varios del usuario
+	 * @param userName					Nombre de usuario para login
+	 * @param passHash					SHA-256 de la password del usuario
 	 * @exception PreexistentUsername	Nombre de usuario ya tomado
 	 * @return							El uID (user ID) del nuevo usuario creado
 	 */
-	uint32_t registrarse(const DatosUsuario &datos);
+	uint32_t registrarse(const DatosUsuario &datos, const string &userName,
+			const std::vector<uint8_t> &passHash);
 
 	/**
 	 * Agrega una nueva foto al usuario de la uID pedida
