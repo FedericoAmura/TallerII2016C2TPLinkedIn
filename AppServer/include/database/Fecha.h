@@ -6,7 +6,7 @@
 /**
  * Clase para representar fechas de una forma que permita una facil transicion entre strings
  * Y el tipo compacto en 4 bytes
- * Las fechas como string seran en formato AAAA/MM/DD
+ * Las fechas como string seran en formato DD/MM/AAAA
  * Para fecha actual/infinito se tomara el string "current"
  * Las fechas uint32_t son en el siguiente formato:
  * 32 bits = 16 bits año, 8 bits mes, 8 bits día
@@ -17,7 +17,7 @@ class Fecha
 {
  public:
 	/**
-	 * Constructor a partir de string AAAA/MM/DD
+	 * Constructor a partir de string DD/MM/AAAA
 	 * @param fecha						El string de caracteres textuales
 	 * @exception MalformedDate			Fecha malformada
 	 */
@@ -44,7 +44,7 @@ class Fecha
 	 */
 	void assign(const char *byteArray);
 	/**
-	 * Devuelve un string de formato AAAA/MM/DD
+	 * Devuelve un string de formato DD/MM/AAAA
 	 * @return
 	 */
 	std::string toString();

@@ -5,7 +5,7 @@
 class RawDBTest : public ::testing::Test {
  public:
 	DBRaw db;
-	RawDBTest() : db(std::string("/tmp/testdb"), &std::cout) {};
+	RawDBTest() : db(std::string("/tmp/testrawdb"), &std::cout) {};
 };
 
 TEST_F(RawDBTest, testRegistrarPrimerUsuario) {
@@ -18,7 +18,7 @@ TEST_F(RawDBTest, testRegistrarPrimerUsuario) {
 
 TEST(FechaTest, FechaFromString)
 {
-	std::string fechaString("2012/12/21");
+	std::string fechaString("21/12/2012");
 	Fecha fecha(fechaString);
 	EXPECT_EQ(fecha.toUint32_t(), 0x07DC0c15);
 }
@@ -28,7 +28,7 @@ TEST(FechaTest, FechaFromByteArray)
 	uint32_t fechaNum = 0x07120519;
 	Fecha fecha((char*)&fechaNum);
 	std::string fechaString = fecha.toString();
-	EXPECT_STREQ("1810/5/25", fechaString.c_str());
+	EXPECT_STREQ("25/5/1810", fechaString.c_str());
 }
 
 TEST(GeoTest, GeoFromDouble)

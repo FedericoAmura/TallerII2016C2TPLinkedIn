@@ -9,6 +9,7 @@ TEST(LibTest, TestCrearUnaBaseDeDatos) {
 	leveldb::Options options;
 	options.create_if_missing = true;
 	leveldb::Status status = leveldb::DB::Open(options, "/tmp/testdb", &db);
+	if (!status.ok()) std::cout << status.ToString();
 	EXPECT_TRUE(status.ok());
 	delete db;
 }

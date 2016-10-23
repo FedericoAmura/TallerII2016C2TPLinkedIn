@@ -8,9 +8,14 @@ Fecha::Fecha(const Fecha &fecha) : fecha(fecha.fecha) {}
 
 Fecha::Fecha(const std::string& fecha) : fecha(0) {
 	//TODO: Format check
-	this->fecha |= (std::stoi(fecha.substr(0,4)) << 16);
-	this->fecha |= (std::stoi(fecha.substr(5,2)) << 8);
-	this->fecha |= std::stoi(fecha.substr(8,2));
+	size_t barra1 = fecha.find('/');
+	size_t barra2 = fecha.rfind('/');
+	size_t lenDia = barra1;
+	size_t lenMes = barra2 - barra1;
+	size_t lenAnio = fecha.length() - barra2;
+	this->fecha |= (std::stoi(fecha.substr(barra2+1, lenAnio)) << 16);
+	this->fecha |= (std::stoi(fecha.substr(barra1+1,lenMes)) << 8);
+	this->fecha |= std::stoi(fecha.substr(0,lenDia));
 }
 
 Fecha::Fecha(const char* byteArray) : fecha(0) {
@@ -26,7 +31,7 @@ std::string Fecha::toString() {
 	uint mes = (fecha & 0x0000ff00) >> 8;
 	uint dia = fecha & 0x000000ff;
 	std::stringstream result;
-	result << anio << "/" << mes << "/" << dia;
+	result << dia << "/" << mes << "/" << anio;
 	return result.str();
 }
 
