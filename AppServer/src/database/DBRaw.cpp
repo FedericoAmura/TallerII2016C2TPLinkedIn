@@ -2,7 +2,6 @@
 #include "../../include/database/DBExceptions.h"
 #include "../../include/log4cpp/OstreamAppender.hh"
 #include "../../include/log4cpp/BasicLayout.hh"
-#include "../../include/leveldb/write_batch.h"
 
 using leveldb::Slice;
 using leveldb::WriteBatch;
@@ -60,7 +59,7 @@ DBRaw::~DBRaw() {
 
 
 uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
-		const std::vector<uint8_t> &passHash)
+		const std::vector<char> &passHash)
 {
 	vector<char> logKey(sizeof(LOG)+userName.length());
 	logKey[0] = LOG;
@@ -71,27 +70,49 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 	if (status.IsNotFound()) { // Nombre de usuario disponible
 		WriteBatch batch;
 		uint32_t uID = uIDActual();
+
 		// Value de la key para login
-		vector<char> logValue(sizeof(passHash)+sizeof(uID));
+		vector<char> logValue(passHash.size()+sizeof(uID));
 		vector<char>::iterator it  = copy(passHash.begin(), passHash.end(), logValue.begin());
-		copy(&uID, &uID+1, it);
+		copy((char*)&uID, (char*)(&uID+1), it);
 		Slice logValueSlice(logValue.data(), logValue.size());
+
 		// Key y value para datos
-		/*vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
+		vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
 		dataKey[0] = USER_DATA;
+		copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
+		Slice dataKeySlice(dataKey.data(), sizeof(dataKey));
 		vector<char> dataValue = datos.toBytes();
-		Slice dataKeySlice();
+		Slice dataValueSlice(dataValue.data(), sizeof(dataValue));
 
-		Slice dataValueSlice();
-
+		// Escribir y aumentar el uID
 	    batch.Put(logKeySlice, logValueSlice);
+	    batch.Put(dataKeySlice, dataValueSlice);
+	    incrementarUID();
 	    status = db->Write(WriteOptions(), &batch);
-	    verificarEstadoDB(status, "Error al registrar usuario");*/
-		incrementarUID();
+	    verificarEstadoDB(status, "Error al registrar usuario");
 		return uID;
 	}
 	else if(status.ok()) throw PreexistentUsername(userName);
 	else verificarEstadoDB(status, "Error al registrar usuario");
+}
+
+uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash) {
+	vector<char> logKey(sizeof(LOG)+userName.length());
+	logKey[0] = LOG;
+	copy(userName.begin(), userName.end(), ++logKey.begin());
+	Slice logKeySlice(logKey.data(), logKey.size());
+	string retVal;
+	Status status = db->Get(ReadOptions(), logKeySlice, &retVal);
+	if (status.IsNotFound()) throw NonexistentUsername(userName);
+	verificarEstadoDB(status, "Error de DB al hacer login");
+	if (strncmp(retVal.data(), passHash.data(), 32) == 0) // Match
+	{
+		uint32_t uID;
+		copy(retVal.data() + 32, retVal.data() + 36, (char*) &uID);
+		return uID;
+	}
+	else throw BadPassword("Password incorrecto.");
 }
 
 /*
@@ -114,9 +135,6 @@ Foto DBRaw::getFoto(uint32_t uID) {
 }
 
 Foto DBRaw::getFotoThumbnail(uint32_t uID) {
-}
-
-uint32_t DBRaw::login(const string& username, const uint8_t* passwordHash) {
 }
 
 std::vector<uint32_t> DBRaw::busquedaProfresional(
@@ -193,14 +211,18 @@ uint32_t DBRaw::uIDActual(bool log)
 	uint32_t lastID = retVal[0];
 }
 
-void DBRaw::incrementarUID()
+void DBRaw::incrementarUID(WriteBatch* batch)
 {
 	uint32_t proxUID = uIDActual() + 1;
 	char keyBytes = LAST_UID;
 	Slice key(&keyBytes, 1);
 	Slice value((char*) &proxUID, 4);
-	Status status = db->Put(WriteOptions(), key, value);
-	verificarEstadoDB(status, "Error al incrementar user IDs");
+	if (batch) batch->Put(key, value);
+	else
+	{
+		Status status = db->Put(WriteOptions(), key, value);
+		verificarEstadoDB(status, "Error al incrementar uID", log);
+	}
 }
 
 void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)

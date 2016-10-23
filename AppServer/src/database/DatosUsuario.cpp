@@ -27,7 +27,7 @@ DatosUsuario::DatosUsuario(const char *byteArray) {
 	std::copy(byteArray+offset, byteArray+offset+4,(char*) &fotoID);
 }
 
-std::vector<char> DatosUsuario::toBytes() {
+std::vector<char> DatosUsuario::toBytes() const {
 	std::vector<char> result(1+nombre.length()+1+email.length()+1+ciudad.length()+4+16+4);
 	std::vector<char>::iterator it = result.begin();
 	*it = (uint8_t) nombre.length();

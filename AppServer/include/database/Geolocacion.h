@@ -45,7 +45,7 @@ public:
 	/**
 	 * Devuelve el vector de bytes que representa una geolocacioón
 	 */
-	std::vector<char> toBytes();
+	std::vector<char> toBytes() const;
 private:
 	double _longitud;
 	double _latitud;

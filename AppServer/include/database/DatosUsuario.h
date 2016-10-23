@@ -36,7 +36,7 @@ class DatosUsuario
 	 * Devuelve los datos como cadena de bytes
 	 * @return
 	 */
-	std::vector<char> toBytes();
+	std::vector<char> toBytes() const;
 
 //Atributos
 	std::string nombre;

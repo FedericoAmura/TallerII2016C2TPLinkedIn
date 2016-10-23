@@ -29,7 +29,7 @@ double Geolocacion::latitud() const {
 }
 
 #include <cstring>
-std::vector<char> Geolocacion::toBytes() {
+std::vector<char> Geolocacion::toBytes() const {
 	std::vector<char> result(sizeof(double)*2);
 	std::vector<char>::iterator it = std::copy((char*)&_longitud, (char*)(&_longitud+1), result.begin());
 	std::copy((char*)&_latitud, (char*)(&_latitud+1), it);

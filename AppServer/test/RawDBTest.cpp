@@ -1,5 +1,6 @@
 #include "../include/gtest/gtest.h"
 #include "../include/database/DBRaw.h"
+#include "../include/database/DBExceptions.h"
 #include <iostream>
 #include <cstdio>
 
@@ -15,8 +16,35 @@ class RawDBTest : public ::testing::Test {
 	~RawDBTest() {delete db;}
 };
 
-TEST_F(RawDBTest, testRegistrarPrimerUsuario) {
-	EXPECT_TRUE(true);
+TEST_F(RawDBTest, testRegistroYLogin)
+{
+	Fecha fecha(string("15/10/1945"));
+	Geolocacion geo(0.5, 0.2);
+	DatosUsuario datos("Juan Tester", "email@dominio.com", "Ciudad", fecha, geo);
+	string userName("TestAccount");
+	std::vector<char> passHash = {
+			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
+			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
+			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
+			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26
+	};
+	db->registrarse(datos, userName, passHash);
+	uint32_t uid = db->login(userName, passHash);
+	EXPECT_EQ(uid,1);
+	try	{
+		uint32_t uid = db->login(string("Bad Username"), passHash);
+	}
+	catch(NonexistentUsername &e) {
+		EXPECT_TRUE(true);
+	}
+	try
+	{
+		passHash[0] = 34;
+		uint32_t uid = db->login(userName, passHash);
+	}
+	catch(BadPassword &e) {
+		EXPECT_TRUE(true);
+	}
 }
 
 /**
