@@ -17,7 +17,7 @@ class DBJSON {
 	DBRaw* db;
 	SharedServerHandler* sharedServerHandler;
  public:
-	DBJSON(SharedServerHandler* sharedServerHandler);
+	DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *DBRaw);
 	virtual ~DBJSON();
 
 	/**

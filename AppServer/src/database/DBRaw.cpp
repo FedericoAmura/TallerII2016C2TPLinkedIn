@@ -3,6 +3,39 @@
 #include "../../include/log4cpp/OstreamAppender.hh"
 #include "../../include/log4cpp/BasicLayout.hh"
 
+using leveldb::Slice;
+using leveldb::ReadOptions;
+using leveldb::WriteOptions;
+using leveldb::Status;
+
+enum KeyCode : uint8_t
+{
+	LAST_UID,
+    LOG,
+	USER_DATA,
+	US_RESUMEN,
+	US_FOTO,
+	FOTO,
+	FOTO_THUMB,
+	US_POS,
+	US_SKILL,
+	RL_POS,
+	RL_SKILLS,
+	US_CONTACT,
+	US_CONTACT_PAIR,
+	US_CONTACT_COUNT,
+	SOLIC,
+	SOLIC_TXT,
+	US_POP,
+	US_POP_PAIR,
+	RL_POP,
+	GEO_US,
+	CONV_COUNT,
+	CONV_MSG,
+	CONV_LAST_READ,
+	CONV_PENDING_READ
+};
+
 DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
 	: logStream(logStream) {
 	dbLogAppender = new log4cpp::OstreamAppender("dbAppender", logStream);
@@ -12,84 +45,85 @@ DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
 
 	leveldb::Options options;
 	options.create_if_missing = true;
-	leveldb::Status status = leveldb::DB::Open(options, rutaArchivo, &db);
-	if (!status.ok()) {
-		dbLog->errorStream() << "Error al abrir la base de datos: "
-				<< status.ToString();
-		throw LevelDBException(status.ToString());
-	}
+	Status status = leveldb::DB::Open(options, rutaArchivo, &db);
+	verificarEstadoDB(status,  "Error al abrir la base de datos");
+	inicializarUID();
 }
 
 DBRaw::~DBRaw() {
 	dbLog->shutdown();
-	delete logStream;
-	delete db;
-}/*
-
-uint32_t DBRaw::registrarse() {
 }
 
-void DBRaw::agregarFoto(uint32_t uID, void* foto) {
+
+uint32_t registrarse(const DatosUsuario &datos, const string &userName,
+		const std::vector<uint8_t> &passHash)
+{
+	/*ReadOptions readOptions;
+	Slice lastIDKey([LAST_UID], 1);
+	string retVal;
+	db->Get(readOptions, lastIDKey, &retVal);
+	uint8_t lastID = retVal[0];*/
 }
 
-void DBRaw::agregarSkill(uint32_t uID, const std::string& skill) {
+/*
+void DBRaw::setFoto(uint32_t uID, Foto& foto) {
 }
 
-void DBRaw::eliminarSkill(uint32_t uID, const std::string& skill) {
+void DBRaw::setGeolocacion(uint32_t uID, Geolocacion geolocacion) {
 }
 
-void DBRaw::agregarPuestoLaboral(uint32_t uID, const std::string& puesto,
-		uint32_t fechaInicio, uint32_t fechaFin) {
+void DBRaw::setResumen(uint32_t uID, const string& resumen) {
 }
 
-void DBRaw::eliminarPosicion(uint32_t uID, const std::string& puesto,
-		uint32_t fechaInicio, uint32_t fechaFin) {
+DatosUsuario DBRaw::getDatos(uint32_t uID) {
 }
 
-void DBRaw::actualizarEMail(uint32_t uID, const std::string& email) {
+void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos) {
 }
 
-void DBRaw::actualizarCiudad(uint32_t uID, const std::string& ciudad) {
+Foto DBRaw::getFoto(uint32_t uID) {
 }
 
-void DBRaw::actualizarGeolocacion(uint32_t uID, float latitud, float longitud) {
+Foto DBRaw::getFotoThumbnail(uint32_t uID) {
 }
 
-void DBRaw::actualizarresumen(uint32_t uID, const std::string& resumen) {
+uint32_t DBRaw::login(const string& username, const uint8_t* passwordHash) {
 }
 
-int DBRaw::getDatos(uint32_t uID) {
+std::vector<uint32_t> DBRaw::busquedaProfresional(
+		const std::vector<string>* puestos, const std::vector<string>* skill,
+		const std::vector<string>* categorias, Geolocacion* geolocacion,
+		float maxDist, bool sortPopularidad) {
 }
 
-void* DBRaw::getFoto(uint32_t uID) {
+std::vector<uint32_t> DBRaw::busquedaPopular(uint conteo) {
 }
 
-void* DBRaw::getFotoThumbnail(uint32_t uID) {
+std::vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill,
+		uint conteo) {
 }
 
-uint32_t DBRaw::login(const std::string& username, const void* passwordHash) {
-}
-
-std::vector<uint32_t> DBRaw::busqueda_profresional(
-		std::vector<std::string>& puestos, std::vector<std::string>& skill,
-		const std::vector<std::string>& categorias,
-		std::pair<float, float> geolocacion, float maxDist,
-		bool sortPopularidad) {
-}
-
-std::vector<uint32_t> DBRaw::busqueda_popularidad(uint conteo,
-		std::vector<std::string>& puestos, std::vector<std::string>& skill,
-		const std::vector<std::string>& categorias) {
+std::vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto,
+		uint conteo) {
 }
 
 void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
-		const std::string& mensaje) {
+		const string& mensaje) {
 }
 
-void DBRaw::aceptarContacto(uint32_t uIDFuente, uint32_t uIDDestino) {
+std::vector<uint32_t> DBRaw::getSolicitudes(uint32_t uIDConsultador) {
 }
 
-void DBRaw::declinarContactor(uint32_t uIDFuente, uint32_t uIDDestino) {
+string DBRaw::getMsgSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
+}
+
+void DBRaw::aceptarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
+}
+
+void DBRaw::eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
+}
+
+void DBRaw::eliminarContacto(uint32_t uID1, uint32_t uID2) {
 }
 
 std::vector<uint32_t> DBRaw::getContactos(uint32_t uID) {
@@ -101,7 +135,52 @@ uint DBRaw::getNumContactos(uint32_t uID) {
 uint32_t DBRaw::numUltMensaje(uint32_t uID1, uint32_t uID2) {
 }
 
-std::vector<std::pair(uint32_t, std::string)> DBRaw::getMensajes(uint32_t uID1,
+std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
+}*/
+
+void DBRaw::inicializarUID()
+{
+	try
+	{
+		uIDActual(false);
+	}
+	catch (LevelDBException &e)
+	{
+		WriteOptions writeOptions;
+		char key = LAST_UID;
+		char value = 0;
+		Status status = db->Put(writeOptions, Slice(&key, 1), Slice(&value, 1));
+		verificarEstadoDB(status, "Error al inicializar user IDs");
+	}
 }
-*/
+
+uint32_t DBRaw::uIDActual(bool log)
+{
+	ReadOptions readOptions;
+	char key = LAST_UID;
+	Slice lastIDKey(&key, 1);
+	string retVal;
+	Status status = db->Get(readOptions, lastIDKey, &retVal);
+	verificarEstadoDB(status, "Error al consultar contador de uIDs", log);
+	uint32_t lastID = retVal[0];
+}
+
+void DBRaw::incrementarUID()
+{
+	uint32_t proxUID = uIDActual() + 1;
+	WriteOptions writeOptions;
+	char keyBytes = LAST_UID;
+	Slice key(&keyBytes, 1);
+	Slice value((char*) &proxUID, 4);
+	Status status = db->Put(writeOptions, key, value);
+	verificarEstadoDB(status, "Error al incrementar user IDs");
+}
+
+void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
+{
+	if (!status.ok()) {
+		if (log) dbLog->errorStream() << mensajeError << ": " << status.ToString();
+		throw LevelDBException(status.ToString());
+	}
+}
