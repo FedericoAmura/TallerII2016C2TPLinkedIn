@@ -1,5 +1,4 @@
 #include "../../include/database/Fecha.h"
-#include <cstring>
 #include <sstream>
 
 Fecha::Fecha() {}
@@ -23,10 +22,10 @@ Fecha::Fecha(const char* byteArray) : fecha(0) {
 }
 
 void Fecha::assign(const char* byteArray) {
-	std::memcpy(&fecha, byteArray, 4);
+	std::copy(byteArray, byteArray+4, (char*)&fecha);
 }
 
-std::string Fecha::toString() {
+std::string Fecha::toString() const {
 	uint anio = (fecha & 0xffff0000) >> 16;
 	uint mes = (fecha & 0x0000ff00) >> 8;
 	uint dia = fecha & 0x000000ff;
@@ -35,6 +34,6 @@ std::string Fecha::toString() {
 	return result.str();
 }
 
-uint32_t Fecha::toUint32_t() {
+uint32_t Fecha::toUint32_t() const {
 	return fecha;
 }

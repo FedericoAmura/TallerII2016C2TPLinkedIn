@@ -37,15 +37,15 @@ public:
 	/**
 	 * Getter de la longitud
 	 */
-	double longitud();
+	double longitud() const;
 	/**
 	 * Getter de la latitud
 	 */
-	double latitud();
+	double latitud() const;
 	/**
 	 * Devuelve el vector de bytes que representa una geolocacioón
 	 */
-	std::vector<uint8_t> toBytes();
+	std::vector<char> toBytes();
 private:
 	double _longitud;
 	double _latitud;

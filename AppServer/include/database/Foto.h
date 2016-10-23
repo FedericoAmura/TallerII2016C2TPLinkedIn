@@ -9,11 +9,11 @@ class Foto
 {
  public:
 	Foto(const std::string &datosBase64);
-	Foto(const uint8_t* datosBinarios);
+	Foto(const char* datosBinarios);
 	std::string toBase64String();
-	const uint32_t* toUint32_t();
+	const char* toUint32_t();
  private:
-	uint8_t* datosBinarios;
+	char* datosBinarios;
 };
 
 #endif /* APPSERVER_INCLUDE_DATABASE_FOTO_H_ */

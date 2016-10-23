@@ -47,12 +47,12 @@ class Fecha
 	 * Devuelve un string de formato DD/MM/AAAA
 	 * @return
 	 */
-	std::string toString();
+	std::string toString() const;
 	/**
 	 * Devuelve un valor de 4 bytes que representa una fecha
 	 * @return
 	 */
-	uint32_t toUint32_t();
+	uint32_t toUint32_t() const;
  private:
 	uint32_t fecha;
 };

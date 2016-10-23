@@ -1,5 +1,4 @@
 #include "../../include/database/Geolocacion.h"
-#include <cstring>
 
 Geolocacion::Geolocacion(double longitud, double latitud) {
 	_longitud = longitud;
@@ -14,23 +13,25 @@ Geolocacion::Geolocacion(const char *byteArray) {
 }
 
 void Geolocacion::assign(const char *byteArray) {
-	std::memcpy(&_longitud, byteArray, sizeof(double));
-	std::memcpy(&_latitud, byteArray+sizeof(double), sizeof(double));
+	std::copy(byteArray, byteArray+sizeof(_longitud), (char*)&_longitud);
+	std::copy(byteArray+sizeof(_longitud),
+			byteArray+sizeof(_longitud)+sizeof(_latitud), (char*)&_latitud);
 }
 
 Geolocacion::Geolocacion() {}
 
-double Geolocacion::longitud() {
+double Geolocacion::longitud() const {
 	return _longitud;
 }
 
-double Geolocacion::latitud() {
+double Geolocacion::latitud() const {
 	return _latitud;
 }
 
-std::vector<uint8_t> Geolocacion::toBytes() {
-	std::vector<uint8_t> result(sizeof(double)*2);
-	std::memcpy(result.data(), &_longitud, sizeof(double));
-	std::memcpy(result.data()+sizeof(double), &_latitud, sizeof(double));
+#include <cstring>
+std::vector<char> Geolocacion::toBytes() {
+	std::vector<char> result(sizeof(double)*2);
+	std::vector<char>::iterator it = std::copy((char*)&_longitud, (char*)(&_longitud+1), result.begin());
+	std::copy((char*)&_latitud, (char*)(&_latitud+1), it);
 	return result;
 }
