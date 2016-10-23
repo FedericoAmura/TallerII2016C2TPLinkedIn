@@ -9,11 +9,17 @@
 #define APPSERVER_INCLUDE_HANDLERS_DB_HANDLER_H_
 
 #include <string>
+#include "../database/DBRaw.h"
+#include "../database/DBChat.h"
 #include "../common/Exceptions.h"
-#include "../common/User.h"
+#include "../users/User.h"
 #include "../json11/json11.hpp"
 
 class DB_Handler {
+private:
+	DBRaw* db_users = 0;
+	DBChat* db_chats = 0;
+
 public:
 	DB_Handler();
 

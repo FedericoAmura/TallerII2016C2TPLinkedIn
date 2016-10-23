@@ -10,7 +10,7 @@
 
 #include "../fossa/fossa.h"
 #include "../server/API_HttpRequest.h"
-#include "../common/User.h"
+#include "../users/User.h"
 #include <string>
 #include <stdlib.h>
 

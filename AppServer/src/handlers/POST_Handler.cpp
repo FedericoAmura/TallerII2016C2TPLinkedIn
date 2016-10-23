@@ -74,6 +74,7 @@ http_response POST_Handler::handleLogIn() {
 
 http_response POST_Handler::handleSignUp() {
 	std::string json_string(request->message->body.p);
+	std::cout << json_string << std::endl;
 	std::string err;
 	json11::Json _json = json11::Json::parse(json_string, err);
 

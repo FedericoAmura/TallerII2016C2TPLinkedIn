@@ -48,10 +48,11 @@ static URI validate_uri(std::string uri){
 	if (uri == LOGIN_URI) 		 return _LOGIN;
 	if (uri == SIGNUP_URI) 		 return _SIGNUP;
 	if (uri == USERS_URI) 		 return _USERS;
+	if (std::regex_match(uri, std::regex(USER_PROFILE_URI)))return _USER_PROFILE;
 	if (std::regex_match(uri, std::regex(USER_SUMMARY_URI)))return _USER_SUMMARY;
 	if (std::regex_match(uri, std::regex(USER_PHOTO_URI))) 	return _USER_PHOTO;
 	if (std::regex_match(uri, std::regex(USER_THUMB_URI))) 	return _USER_THUMB;
-	if (std::regex_match(uri, std::regex(USER_BIEF_URI))) 	return _USER_BIEF;
+	if (std::regex_match(uri, std::regex(USER_BRIEF_URI))) 	return _USER_BIEF;
 
 	if (std::regex_match(uri, std::regex(USERS_NOTIF_URI)))		return _USERS_NOTIF;
 	if (std::regex_match(uri, std::regex(USERS_NEW_NOTIF_URI)))	return _USERS_NEW_NOTIF;
@@ -63,8 +64,6 @@ static URI validate_uri(std::string uri){
 	if (std::regex_match(uri, std::regex(POPULAR_RECOMMED_URI)))return _POPULAR_RECOMMEND;
 	if (std::regex_match(uri, std::regex(POPULAR_POS_URI)))		return _POPULAR_POS;
 	if (std::regex_match(uri, std::regex(POPULAR_SKILL_URI)))	return _POPULAR_SKILL;
-
-	if (std::regex_match(uri, std::regex(USER_PROFILE_URI)))return _USER_PROFILE;
 
 	if (std::regex_match(uri, std::regex(CHAT_NEW_URI))) 		return _CHAT_NEW;
 	if (std::regex_match(uri, std::regex(CHAT_CHATS_URI))) 		return _CHAT_CHATS;

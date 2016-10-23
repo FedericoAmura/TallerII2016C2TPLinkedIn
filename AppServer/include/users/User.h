@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * Estructura para guardar información personal de un usuario (utilizado en el parseo).
+ * */
 struct user_record {
 	std::string first_name;
 	std::string last_name;
@@ -35,6 +38,9 @@ struct user_record {
 	}
 };
 
+/**
+ * Estructura para posiciones de trabajo.
+ * */
 struct job_position {
 	std::string name;
 	std::string start;
@@ -47,6 +53,9 @@ struct job_position {
 	}
 };
 
+/**
+ * Estructura para guardar datos para actualizar información sobre un usuario.
+ * */
 struct user_update {
 	std::string name;
 	std::vector<std::string> skills;
@@ -63,6 +72,9 @@ struct user_update {
 	}
 };
 
+/**
+ * Estructura para guardar información de una solicitud de contacto.
+ * */
 struct contact_request {
 	std::string sender_id;
 	std::string target_id;
@@ -75,6 +87,9 @@ struct contact_request {
 	}
 };
 
+/**
+ * Estructura para guardar datos de una solicitud de recomendación.
+ * */
 struct recommend_request {
 	std::string recommender;
 	std::string recommended;
@@ -87,6 +102,9 @@ struct recommend_request {
 	}
 };
 
+/**
+ * Estructura para guardar propiedades de usuarios para realizar búsquedas.
+ * */
 struct user_properties {
 	std::string category;
 	std::string skill;

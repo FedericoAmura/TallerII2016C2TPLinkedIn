@@ -8,69 +8,74 @@
 #ifndef APPSERVER_INCLUDE_SERVER_API_SERVER_H_
 #define APPSERVER_INCLUDE_SERVER_API_SERVER_H_
 
-#define SHARED_SERVER_URL "http://jobifyg2.herokuapp.com" //"http://127.0.0.1:5000"
+#include <string>
 
-#define APP_SERVER_URL	"http://127.0.0.1"
+static const std::string SHARED_SERVER_URL	= "http://jobifyg2.herokuapp.com"; //"http://127.0.0.1:5000"
+
+static const std::string APP_SERVER_URL		= "http://127.0.0.1";
 #define DEFAULT_PORT	"8888"
 
 /* URIs */
 /* User */
-#define LOGIN_URI			"/login"
-#define SIGNUP_URI			"/signup"
-#define USERS_URI			"/users/"
-#define USER_PROFILE_URI	"/users/.*" // TODO revisar ya que se utiliza para profiles
-#define USER_SUMMARY_URI	"/users/.*/summary"
-#define USER_PHOTO_URI		"/users/.*/photo"
-#define USER_THUMB_URI		"/users/.*/thumb"
-#define USER_BIEF_URI		"/users/.*/bief"
+static const std::string USER_ID = "\\d{1,}";
+static const std::string DESCRIPTION = "[a-z]{1,}";
+
+static const std::string LOGIN_URI				= "/login";
+static const std::string SIGNUP_URI				= "/signup";
+static const std::string USERS_URI				= "/users/";		// ej: /users/123456/?cat=er&job=sas; (PARA BUSQUEDAS)
+static const std::string USER_PROFILE_URI		= "/users/" + USER_ID;
+static const std::string USER_SUMMARY_URI		= "/users/" + USER_ID + "/summary";
+static const std::string USER_PHOTO_URI			= "/users/" + USER_ID + "/photo";
+static const std::string USER_THUMB_URI			= "/users/" + USER_ID + "/thumb";
+static const std::string USER_BRIEF_URI			= "/users/" + USER_ID + "/brief";
 
 /* Contacts */
-#define USERS_NOTIF_URI		"/users/.*/notif"
-#define USERS_NEW_NOTIF_URI	"/users/.*/notif/new"
-#define USERS_REQ_NOTIF_URI	"/users/.*/notif/.*"
-#define USERS_CONTACTS_URI	"/users/.*/contacts"
-#define USERS_REQ_CONTACTS_URI	"/users/.*/contacts/.*"
+static const std::string USERS_NOTIF_URI		= "/users/" + USER_ID + "/notif";
+static const std::string USERS_NEW_NOTIF_URI	= "/users/" + USER_ID + "/notif/new";
+static const std::string USERS_REQ_NOTIF_URI	= "/users/" + USER_ID + "/notif/" + USER_ID;
+static const std::string USERS_CONTACTS_URI		= "/users/" + USER_ID + "/contacts";
+static const std::string USERS_REQ_CONTACTS_URI	= "/users/" + USER_ID + "/contacts/" + USER_ID;
 
 /* Popularity / Recommendations */
-#define POPULAR_URI			"/users/popular"
-#define POPULAR_RECOMMED_URI "/users/popular/.*/.*"
-#define POPULAR_POS_URI		"/users/popular/position/.*"	// TODO problemas con GET (POPULAR_RECOMMED_URI los toma primero)
-#define POPULAR_SKILL_URI	"/users/popular/skill/.*"		// TODO problemas con GET (POPULAR_RECOMMED_URI los toma primero)
+static const std::string POPULAR_URI			= "/users/popular";
+static const std::string POPULAR_RECOMMED_URI	= "/users/popular/" + USER_ID + "/" + USER_ID;
+static const std::string POPULAR_POS_URI		= "/users/popular/position/" + DESCRIPTION;
+static const std::string POPULAR_SKILL_URI		= "/users/popular/skill/" + DESCRIPTION;
 
 /* Chat */
-#define CHAT_NEW_URI		"/chat/.*/new"
-#define CHAT_CHATS_URI		"/chat/.*/.*"
-#define CHAT_LAST_MSG_URI	"/chat/.*/last"		// TODO problemas con GET (CHAT_CHATS_URI los toma primero)
-#define CHAT_INC_MSG_URI	"/chat/.*/.*/?.*"	// TODO problemas con GET (CHAT_CHATS_URI los toma primero)
+static const std::string CHAT_NEW_URI			= "/chat/" + USER_ID + "/new";
+static const std::string CHAT_CHATS_URI			= "/chat/" + USER_ID + "/" + USER_ID;
+static const std::string CHAT_LAST_MSG_URI		= "/chat/" + USER_ID + "/" + USER_ID + "/last";
+static const std::string CHAT_INC_MSG_URI		= "/chat/" + USER_ID + "/" + USER_ID + "/";		// ej: "/chat/123/456/?ini=a&fin=b"
 
 /* categories, job_positions, skills */
-#define JOB_POS_BY_CAT_URI  "/job_positions/categories/.*"
-#define JOB_POS_URI         "/job_positions/.*"
-#define SKILLS_BY_CAT_URI   "/skills/categories/.*"
-#define SKILL_URI           "/skills/.*"
+static const std::string JOB_POS_BY_CAT_URI		= "/job_positions/categories/" + DESCRIPTION;
+static const std::string JOB_POS_URI			= "/job_positions/" + DESCRIPTION;
+static const std::string SKILLS_BY_CAT_URI		= "/skills/categories/" + DESCRIPTION;
+static const std::string SKILL_URI				= "/skills/" + DESCRIPTION;
 
 
 /* SharedServer */
-#define CATEGORIES_URI  	"/categories"
-#define JOB_POSITIONS_URI 	"/job_positions"
-#define SKILLS_URI 			"/skills"
+static const std::string CATEGORIES_URI			= "/categories";
+static const std::string JOB_POSITIONS_URI		= "/job_positions";
+static const std::string SKILLS_URI				= "/skills";
 
 /* HTTP Methods */
 #define GET		"GET"
-#define POST 	"POST"
-#define DELETE 	"DELETE"
-#define PUT 	"PUT"
+#define POST	"POST"
+#define DELETE	"DELETE"
+#define PUT		"PUT"
 
 /* HTTP Status Codes */
-#define STATUS_OK			200
-#define STATUS_CREATED		201
-#define STATUS_NO_CONTENT	204
-#define STATUS_BAD_REQUEST	400
-#define STATUS_UNAUTHORIZED 401
-#define STATUS_NOT_FOUND 	404
-#define STATUS_NOT_ACCEPTABLE 406
-#define STATUS_CONFLICT		409
-#define STATUS_UNPROCCESABLE  422
-#define STATUS_INT_SERVER_ERR 500
+static const int STATUS_OK				= 200;
+static const int STATUS_CREATED			= 201;
+static const int STATUS_NO_CONTENT		= 204;
+static const int STATUS_BAD_REQUEST		= 400;
+static const int STATUS_UNAUTHORIZED	= 401;
+static const int STATUS_NOT_FOUND 		= 404;
+static const int STATUS_NOT_ACCEPTABLE	= 406;
+static const int STATUS_CONFLICT		= 409;
+static const int STATUS_UNPROCCESABLE	= 422;
+static const int STATUS_INT_SERVER_ERR	= 500;
 
 #endif  // APPSERVER_INCLUDE_SERVER_API_SERVER_H_

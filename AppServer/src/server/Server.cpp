@@ -19,17 +19,25 @@ static void* serverHandler(void* arg) {
 }
 
 Server::Server() {
-	db_handler = new DB_Handler();
+	try {
+		db_handler = new DB_Handler();
+	} catch (LevelDBException &e) {
+		init_ok = false;
+		return;
+	}
 	connectionsHandler = new ConnectionsHandler(db_handler);
+	init_ok = true;
 }
 
 bool Server::settting_ok() {
-	return connectionsHandler->isRunning();
+	return init_ok;
 }
 
 Server::~Server() {
-	delete connectionsHandler;
-	delete db_handler;
+	if (connectionsHandler != 0)
+		delete connectionsHandler;
+	if (db_handler != 0)
+		delete db_handler;
 }
 
 void Server::run() {

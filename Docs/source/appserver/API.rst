@@ -137,14 +137,14 @@ Resumen : Consulta
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/resumen
+URL                  	| \http://<appserver>/users/<user_id>/summary
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			| 200 - OK + Siguiente JSON:
 			| {
-			| “resumen” : “Bla Bla Bla.“
+			| “summary” : “Bla Bla Bla.“
 			| }
 ======================  ==========================
 
@@ -152,11 +152,11 @@ Resumen : Actualizar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/resumen
+URL                  	| \http://<appserver>/users/<user_id>/summary
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
-			| “resumen” : “Bla Bla Bla.“
+			| “summary” : “Bla Bla Bla.“
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No aurotizado
@@ -169,14 +169,14 @@ Foto : Consulta
 Los datos binarios vienen como texto plano en base64.
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/foto
+URL                  	| \http://<appserver>/users/<user_id>/photo
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID inexistente
 			| 200 - OK + Siguiente JSON:
 			| {
-			| “foto” = “ab03d7f4c80239b8…”
+			| “photo” = “ab03d7f4c80239b8…”
 			| }
 ======================  ==========================
 
@@ -186,11 +186,11 @@ Foto : Actualizar
 Los datos binarios vienen como texto plano en base64.
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/foto
+URL                  	| \http://<appserver>/users/<user_id>/photo
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
-			| “foto” = “ab03d7f4c80239b8…”
+			| “photo” = “ab03d7f4c80239b8…”
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No aurotizado
@@ -416,7 +416,7 @@ POSIBLES RESPUESTAS	| 404 - Alguno de los usuarios no existe
 			| 200 - OK + Siguiente JSON:
 			| {
 			|  “recommender” : <userID1>
-			|  “recommendee” : <userID2>
+			|  “recommended” : <userID2>
 			|  “recommends” : true/false
 			| }
 ======================  ==========================
@@ -430,7 +430,7 @@ AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
 			|  “recommender” : <userID1>
-			|  “recommendee” : <userID2>
+			|  “recommended” : <userID2>
 			|  “recommends” : true/false
 			| }
 POSIBLES RESPUESTAS	| 404 - Alguno de los usuarios no existe
@@ -615,7 +615,7 @@ Consultar position por categoría
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/job_positions/category/<category>
+URL                  	| \http://<appserver>/job_positions/categories/<category>
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
@@ -655,7 +655,7 @@ Consultar skill por categoría
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/skills/category/<category>
+URL                  	| \http://<appserver>/skills/categories/<category>
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|

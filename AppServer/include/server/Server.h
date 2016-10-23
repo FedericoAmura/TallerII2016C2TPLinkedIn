@@ -12,8 +12,9 @@
 
 class Server {
  private:
-	ConnectionsHandler* connectionsHandler;
-	DB_Handler* db_handler;
+	ConnectionsHandler* connectionsHandler = 0;
+	DB_Handler* db_handler = 0;
+	bool init_ok;
 
  public:
 	Server();

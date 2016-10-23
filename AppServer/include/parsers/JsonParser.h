@@ -9,7 +9,7 @@
 #define APPSERVER_INCLUDE_HANDLERS_PARSERS_JSONPARSER_H_
 
 #include "../json11/json11.hpp"
-#include "../common/User.h"
+#include "../users/User.h"
 #include "../server/API_HttpRequest.h"
 #include <stdlib.h>
 

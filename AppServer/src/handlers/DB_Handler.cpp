@@ -8,6 +8,8 @@
 #include "../../include/handlers/DB_Handler.h"
 
 DB_Handler::DB_Handler() {
+//	db_users = 0;
+	db_chats = new DBChat("/tmp/chats");
 }
 
 bool DB_Handler::validateUserPass(std::string user, std::string pass) {
@@ -31,5 +33,9 @@ void DB_Handler::registerNewUser(struct user_record user) {
 }
 
 DB_Handler::~DB_Handler() {
+	if (db_users != 0)
+		delete db_users;
+	if (db_chats != 0)
+		delete db_chats;
 }
 
