@@ -2,6 +2,7 @@
 #define APPSERVER_INCLUDE_DATABASE_DBRAW_H_
 
 #include "../leveldb/db.h"
+#include "../../include/leveldb/write_batch.h"
 #include "../log4cpp/Appender.hh"
 #include "../log4cpp/Category.hh"
 #include "../handlers/SharedServerHandler.h"
@@ -42,9 +43,10 @@ class DBRaw {
 	uint32_t uIDActual(bool log = true);
 
 	/**
-	 * Incrementa el contador de user IDs
+	 * Incrementa el registro de uIDs
+	 * @param batch							Puntero si se quiere batchear el write, null sino
 	 */
-	void incrementarUID();
+	void incrementarUID(leveldb::WriteBatch* batch = 0);
 
 	/**
 	 * Dado un codigo de estado de leveldb, arroja una excepcion si algo fallo
@@ -76,7 +78,7 @@ class DBRaw {
 	 * @return							El uID (user ID) del nuevo usuario creado
 	 */
 	uint32_t registrarse(const DatosUsuario &datos, const string &userName,
-			const std::vector<uint8_t> &passHash);
+			const std::vector<char> &passHash);
 
 	/**
 	 * Agrega una nueva foto al usuario de la uID pedida
@@ -142,13 +144,13 @@ class DBRaw {
 	/**
 	 *  Hace login y devuelve un uid válido si la info es correcta
 	 *  o lanza una excepcion si no lo es
-	 * @param username					Nombre de usuario
-	 * @param passwordHash				Hash de la password del usuario de 256 bit
+	 * @param userName					Nombre de usuario
+	 * @param passHash					Hash de la password del usuario de 256 bit
 	 * @return							El user ID
 	 * @exception NonexistentUsername	Datos de login incorrectos por username inexistente
 	 * @exception BadPassword			Datos de login incorrectos por password incorrecto
 	 */
-	uint32_t login(const string &username, const uint8_t* passwordHash);
+	uint32_t login(const string &userName, const std::vector<char> &passHash);
 
 	/**
 	 * Realiza una búsqueda sobre los usuarios con los parametros dados.
