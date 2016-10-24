@@ -5,6 +5,7 @@
 #include "../log4cpp/Appender.hh"
 #include "../log4cpp/Category.hh"
 #include "../handlers/SharedServerHandler.h"
+#include "DBExceptions.h"
 #include "DatosUsuario.h"
 #include "Foto.h"
 #include "Fecha.h"

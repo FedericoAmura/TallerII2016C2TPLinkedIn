@@ -31,16 +31,17 @@ http_response PUT_Handler::handleRequest() {
 			res = handleRecommend();
 			break;
 		default:
-			std::cout << "Error: Invalid uri. " << std::endl;
-			return http_response("", STATUS_BAD_REQUEST);
+			std::cout << "ERROR >> Method Not Allowed" << std::endl;
+			return http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
 	}
 	return res;
 }
 
 http_response PUT_Handler::handleProfile() {
+	/* uri = /users/<userID> */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
-	std::string userID = vec_uri[1];
+	std::string userID_s = vec_uri[1];
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
@@ -48,19 +49,30 @@ http_response PUT_Handler::handleProfile() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
-	if (!db_handler->validateTokenAndUserID(token, userID)) {
+/*	TODO
+	if (validate_token) {
 		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
+*/
 
-	std::string json_string(request->message->body.p);
-	json11::Json _json = JsonParser::parseStringToJson(json_string);
-	if (_json.is_null()) {
+	std::string body(request->message->body.p), err;
+	Json data = Json::parse(body, err);
+	if ( !err.empty() ) {
+		std::cout << "Error: Invalid Json Format. Update Profile failed." << std::endl;
+		return http_response("", STATUS_UNPROCCESABLE);
+	}
+
+	uint32_t userID = std::stoi(userID_s);
+	try {
+		db_json->setDatos(userID, data);
+	} catch (NonexistentUserID &e) {
+
+	} catch (NonexistentSkill &e) {
+
+	} catch (NonexistentPosition &e) {
 
 	}
-	user_update user;
-	parsed = JsonParser::parse_user_update(user, _json);
-
 
 	return http_response("{\"msg\":\"Edit my profile\"}\n", STATUS_OK);
 }

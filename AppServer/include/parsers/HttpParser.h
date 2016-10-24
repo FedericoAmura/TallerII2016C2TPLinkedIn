@@ -22,11 +22,7 @@ private:
 
 public:
 
-//	static bool parse_username_password(struct http_message* msg, std::string &username, std::string &password);
-
-//	static bool parse_token(struct http_message* msg, std::string &token);
-
-	static bool parse_variable_from_authorization_header(struct http_message* msg, std::string var_name, std::string &buffer);
+	static bool parse_variable_from_authorization_header(struct http_message* msg, const std::string var_name, std::string &buffer);
 
 	static bool parse_user_properties(struct http_message* msg, struct user_properties &prop);
 };

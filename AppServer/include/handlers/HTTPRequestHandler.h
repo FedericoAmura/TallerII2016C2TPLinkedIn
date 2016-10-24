@@ -10,18 +10,15 @@
 
 #include "../common/req_res.h"
 #include "../parsers/HttpParser.h"
-#include "../parsers/JsonParser.h"
 //#include "../cpr/cpr.h"
-#include "DB_Handler.h"
+#include "../database/DBJSON.h"
 #include "../common/Utils.h"
 
 class HTTPRequestHandler {
 protected:
 	http_request* request;
-	DB_Handler* db_handler;
+	DBJSON* db_json;
 	URI uri;
-
-	//bool validToken();
 
 public:
 	/*

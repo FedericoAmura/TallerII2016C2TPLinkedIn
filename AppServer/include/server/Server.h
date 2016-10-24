@@ -13,7 +13,7 @@
 class Server {
  private:
 	ConnectionsHandler* connectionsHandler = 0;
-	DB_Handler* db_handler = 0;
+	DBJSON* db_json = 0;
 	bool init_ok;
 
  public:

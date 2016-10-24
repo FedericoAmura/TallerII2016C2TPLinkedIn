@@ -12,7 +12,13 @@ RequestHandler::RequestHandler(http_request* req) : HTTPRequestHandler(req) {
 }
 
 http_response RequestHandler::handleRequest() {
+	if (uri == _INVALID_URI) {
+		std::cout << "ERROR >> Invalid uri " << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+
 	http_response res;
+
 	METHOD method = request->method();
 	bool method_ok = true;
 	switch (method){
@@ -30,7 +36,7 @@ http_response RequestHandler::handleRequest() {
 			break;
 		default:
 			method_ok = false;
-			res = http_response("", STATUS_BAD_REQUEST);
+			res = http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
 	}
 

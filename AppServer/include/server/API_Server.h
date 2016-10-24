@@ -22,7 +22,7 @@ static const std::string DESCRIPTION = "[a-z]{1,}";
 
 static const std::string LOGIN_URI				= "/login";
 static const std::string SIGNUP_URI				= "/signup";
-static const std::string USERS_URI				= "/users/";		// ej: /users/123456/?cat=er&job=sas; (PARA BUSQUEDAS)
+static const std::string USERS_URI				= "/users/";		// ej: /users/?cat=er&job=sas; (PARA BUSQUEDAS)
 static const std::string USER_PROFILE_URI		= "/users/" + USER_ID;
 static const std::string USER_SUMMARY_URI		= "/users/" + USER_ID + "/summary";
 static const std::string USER_PHOTO_URI			= "/users/" + USER_ID + "/photo";
@@ -72,7 +72,9 @@ static const int STATUS_CREATED			= 201;
 static const int STATUS_NO_CONTENT		= 204;
 static const int STATUS_BAD_REQUEST		= 400;
 static const int STATUS_UNAUTHORIZED	= 401;
+static const int STATUS_FORBIDDEN		= 403;
 static const int STATUS_NOT_FOUND 		= 404;
+static const int STATUS_MET_NOT_ALLOWED	= 405;
 static const int STATUS_NOT_ACCEPTABLE	= 406;
 static const int STATUS_CONFLICT		= 409;
 static const int STATUS_UNPROCCESABLE	= 422;

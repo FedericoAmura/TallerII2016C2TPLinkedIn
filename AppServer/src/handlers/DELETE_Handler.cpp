@@ -27,8 +27,8 @@ http_response DELETE_Handler::handleRequest() {
 			res = handleDeleteContact();
 			break;
 		default:
-			std::cout << "ERROR >> Invalid uri " << std::endl;
-			return http_response("", STATUS_BAD_REQUEST);
+			std::cout << "ERROR >> Method Not Allowed" << std::endl;
+			return http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
 	}
 	return res;

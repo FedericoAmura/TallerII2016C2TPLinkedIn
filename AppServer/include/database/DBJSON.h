@@ -1,6 +1,7 @@
 #ifndef APPSERVER_INCLUDE_DATABASE_DBJSON_H_
 #define APPSERVER_INCLUDE_DATABASE_DBJSON_H_
 
+#include "DBRaw.h"
 #include "../include/json11/json11.hpp"
 
 using json11::Json;
@@ -16,6 +17,7 @@ class DBJSON {
  private:
 	DBRaw* db;
 	SharedServerHandler* sharedServerHandler;
+
  public:
 	DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *DBRaw);
 	virtual ~DBJSON();

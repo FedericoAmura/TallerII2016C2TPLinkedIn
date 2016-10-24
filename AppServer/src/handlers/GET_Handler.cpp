@@ -107,8 +107,8 @@ http_response GET_Handler::handleRequest() {
 			res = handleSkill();
 			break;
 		default:
-			std::cout << "ERROR >> Invalid uri " << std::endl;
-			res = http_response("", STATUS_BAD_REQUEST);
+			std::cout << "ERROR >> Method Not Allowed" << std::endl;
+			return http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
 	}
 	return res;

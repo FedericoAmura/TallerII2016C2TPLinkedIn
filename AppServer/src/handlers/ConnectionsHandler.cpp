@@ -28,7 +28,7 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 	  }
 }
 
-ConnectionsHandler::ConnectionsHandler(DB_Handler* db_handler) {
+ConnectionsHandler::ConnectionsHandler(DBJSON* db_json) {
 	ns_mgr_init(&mgr, NULL);
 	running = false;
 	connection = ns_bind(&mgr, DEFAULT_PORT, event_handler);
@@ -37,7 +37,7 @@ ConnectionsHandler::ConnectionsHandler(DB_Handler* db_handler) {
 	ns_set_protocol_http_websocket(connection);
 	// ns_enable_multithreading(connection);		// TODO
 	running = true;
-	connection->user_data = db_handler;
+	connection->user_data = db_json;
 }
 
 bool ConnectionsHandler::isRunning() {

@@ -18,7 +18,7 @@ class ConnectionsHandler : public Thread {
 	bool running;
 
  public:
-	ConnectionsHandler(DB_Handler* db_handler);
+	ConnectionsHandler(DBJSON* db_json);
 	bool isRunning();
 	void run();
 	void stop();

@@ -20,12 +20,12 @@ static void* serverHandler(void* arg) {
 
 Server::Server() {
 	try {
-		db_handler = new DB_Handler();
+		db_json = new DBJSON(0, new DBRaw("/tmp/db_users", &std::cout));
 	} catch (LevelDBException &e) {
 		init_ok = false;
 		return;
 	}
-	connectionsHandler = new ConnectionsHandler(db_handler);
+	connectionsHandler = new ConnectionsHandler(db_json);
 	init_ok = true;
 }
 
@@ -36,8 +36,8 @@ bool Server::settting_ok() {
 Server::~Server() {
 	if (connectionsHandler != 0)
 		delete connectionsHandler;
-	if (db_handler != 0)
-		delete db_handler;
+	if (db_json != 0)
+		delete db_json;
 }
 
 void Server::run() {
