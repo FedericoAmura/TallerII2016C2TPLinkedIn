@@ -46,7 +46,7 @@ static const std::string POPULAR_SKILL_URI		= "/users/popular/skill/" + DESCRIPT
 static const std::string CHAT_NEW_URI			= "/chat/" + USER_ID + "/new";
 static const std::string CHAT_CHATS_URI			= "/chat/" + USER_ID + "/" + USER_ID;
 static const std::string CHAT_LAST_MSG_URI		= "/chat/" + USER_ID + "/" + USER_ID + "/last";
-static const std::string CHAT_INC_MSG_URI		= "/chat/" + USER_ID + "/" + USER_ID + "/";		// ej: "/chat/123/456/?ini=a&fin=b"
+static const std::string CHAT_INC_MSG_URI		= "/chat/" + USER_ID + "/" + USER_ID + "/";		// ej: "/chat/123/456/?start=a&end=b"
 
 /* categories, job_positions, skills */
 static const std::string JOB_POS_BY_CAT_URI		= "/job_positions/categories/" + DESCRIPTION;

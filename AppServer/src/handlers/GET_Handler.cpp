@@ -34,8 +34,8 @@ http_response GET_Handler::handleRequest() {
 			// /users/<user_id>/thumb
 			res = handleUserThumb();
 			break;
-		case _USER_BIEF:
-			// /users/<user_id>/bief
+		case _USER_BRIEF:
+			// /users/<user_id>/brief
 			res = handleUserBrief();
 			break;
 		case _USERS_NOTIF:
@@ -79,7 +79,7 @@ http_response GET_Handler::handleRequest() {
 			res = handleChatNew();
 			break;
 		case _CHAT_LAST_MSG:
-			// /chat/<user_id>/last
+			// /chat/<user_id>/<user_id2>/last
 			res = handleChatLastMsg();
 			break;
 		case _CHAT_INC_MSG:

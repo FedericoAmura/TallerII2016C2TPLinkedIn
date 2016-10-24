@@ -26,8 +26,8 @@ PARAMETROS           	| {
 			| “last_name” : “<apellido>”,
 			| “birth” : “<DD/MM/YYYY>”,
 			| “email” : “<email>”,
-			| “user_name” : “<nombre de usuario>”,
-			| “pass” : “<contraseña>”,
+			| “username” : “<nombre de usuario>”,
+			| “password” : “<contraseña>”,
 			| “city” : “<ciudad>”,
 			| “longitude” : <longitud>,
 			| “latitude” : <latitud>

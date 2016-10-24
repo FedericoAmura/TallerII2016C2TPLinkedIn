@@ -13,8 +13,8 @@ user1_data["email"] = "mmmm@gmail.com"
 user1_data["username"] = "cosmefulanito"
 user1_data["password"] = "mi_password"
 user1_data["city"] = "ciudad_perdida"
-user1_data["longitude"] = "12.4"
-user1_data["latitude"] = "3.4"
+user1_data["longitude"] = 12.4
+user1_data["latitude"] = 3.4
 
 user2_data["first_name"] = "menganito"
 user2_data["last_name"] = "perez"
@@ -23,8 +23,8 @@ user2_data["email"] = "rrrrr@gmail.com"
 user2_data["username"] = "cosmemenganito"
 user2_data["password"] = "mi_password"
 user2_data["city"] = "ciudad_perdida"
-user2_data["longitude"] = "10.4"
-user2_data["latitude"] = "2.5"
+user2_data["longitude"] = 10.4
+user2_data["latitude"] = 2.5
 
 client1 = Client(user1_data)
 client2 = Client(user2_data)
@@ -33,7 +33,7 @@ class ClientTest(unittest.TestCase):
 ### POST
     def test_login(self):
         res = client1.login()
-        self.assertEquals(200, res.status_code)
+        self.assertNotEquals(200, res.status_code)
 
     def test_signup(self):
         res = client1.signup()

@@ -23,7 +23,7 @@ enum URI {	_LOGIN,
 			_USER_SUMMARY,
 			_USER_PHOTO,
 			_USER_THUMB,
-			_USER_BIEF,
+			_USER_BRIEF,
 			_USERS_NOTIF,
 			_USERS_NEW_NOTIF,
 			_USERS_REQ_CONTACT,
@@ -52,7 +52,7 @@ static URI validate_uri(std::string uri){
 	if (std::regex_match(uri, std::regex(USER_SUMMARY_URI)))return _USER_SUMMARY;
 	if (std::regex_match(uri, std::regex(USER_PHOTO_URI))) 	return _USER_PHOTO;
 	if (std::regex_match(uri, std::regex(USER_THUMB_URI))) 	return _USER_THUMB;
-	if (std::regex_match(uri, std::regex(USER_BRIEF_URI))) 	return _USER_BIEF;
+	if (std::regex_match(uri, std::regex(USER_BRIEF_URI))) 	return _USER_BRIEF;
 
 	if (std::regex_match(uri, std::regex(USERS_NOTIF_URI)))		return _USERS_NOTIF;
 	if (std::regex_match(uri, std::regex(USERS_NEW_NOTIF_URI)))	return _USERS_NEW_NOTIF;
