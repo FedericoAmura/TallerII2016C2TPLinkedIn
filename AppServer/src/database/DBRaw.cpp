@@ -55,6 +55,7 @@ DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
 
 DBRaw::~DBRaw() {
 	dbLog->shutdown();
+	delete db;
 }
 
 
@@ -76,19 +77,11 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		vector<char>::iterator it  = copy(passHash.begin(), passHash.end(), logValue.begin());
 		copy((char*)&uID, (char*)(&uID+1), it);
 		Slice logValueSlice(logValue.data(), logValue.size());
-
+		batch.Put(logKeySlice, logValueSlice);
 		// Key y value para datos
-		vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
-		dataKey[0] = USER_DATA;
-		copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
-		Slice dataKeySlice(dataKey.data(), sizeof(dataKey));
-		vector<char> dataValue = datos.toBytes();
-		Slice dataValueSlice(dataValue.data(), sizeof(dataValue));
-
+		setDatos(uID, datos, &batch, false);
 		// Escribir y aumentar el uID
-	    batch.Put(logKeySlice, logValueSlice);
-	    batch.Put(dataKeySlice, dataValueSlice);
-	    incrementarUID();
+	    incrementarUID(&batch);
 	    status = db->Write(WriteOptions(), &batch);
 	    verificarEstadoDB(status, "Error al registrar usuario");
 		return uID;
@@ -115,20 +108,38 @@ uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash)
 	else throw BadPassword("Password incorrecto.");
 }
 
+void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch, bool verifUID) {
+	if (verifUID) verificarUID(uID);
+	vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
+	dataKey[0] = USER_DATA;
+	copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
+	Slice dataKeySlice(dataKey.data(), dataKey.size());
+	vector<char> dataValue = datos.toBytes();
+	Slice dataValueSlice(dataValue.data(), dataValue.size());
+	if (batch) batch->Put(dataKeySlice, dataValueSlice);
+	else {
+		Status status = db->Put(WriteOptions(), dataKeySlice, dataValueSlice);
+		verificarEstadoDB(status, "Error al guardar datos de usuario");
+	}
+}
+
+DatosUsuario DBRaw::getDatos(uint32_t uID) {
+	verificarUID(uID);
+	vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
+	dataKey[0] = USER_DATA;
+	copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
+	Slice dataKeySlice(dataKey.data(), dataKey.size());
+	string retVal;
+	Status status = db->Get(ReadOptions(), dataKeySlice, &retVal);
+	verificarEstadoDB(status, "Error al obtener datos de usuario");
+	return DatosUsuario(retVal.data());
+}
+
 /*
 void DBRaw::setFoto(uint32_t uID, Foto& foto) {
 }
 
-void DBRaw::setGeolocacion(uint32_t uID, Geolocacion geolocacion) {
-}
-
 void DBRaw::setResumen(uint32_t uID, const string& resumen) {
-}
-
-DatosUsuario DBRaw::getDatos(uint32_t uID) {
-}
-
-void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos) {
 }
 
 Foto DBRaw::getFoto(uint32_t uID) {
@@ -195,8 +206,8 @@ void DBRaw::inicializarUID()
 	catch (LevelDBException &e)
 	{
 		char key = LAST_UID;
-		char value = 0;
-		Status status = db->Put(WriteOptions(), Slice(&key, 1), Slice(&value, 1));
+		uint32_t value = 0;
+		Status status = db->Put(WriteOptions(), Slice(&key, 1), Slice((char*)&value, 4));
 		verificarEstadoDB(status, "Error al inicializar user IDs");
 	}
 }
@@ -208,7 +219,9 @@ uint32_t DBRaw::uIDActual(bool log)
 	string retVal;
 	Status status = db->Get(ReadOptions(), lastIDKey, &retVal);
 	verificarEstadoDB(status, "Error al consultar contador de uIDs", log);
-	uint32_t lastID = retVal[0];
+	uint32_t lastID;
+	copy(retVal.begin(), retVal.begin()+4, (char*) &lastID);
+	return lastID;
 }
 
 void DBRaw::incrementarUID(WriteBatch* batch)
@@ -231,4 +244,10 @@ void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 		if (log) dbLog->errorStream() << mensajeError << ": " << status.ToString();
 		throw LevelDBException(status.ToString());
 	}
+}
+
+void DBRaw::verificarUID(uint32_t uID)
+{
+	if (uID > uIDActual()) throw NonexistentUserID(std::to_string(uID));
+	return;
 }

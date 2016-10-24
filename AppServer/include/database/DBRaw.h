@@ -57,6 +57,13 @@ class DBRaw {
 	 */
 	void verificarEstadoDB(leveldb::Status status, const char *mensajeError, bool log = true);
 
+	/**
+	 * Verifica si un uid existe, y sino lanza una excepcion
+	 * @param uID							User ID
+	 * @exception NonexistentUserID			No existe el uID
+	 */
+	void verificarUID(uint32_t uID);
+
  public:
 	/**
 	 * Constructor
@@ -92,14 +99,6 @@ class DBRaw {
 	void setFoto(uint32_t uID, Foto &foto);
 
 	/**
-	 * Actualiza la locación geografica del usuario a la dada
-	 * @param uID						User ID
-	 * @param geolocacion				Locación geográfica
-	 * @exception NonexistentUserID		El uID es inválido
-	 */
-	void setGeolocacion(uint32_t uID, Geolocacion geolocacion);
-
-	/**
 	 * Actualiza el resumen profesional del usuario
 	 * @param uID						User ID
 	 * @param resumen					El resumen personal arbitrario que escribio el usuario
@@ -119,9 +118,14 @@ class DBRaw {
 	/**
 	 * Actualiza todos los datos de usuario que el sistema tiene,
 	 * salvo foto y resumen
+	 * @param uID						UserID
+	 * @param datos						Datos
+	 * @param batch						Null para escribir a db, puntero para batchear
+	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
 	 * @exception NonexistentUserID		El uID no es válido
 	 */
-	void setDatos(uint32_t uID, const DatosUsuario &datos);
+	void setDatos(uint32_t uID, const DatosUsuario &datos,
+			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Devuelve la foto del usuario
