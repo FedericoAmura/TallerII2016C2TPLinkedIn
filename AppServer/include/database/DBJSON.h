@@ -19,7 +19,7 @@ class DBJSON {
 	SharedServerHandler* sharedServerHandler;
 
  public:
-	DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *DBRaw);
+	DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db);
 	virtual ~DBJSON();
 
 	/**
@@ -35,7 +35,7 @@ class DBJSON {
 
 	/**
 	 * Hace login y devuelve el user ID en caso de ser un login exitoso
-	 * @param json						Ver documentacion API: "Login"
+	 * @param json						{"username" : <username>, "password" : <stringbase64password>}
 	 * @exception NonexistentUsername	Datos de login incorrectos por username inexistente
 	 * @exception BadPassword			Datos de login incorrectos por password incorrecto
 	 * @return							Ver documentacion API: "Login"

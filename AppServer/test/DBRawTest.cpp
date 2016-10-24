@@ -4,47 +4,93 @@
 #include <iostream>
 #include <cstdio>
 
-class RawDBTest : public ::testing::Test {
+/**
+ * Tests sobre la clase DBRaw
+ */
+
+static const string defaultFecha("15/10/1945");
+static const string defaultNombre("Test Name");
+static const string defaultEmail("email@dominio.com");
+static const string defaultCiudad("Ciudad");
+static const std::vector<char> defaultPassHash = {
+	0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
+	0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
+	0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
+	0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26
+};
+static const string dbPath("/tmp/testrawdb");
+
+class DBRawTest : public ::testing::Test {
  public:
 	DBRaw *db;
-	RawDBTest()
+	DBRawTest()
 	{
-		std::string dbPath("/tmp/testrawdb");
-		leveldb::DestroyDB(dbPath, leveldb::Options());
+		leveldb::Status status = leveldb::DestroyDB(dbPath, leveldb::Options());
+		if(!status.ok()) std::cout << "Error elminando DB: " << status.ToString() << std::endl;
 		db = new DBRaw(dbPath, &std::cout);
 	}
-	~RawDBTest() {delete db;}
+	~DBRawTest() {
+		delete db;
+	}
+	/**
+	 * Registra un usuario con varios parametros por defecto
+	 * @param userName				Nombre de usuario
+	 * @param latitud				Latitud
+	 * @param longitud				Longitud
+	 */
+	void registrarTest(string userName, double latitud, double longitud)	{
+		Fecha fecha(defaultFecha);
+		Geolocacion geo(latitud, longitud);
+		DatosUsuario datos(defaultNombre, defaultEmail, defaultCiudad, fecha, geo);
+		db->registrarse(datos, userName, defaultPassHash);
+	}
 };
 
-TEST_F(RawDBTest, testRegistroYLogin)
+TEST_F(DBRawTest, testRegistroYLogin)
 {
-	Fecha fecha(string("15/10/1945"));
-	Geolocacion geo(0.5, 0.2);
-	DatosUsuario datos("Juan Tester", "email@dominio.com", "Ciudad", fecha, geo);
-	string userName("TestAccount");
-	std::vector<char> passHash = {
-			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
-			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
-			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26,
-			0x15, 0x0c, 0x1c, 0x07, 0x01, 0x3a, 0x5b, 0x26
-	};
-	db->registrarse(datos, userName, passHash);
-	uint32_t uid = db->login(userName, passHash);
+	string userName1("TestUserName1");
+	string userName2("TestUserName2");
+	registrarTest(userName1, 0.5, 0.7);
+	registrarTest(userName2, 0.4, 0.2);
+	uint32_t uid = db->login(userName1, defaultPassHash);
+	EXPECT_EQ(uid,0);
+	uid = db->login(userName2, defaultPassHash);
 	EXPECT_EQ(uid,1);
 	try	{
-		uint32_t uid = db->login(string("Bad Username"), passHash);
+		uint32_t uid = db->login(string("Bad Username"), defaultPassHash);
 	}
 	catch(NonexistentUsername &e) {
 		EXPECT_TRUE(true);
 	}
 	try
 	{
+		std::vector<char> passHash(defaultPassHash);
 		passHash[0] = 34;
-		uint32_t uid = db->login(userName, passHash);
+		uint32_t uid = db->login(userName1, defaultPassHash);
 	}
 	catch(BadPassword &e) {
 		EXPECT_TRUE(true);
 	}
+}
+
+TEST_F(DBRawTest, testGetSetDatos) {
+	string userName("TestUserName");
+	registrarTest(userName, 0.4, 0.6);
+	int32_t uid = db->login(userName, defaultPassHash);
+
+	DatosUsuario datos = db->getDatos(uid);
+	EXPECT_STREQ(datos.nombre.c_str(), defaultNombre.c_str());
+	EXPECT_STREQ(datos.email.c_str(), defaultEmail.c_str());
+	EXPECT_STREQ(datos.ciudad.c_str(), defaultCiudad.c_str());
+	EXPECT_STREQ(datos.fechaNacimiento.toString().c_str(), defaultFecha.c_str());
+	EXPECT_DOUBLE_EQ(0.4, datos.geolocacion.longitud());
+	EXPECT_DOUBLE_EQ(0.6, datos.geolocacion.latitud());
+	EXPECT_EQ(0, datos.fotoID);
+
+	datos.email = "nuevomail@dom.com";
+	db->setDatos(uid, datos);
+	datos = db->getDatos(uid);
+	EXPECT_STREQ(datos.email.c_str(), "nuevomail@dom.com");
 }
 
 /**
