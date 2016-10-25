@@ -215,6 +215,7 @@ class DBJSON {
 	/**
 	 * Recomienda o desrecomienda usuarios
 	 * @param json				Ver documentación API: "Recomendar a un usuario"
+     * @exception NonexistentUserID		Alguno de los uID es inválido
 	 */
 	void actualizarRecomendacion(const Json &json);
 

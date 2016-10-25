@@ -4,7 +4,7 @@
 UtilsTest::UtilsTest() {}
 
 TEST_F(UtilsTest, ValidacionDeUriValida) {
-	std::string uri_s = "/users/<user_id>";
+	std::string uri_s = "/users/1234567";
 	URI uri = validate_uri(uri_s);
 	EXPECT_EQ(uri, _USER_PROFILE);
 }

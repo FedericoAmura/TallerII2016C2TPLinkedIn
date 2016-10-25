@@ -84,7 +84,7 @@ http_response POST_Handler::handleSignUp() {
 		std::cout << "Error: Invalid Json Format. Sign Up failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
-	std::cout << json_string << std::endl;
+
 	uint32_t user_id;
 	try {
 		user_id = db_json->registrarse(data);
@@ -109,19 +109,142 @@ http_response POST_Handler::handleSignUp() {
 }
 
 http_response POST_Handler::handleAcceptContactRequest() {
-	return http_response("{\"msg\":\"Contact request accepted\"}\n", STATUS_CREATED);
+	/* uri = /users/<userID>/contacts/<other_userID> */
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string userID1_s = vec_uri[1];
+	std::string userID2_s = vec_uri[3];
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+
+/*	TODO
+	if (validate_token) {
+		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+*/
+
+	std::string body(request->message->body.p, request->message->body.len), err;
+	Json data = Json::parse(body, err);
+	if ( !err.empty() ) {
+		std::cout << "Error: Invalid Json Format. Accept contact request failed." << std::endl;
+		return http_response("", STATUS_UNPROCCESABLE);
+	}
+
+	uint32_t userID1 = std::stoi(userID1_s);
+	uint32_t userID2 = std::stoi(userID2_s);
+	try {
+		db_json->aceptarPeticion(userID1, userID2);
+	} catch (NonexistentRequest &e) {
+		std::cout << "Error: Non existent request. Accept contact request failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
+	}
+	return http_response("", STATUS_NO_CONTENT);
 }
 
 http_response POST_Handler::handleContactRequest() {
-	return http_response("{\"msg\":\"Contact Request\"}\n", STATUS_CREATED);
+	/* uri = /users/<userID>/contacts */
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string userID_s = vec_uri[1];
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+
+/*	TODO
+	if (validate_token) {
+		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+*/
+
+	std::string body(request->message->body.p, request->message->body.len), err;
+	Json data = Json::parse(body, err);
+	if ( !err.empty() ) {
+		std::cout << "Error: Invalid Json Format. Create contact request failed." << std::endl;
+		return http_response("", STATUS_UNPROCCESABLE);
+	}
+
+	try {
+		db_json->crearPeticion(data);
+	} catch (NonexistentUserID &e) {
+		std::cout << "Error: Non existent userID. Create contact request failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
+	}
+	return http_response("", STATUS_CREATED);
 }
 
 http_response POST_Handler::handleChatNotifyMsgSeen() {
-	return http_response("{\"msg\":\"Message seen\"}\n", STATUS_CREATED);
+	/* uri = /chat/<userID>/new */
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string userID_s = vec_uri[1];
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+
+/*	TODO
+	if (validate_token) {
+		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+*/
+
+	std::string body(request->message->body.p, request->message->body.len), err;
+	Json data = Json::parse(body, err);
+	if ( !err.empty() ) {
+		std::cout << "Error: Invalid Json Format. Notify Message Seen failed." << std::endl;
+		return http_response("", STATUS_UNPROCCESABLE);
+	}
+
+	try {
+		db_json->marcarChatLeido(data);
+	} catch (NonexistentChat &e) {
+		std::cout << "Error: Non existent chat. Notify Message Seen failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
+	}
+	return http_response("", STATUS_NO_CONTENT);
 }
 
 http_response POST_Handler::handleChatSendMsg() {
-	return http_response("{\"msg\":\"Send message\"}\n", STATUS_CREATED);
+	/* uri = /chat/<userID1>/<userID2> */
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string userID_s = vec_uri[1];
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+
+/*	TODO
+	if (validate_token) {
+		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}
+*/
+
+	std::string body(request->message->body.p, request->message->body.len), err;
+	Json data = Json::parse(body, err);
+	if ( !err.empty() ) {
+		std::cout << "Error: Invalid Json Format. Send Message failed." << std::endl;
+		return http_response("", STATUS_UNPROCCESABLE);
+	}
+
+	try {
+		db_json->enviarMensaje(data);
+	} catch (NonexistentUserID &e) {
+		std::cout << "Error: Non existent userID. Send Message failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
+	}
+	return http_response("", STATUS_CREATED);
 }
 
 POST_Handler::~POST_Handler() {

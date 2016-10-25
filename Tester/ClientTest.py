@@ -42,7 +42,7 @@ class ClientTest(unittest.TestCase):
     def test_accept_contact_request(self):
         other_userID = "123"
         res = client1.accept_contact_request(other_userID)
-        self.assertEquals(201, res.status_code)
+        self.assertEquals(204, res.status_code)
 
     def test_create_contact_request(self):
         data = {}
@@ -57,7 +57,7 @@ class ClientTest(unittest.TestCase):
         data.clear()
         data["receiverID"] = "123"
         res = client1.notify_msg_seen(data)
-        self.assertEquals(201, res.status_code)
+        self.assertEquals(204, res.status_code)
 
     def test_send_message(self):
         data = {}
@@ -82,14 +82,14 @@ class ClientTest(unittest.TestCase):
         data.clear()
         data = {"summary" : "new summary"}
         res = client1.update_summary(data)
-        self.assertEquals(200, res.status_code)
+        self.assertEquals(204, res.status_code)
 
     def test_update_photo(self):
         data = {}
         data.clear()
         data = {"photo": "asd12as"}
         res = client1.update_photo(data)
-        self.assertEquals(200, res.status_code)
+        self.assertEquals(204, res.status_code)
 
     def test_recommend_user(self):
         receiverID = "123"
@@ -98,7 +98,7 @@ class ClientTest(unittest.TestCase):
         data["recommended"] = "456"
         data["recommends"] = True
         res = client1.recommend_user(receiverID, data)
-        self.assertEquals(200, res.status_code)
+        self.assertEquals(204, res.status_code)
 
 ### DELETE
     def test_logout(self):
