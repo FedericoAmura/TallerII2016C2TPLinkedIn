@@ -7,16 +7,16 @@
 
 #include "../../include/parsers/HttpParser.h"
 
-struct ns_str* HttpParser::get_header(struct http_message* msg, const char* name) {
-	return ns_get_http_header(msg, name);
+struct mg_str* HttpParser::get_header(struct http_message* msg, const char* name) {
+	return mg_get_http_header(msg, name);
 }
 
-int HttpParser::parse_header(struct ns_str *hdr, const char* var_name, char* buffer, size_t buf_size) {
-	return ns_http_parse_header(hdr, var_name, buffer, buf_size);
+int HttpParser::parse_header(struct mg_str *hdr, const char* var_name, char* buffer, size_t buf_size) {
+	return mg_http_parse_header(hdr, var_name, buffer, buf_size);
 }
 
 bool HttpParser::parse_variable_from_authorization_header(struct http_message* msg, const std::string var_name, std::string &buffer) {
-	struct ns_str* hdr = HttpParser::get_header(msg, AUTHORIZATION);
+	struct mg_str* hdr = HttpParser::get_header(msg, AUTHORIZATION);
 	if (!hdr)
 		return false;
 	int BUFFER_SIZE = 100;
@@ -36,36 +36,35 @@ bool HttpParser::parse_user_properties(struct http_message* msg, struct user_pro
 	char buffer[BUFFER_SIZE];
 	int found;
 
-	found = ns_get_http_var(&msg->query_string, CATEGORY, buffer, BUFFER_SIZE);
+	found = mg_get_http_var(&msg->query_string, CATEGORY, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		prop.category = std::string(buffer);
 		parsed = true;
 	}
 
 	memset(buffer, 0, BUFFER_SIZE);
-	found = ns_get_http_var(&msg->query_string, SKILL, buffer, BUFFER_SIZE);
+	found = mg_get_http_var(&msg->query_string, SKILL, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		prop.skill = std::string(buffer);
 		parsed = true;
 	}
 	memset(buffer, 0, BUFFER_SIZE);
-	found = ns_get_http_var(&msg->query_string, JOB_POSITION, buffer, BUFFER_SIZE);
+	found = mg_get_http_var(&msg->query_string, JOB_POSITION, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		prop.job_position = std::string(buffer);
 		parsed = true;
 	}
 	memset(buffer, 0, BUFFER_SIZE);
-	found = ns_get_http_var(&msg->query_string, GEOLOCATION, buffer, BUFFER_SIZE);
+	found = mg_get_http_var(&msg->query_string, GEOLOCATION, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		prop.geolocation = std::string(buffer);
 		parsed = true;
 	}
 	memset(buffer, 0, BUFFER_SIZE);
-	found = ns_get_http_var(&msg->query_string, DISTANCE, buffer, BUFFER_SIZE);
+	found = mg_get_http_var(&msg->query_string, DISTANCE, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		prop.distance = strtof(std::string(buffer).c_str(), 0);
 		parsed = true;
 	}
 	return parsed;
 }
-

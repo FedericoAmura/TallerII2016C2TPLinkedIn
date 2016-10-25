@@ -8,7 +8,7 @@
 #ifndef APPSERVER_INCLUDE_PARSERS_HTTPPARSER_H_
 #define APPSERVER_INCLUDE_PARSERS_HTTPPARSER_H_
 
-#include "../fossa/fossa.h"
+#include "../mongoose/mongoose.h"
 #include "../server/API_HttpRequest.h"
 #include "../users/User.h"
 #include <string>
@@ -16,9 +16,9 @@
 
 class HttpParser {
 private:
-	static struct ns_str* get_header(struct http_message* msg, const char* name);
+	static struct mg_str* get_header(struct http_message* msg, const char* name);
 
-	static int parse_header(struct ns_str *hdr, const char* var_name, char* buffer, size_t buf_size);
+	static int parse_header(struct mg_str *hdr, const char* var_name, char* buffer, size_t buf_size);
 
 public:
 

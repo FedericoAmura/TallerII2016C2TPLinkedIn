@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(AppServer)
 
+add_definitions(-DMG_ENABLE_THREADS)
+
 file(GLOB_RECURSE COMMONSRC "src/*.cpp" "src/*.c" )
 list(REMOVE_ITEM COMMONSRC ${CMAKE_CURRENT_SOURCE_DIR}/src/AppServer.cpp)
 file(GLOB_RECURSE TEST "test/*.cpp")

@@ -9,11 +9,11 @@
 #include "../../include/handlers/ConnectionsHandler.h"
 
 /* communication between clientapp and appserver*/
-static void event_handler(struct ns_connection* c, int event, void* data) {
+static void event_handler(struct mg_connection* c, int event, void* data) {
 	  struct http_message* message = (struct http_message*) data;
 
 	  switch (event) {
-	  	  case NS_HTTP_REQUEST:
+	  	  case MG_EV_HTTP_REQUEST:
 	  	  {
 	  		  http_request request(c, message);
 	  		  std::cout << MethodtoString(request.method()) << "\t" << request.uri() <<std::endl;
@@ -29,13 +29,13 @@ static void event_handler(struct ns_connection* c, int event, void* data) {
 }
 
 ConnectionsHandler::ConnectionsHandler(DBJSON* db_json) {
-	ns_mgr_init(&mgr, NULL);
+	mg_mgr_init(&mgr, NULL);
 	running = false;
-	connection = ns_bind(&mgr, DEFAULT_PORT, event_handler);
+	connection = mg_bind(&mgr, DEFAULT_PORT, event_handler);
 	if (!connection)
 		return;
-	ns_set_protocol_http_websocket(connection);
-	// ns_enable_multithreading(connection);		// TODO
+	mg_set_protocol_http_websocket(connection);
+	mg_enable_multithreading(connection);
 	running = true;
 	connection->user_data = db_json;
 }
@@ -46,7 +46,7 @@ bool ConnectionsHandler::isRunning() {
 
 void ConnectionsHandler::run() {
 	while(running) {
-		ns_mgr_poll(&mgr, 1000);
+		mg_mgr_poll(&mgr, 500);
 	}
 }
 
@@ -55,6 +55,5 @@ void ConnectionsHandler::stop() {
 }
 
 ConnectionsHandler::~ConnectionsHandler() {
-	ns_mgr_free(&mgr);
+	mg_mgr_free(&mgr);
 }
-

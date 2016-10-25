@@ -14,7 +14,7 @@ HTTPRequestHandler::HTTPRequestHandler(http_request* req){
 }
 
 void HTTPRequestHandler::sendReply(http_response* res) {
-	ns_printf(request->connection, "HTTP/1.1 %d\r\n"
+	mg_printf(request->connection, "HTTP/1.1 %d\r\n"
 								   "Content-Type: application/json\r\n"
 								   "Content-Length: %d\r\n"
 								   "\r\n"
@@ -23,5 +23,5 @@ void HTTPRequestHandler::sendReply(http_response* res) {
 }
 
 void HTTPRequestHandler::closeConnection() {
-	request->connection->flags |= NSF_SEND_AND_CLOSE;
+	request->connection->flags |= MG_F_SEND_AND_CLOSE;
 }

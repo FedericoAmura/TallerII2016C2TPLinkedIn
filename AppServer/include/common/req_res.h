@@ -8,26 +8,26 @@
 #ifndef COMMON_REQ_RES_H_
 #define COMMON_REQ_RES_H_
 
-#include "../fossa/fossa.h"
+#include "../mongoose/mongoose.h"
 #include "../common/Utils.h"
 
 struct http_request{
-	ns_connection* connection;
+	mg_connection* connection;
 	http_message* message;
 
-	http_request(ns_connection* c, http_message* msg){
+	http_request(mg_connection* c, http_message* msg){
 		connection = c;
 		message = msg;
 	}
 
 	METHOD method(){
-		if (ns_vcmp(&message->method, GET) == 0)
+		if (mg_vcmp(&message->method, GET) == 0)
 			return _GET;
-		if (ns_vcmp(&message->method, POST) == 0)
+		if (mg_vcmp(&message->method, POST) == 0)
 			return _POST;
-		if (ns_vcmp(&message->method, DELETE) == 0)
+		if (mg_vcmp(&message->method, DELETE) == 0)
 			return _DELETE;
-		if (ns_vcmp(&message->method, PUT) == 0)
+		if (mg_vcmp(&message->method, PUT) == 0)
 			return _PUT;
 		return _INVALID_METHOD;
 	}

@@ -13,8 +13,8 @@
 
 class ConnectionsHandler : public Thread {
  private:
-	struct ns_mgr mgr;
-	struct ns_connection* connection;
+	struct mg_mgr mgr;
+	struct mg_connection* connection;
 	bool running;
 
  public:
