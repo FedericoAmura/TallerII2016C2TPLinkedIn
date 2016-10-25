@@ -56,13 +56,13 @@ http_response PUT_Handler::handleProfile() {
 	}
 */
 
-	std::string body(request->message->body.p), err;
+	std::string body(request->message->body.p, request->message->body.len), err;
 	Json data = Json::parse(body, err);
 	if ( !err.empty() ) {
 		std::cout << "Error: Invalid Json Format. Update Profile failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
-
+	std::cout << body << std::endl;
 	uint32_t userID = std::stoi(userID_s);
 	try {
 		db_json->setDatos(userID, data);

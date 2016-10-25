@@ -76,7 +76,7 @@ http_response POST_Handler::handleLogIn() {
 }
 
 http_response POST_Handler::handleSignUp() {
-	std::string json_string(request->message->body.p);
+	std::string json_string(request->message->body.p, request->message->body.len);
 	std::string err;
 	Json data = Json::parse(json_string, err);
 
@@ -84,7 +84,7 @@ http_response POST_Handler::handleSignUp() {
 		std::cout << "Error: Invalid Json Format. Sign Up failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
-
+	std::cout << json_string << std::endl;
 	uint32_t user_id;
 	try {
 		user_id = db_json->registrarse(data);
