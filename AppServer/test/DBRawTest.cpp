@@ -1,4 +1,5 @@
 #include "../include/gtest/gtest.h"
+#include "../include/gmock/gmock-matchers.h"
 #include "../include/database/DBRaw.h"
 #include "../include/database/DBExceptions.h"
 #include <iostream>
@@ -56,21 +57,12 @@ TEST_F(DBRawTest, testRegistroYLogin)
 	EXPECT_EQ(uid,0);
 	uid = db->login(userName2, defaultPassHash);
 	EXPECT_EQ(uid,1);
-	try	{
-		uint32_t uid = db->login(string("Bad Username"), defaultPassHash);
-	}
-	catch(NonexistentUsername &e) {
-		EXPECT_TRUE(true);
-	}
-	try
-	{
+	EXPECT_THROW(db->login(string("Bad Username"), defaultPassHash), NonexistentUsername);
+	EXPECT_THROW({
 		std::vector<char> passHash(defaultPassHash);
 		passHash[0] = 34;
-		uint32_t uid = db->login(userName1, defaultPassHash);
-	}
-	catch(BadPassword &e) {
-		EXPECT_TRUE(true);
-	}
+		uint32_t uid = db->login(userName1, passHash);
+	}, BadPassword);
 }
 
 TEST_F(DBRawTest, testGetSetDatos) {
@@ -91,6 +83,16 @@ TEST_F(DBRawTest, testGetSetDatos) {
 	db->setDatos(uid, datos);
 	datos = db->getDatos(uid);
 	EXPECT_STREQ(datos.email.c_str(), "nuevomail@dom.com");
+}
+
+TEST_F(DBRawTest, testGetSetResumen) {
+	string userName("TestUserName");
+	registrarTest(userName, 0.2, 0.1);
+	int32_t uID = db->login(userName, defaultPassHash);
+
+	string resumen("Este es el contenido de un resumen.");
+	db->setResumen(uID, resumen);
+	EXPECT_STREQ(resumen.c_str(), db->getResumen(uID).c_str());
 }
 
 /**
@@ -199,4 +201,44 @@ TEST(DatosTest, DatosToByteArray)
 	EXPECT_DOUBLE_EQ(0.12, datos.geolocacion.longitud());
 	EXPECT_DOUBLE_EQ(0.3, datos.geolocacion.latitud());
 	EXPECT_EQ(0xffabca01, datos.fotoID);
+}
+
+static const std::vector<unsigned char> tinyJPG = {
+		0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46,
+		0x00, 0x01, 0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00,
+		0xFF, 0xDB, 0x00, 0x43, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+		0xC2, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01,
+		0x11, 0x00, 0xFF, 0xC4, 0x00, 0x14, 0x10, 0x01, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01,
+		0x00, 0x01, 0x3F, 0x10
+};
+static const std::string tinyJPGBase64 = "/9j/4AAQSkZJRgABAQEASABIA"
+		"AD/2wBDAP/////////////////////////////////////////////////"
+		"/////////////////////////////////////wgALCAABAAEBAREA/8QAF"
+		"BABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
+
+#include "../include/base64/base64.h"
+
+TEST(FotoTest, DatosFromString)
+{
+	Foto foto(tinyJPGBase64);
+	std::vector<char> bytes(foto.toBytes());
+	std::vector<unsigned char> charBytes(bytes.size());
+	std::copy(bytes.begin(), bytes.end(), charBytes.begin());
+	EXPECT_THAT(tinyJPG, ::testing::ContainerEq(charBytes));
+}
+
+TEST(FotoTest, DatosFromByteArray)
+{
+	std::vector<char> bytes(tinyJPG.size());
+	std::copy(tinyJPG.begin(), tinyJPG.end(), bytes.begin());
+	Foto foto(bytes.data(), bytes.size());
+	EXPECT_TRUE(tinyJPGBase64.compare(foto.toBase64String()) == 0);
 }

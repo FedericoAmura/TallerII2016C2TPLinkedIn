@@ -121,9 +121,12 @@ class DBRaw {
 	 * Actualiza el resumen profesional del usuario
 	 * @param uID						User ID
 	 * @param resumen					El resumen personal arbitrario que escribio el usuario
-	 * @exception NonexistentUserID		El uID es inválido
+	 * @param batch						Null para escribir a db, puntero para batchear
+	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
+	 * @exception NonexistentUserID		El uID no es válido
 	 */
-	void setResumen(uint32_t uID, const string &resumen);
+	void setResumen(uint32_t uID, const string &resumen,
+			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Devuelve el resumen profesional del usuario

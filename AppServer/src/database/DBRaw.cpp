@@ -144,22 +144,37 @@ DatosUsuario DBRaw::getDatos(uint32_t uID) {
 	return DatosUsuario(retVal.data());
 }
 
-void DBRaw::setResumen(uint32_t uID, const string& resumen) {
+void DBRaw::setResumen(uint32_t uID, const string& resumen, WriteBatch *batch, bool verifUID) {
+	if (verifUID) verificarContador(LAST_UID, string("user ID"),
+				uID, NonexistentUserID(std::to_string(uID)));
+	if (batch) batch->Put(IDKey(USER_DATA, uID).toSlice(), Slice(resumen));
+	else {
+		Status status = db->Put(WriteOptions(), IDKey(USER_DATA, uID).toSlice(), Slice(resumen));
+		verificarEstadoDB(status, "Error al guardar el resumen");
+	}
 }
 
-string DBRaw::getResumen(uint32_t uID){
+string DBRaw::getResumen(uint32_t uID) {
+	verificarContador(LAST_UID, string("user ID"),
+				uID, NonexistentUserID(std::to_string(uID)));
+	string retVal;
+	Status status = db->Get(ReadOptions(), IDKey(USER_DATA, uID).toSlice(), &retVal);
+	verificarEstadoDB(status, "Error al obtener datos de usuario");
+	return retVal;
 }
 
-/*
-void DBRaw::setFoto(uint32_t uID, Foto& foto) {
+/*void DBRaw::setFoto(uint32_t uID, Foto& foto) {
+
 }
 
 Foto DBRaw::getFoto(uint32_t uID) {
+
 }
 
 Foto DBRaw::getFotoThumbnail(uint32_t uID) {
-}
+}*/
 
+/*
 std::vector<uint32_t> DBRaw::busquedaProfresional(
 		const std::vector<string>* puestos, const std::vector<string>* skill,
 		const std::vector<string>* categorias, Geolocacion* geolocacion,
