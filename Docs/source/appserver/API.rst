@@ -76,7 +76,7 @@ POSIBLES RESPUESTAS	| 204 - OK
 Datos generales de usuario
 --------------------------------------------------------
 
-Perfil : Consulta (Salvo foto y resumen)
+Perfil : Consulta (con foto y resumen)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
@@ -99,7 +99,9 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			|      “end” :  “<DD/MM/YYYY>”
 			|      }],
 			|  “city” : “<ciudad>”,
- 			|  “Contactos” : <numero>
+ 			|  “Contactos” : <numero>,
+  			|  “resumen” : “Bla Bla Bla.“,
+  			|  “foto” = “ab03d7f4c80239b8…”
 			| }
 ======================  ==========================
 
@@ -125,42 +127,13 @@ PARAMETROS           	| 404 - UserID Inexistente
 			|      “end” :  “<DD/MM/YYYY>”
 			|      }],
 			|  “city” : “<ciudad>”,
- 			|  “Contactos” : <numero>
+ 			|  “resumen” : “Bla Bla Bla.“,	(Campo opcional)
+			|  “foto” = “ab03d7f4c80239b8…”	(Campo opcional)
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No autorizado
 			| 404 - UserID Inexistente
 			| 422 - Skills o positions invalidos
-======================  ==========================
-
-Resumen : Consulta
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/summary
-AUTH                 	| No hace falta
-VERB                 	| GET
-PARAMETROS           	|
-POSIBLES RESPUESTAS	| 404 - UserID Inexistente
-			| 200 - OK + Siguiente JSON:
-			| {
-			| “summary” : “Bla Bla Bla.“
-			| }
-======================  ==========================
-
-Resumen : Actualizar
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/summary
-AUTH                 	| Si
-VERB                 	| PUT
-PARAMETROS           	| {
-			| “summary” : “Bla Bla Bla.“
-			| }
-POSIBLES RESPUESTAS	| 204 - OK
-			| 401 - No aurotizado
-			| 404 - UserID inexistente
 ======================  ==========================
 
 Foto : Consulta
