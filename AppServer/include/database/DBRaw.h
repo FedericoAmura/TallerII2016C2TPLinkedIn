@@ -15,6 +15,7 @@
 
 using std::string;
 
+enum KeyCode : uint8_t;
 
 /**
  * Clase wrapper de levelDB con el modelo de datos propio de la aplicación
@@ -31,22 +32,30 @@ class DBRaw {
 	SharedServerHandler* sharedServerHandler;
 
 	/**
-	 * Inicializa los user IDs en caso de no estar inicializados
+	 * Inicializa un contador en caso de no estar inicializado
+	 * @param keyCode			Keycode que identifica el tipo de contador
+	 * @param tipo				String que describe que es el contador para mensajes de error
+	 * @return					True si fue necesario inicializar el contador
 	 */
-	void inicializarUID();
+	bool inicializarContador(KeyCode keyCode, const string &tipo);
 
 	/**
-	 * Devuelve el proximo user ID a usar
-	 * @param log			Si se debe logear en caso de error
-	 * @return				UID deseado
+	 * Devuelve el proximo valor del contador
+	 * @param keyCode			Keycode que identifica el tipo de contador
+	 * @param tipo				String que describe que es el contador para mensajes de error
+	 * @param log				Si se debe logear en caso de error
+	 * @return					UID deseado
 	 */
-	uint32_t uIDActual(bool log = true);
+	uint32_t contadorActual(KeyCode keyCode, const string &tipo, bool log = true);
 
 	/**
 	 * Incrementa el registro de uIDs
-	 * @param batch							Puntero si se quiere batchear el write, null sino
+	 * @param keyCode			Keycode que identifica el tipo de contador
+	 * @param tipo				String que describe que es el contador para mensajes de error
+	 * @param batch				Puntero si se quiere batchear el write, null sino
 	 */
-	void incrementarUID(leveldb::WriteBatch* batch = 0);
+	void incrementarContador(KeyCode keyCode, const string &tipo,
+			leveldb::WriteBatch* batch = NULL);
 
 	/**
 	 * Dado un codigo de estado de leveldb, arroja una excepcion si algo fallo
@@ -59,10 +68,20 @@ class DBRaw {
 
 	/**
 	 * Verifica si un uid existe, y sino lanza una excepcion
-	 * @param uID							User ID
-	 * @exception NonexistentUserID			No existe el uID
+	 * @param keyCode					Keycode que identifica el tipo de contador
+	 * @param tipo						String que describe que es el contador para mensajes de error
+	 * @param uID						El ID
+	 * @param exception					Excepcion a arrojar en caso de falla
 	 */
-	void verificarUID(uint32_t uID);
+	void verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID,
+			const std::runtime_error &exception);
+
+	/**
+	 * Inicializa el foto ID si no existe
+	 * Carga la foto default si es necesario
+	 * @param rutaFotoDefault			Ruta a un jpg
+	 */
+	void inicializarFID(const string &rutaFotoDefault);
 
  public:
 	/**
@@ -102,9 +121,19 @@ class DBRaw {
 	 * Actualiza el resumen profesional del usuario
 	 * @param uID						User ID
 	 * @param resumen					El resumen personal arbitrario que escribio el usuario
+	 * @param batch						Null para escribir a db, puntero para batchear
+	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
+	 * @exception NonexistentUserID		El uID no es válido
+	 */
+	void setResumen(uint32_t uID, const string &resumen,
+			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+
+	/**
+	 * Devuelve el resumen profesional del usuario
+	 * @param uID						User ID
 	 * @exception NonexistentUserID		El uID es inválido
 	 */
-	void setResumen(uint32_t uID, const string &resumen);
+	string getResumen(uint32_t uID);
 
 	/**
 	 * Devuelve todos los datos de usuario que el sistema tiene,

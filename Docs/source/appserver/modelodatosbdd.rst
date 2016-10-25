@@ -29,6 +29,10 @@ Estructura
 
 LAST_UID[1] = uid[4]
 
+**Contador de Foto IDs**
+
+LAST_FID[1] = fid[4]
+
 **Login**
 
 LOG[1] username[VAR] = passwordHash[32] uID[4]
