@@ -48,5 +48,104 @@ Json DBJSON::getDatosBrief(uint32_t userID) {
 }
 
 void DBJSON::setDatos(uint32_t userID, const Json &json) {
+}
 
+Json DBJSON::getResumen(uint32_t userID) {
+	Json data = Json::object {};
+	return data;
+}
+
+void DBJSON::setResumen(uint32_t userID, const Json &json) {
+}
+
+Json DBJSON::getFoto(uint32_t userID) {
+	Json data = Json::object {};
+	return data;
+}
+
+Json DBJSON::getFotoThumbnail(uint32_t userID) {
+	Json data = Json::object {};
+	return data;
+}
+
+void DBJSON::setFoto(uint32_t userID, const Json &json) {
+}
+
+Json DBJSON::busqueda_profresional(const std::vector<string>
+	*puestos, const std::vector<string> *skill, const std::vector<string>
+	*categorias, Geolocacion *geolocacion, float maxDist,
+	bool sortPopularidad) {
+
+	Json data = Json::object {};
+	return data;
+}
+
+Json DBJSON::getPeticionesPendientes(uint32_t userID) {
+	Json data = Json::object {};
+	return data;
+}
+
+Json DBJSON::getNumPeticionesPendientes(uint32_t userID) {
+	Json data = Json::object {};
+	return data;
+}
+
+Json DBJSON::getPeticion(uint32_t userID1, uint32_t userID2) {
+	Json data = Json::object {};
+	return data;
+}
+
+void DBJSON::aceptarPeticion(uint32_t userID1, uint32_t userID2) {
+}
+
+void DBJSON::declinarPeticion(uint32_t userID1, uint32_t userID2) {
+}
+
+Json DBJSON::getContactos(uint32_t userID) {
+	Json data = Json::object {};
+	return data;
+}
+
+void DBJSON::crearPeticion(const Json &json) {
+}
+
+bool DBJSON::esContacto(uint32_t userID1, uint32_t userID2) {
+	return false;
+}
+
+void DBJSON::eliminarContacto(uint32_t userID1, uint32_t userID2) {
+}
+
+Json DBJSON::esRecomendado(uint32_t userIDRecomendador, uint32_t userIDRecomendado) {
+	Json data = Json::object {};
+	return data;
+}
+
+void DBJSON::actualizarRecomendacion(const Json &json) {
+}
+
+Json DBJSON::getPopulares() {
+	Json data = Json::object {};
+	return data;
+}
+
+Json DBJSON::getPopularesPorSkill(const string &skill) {
+	Json data = Json::object {};
+	return data;
+}
+
+Json DBJSON::getPopularesPorPosition(const string &position) {
+	Json data = Json::object {};
+	return data;
+}
+
+Json DBJSON::getChatNuevos(uint32_t userID) {
+	Json data = Json::object {};
+	return data;
+}
+
+void DBJSON::marcarChatLeido(const Json &json) {
+}
+
+void DBJSON::enviarMensaje(const Json &json) {
 }
