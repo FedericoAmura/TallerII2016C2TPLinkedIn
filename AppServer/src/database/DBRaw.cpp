@@ -78,6 +78,7 @@ DBRaw::~DBRaw() {
 uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		const std::vector<char> &passHash)
 {
+	//TODO: Lock para evitar errores RAW con el ID
 	vector<char> logKey(sizeof(LOG)+userName.length());
 	logKey[0] = LOG;
 	copy(userName.begin(), userName.end(), ++logKey.begin());
@@ -128,9 +129,10 @@ void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch,
 			uID, NonexistentUserID(std::to_string(uID)));
 	vector<char> dataValue = datos.toBytes();
 	Slice dataValueSlice(dataValue.data(), dataValue.size());
-	if (batch) batch->Put(IDKey(USER_DATA, uID).toSlice(), dataValueSlice);
+	IDKey dataKey(USER_DATA, uID);
+	if (batch) batch->Put(dataKey.toSlice(), dataValueSlice);
 	else {
-		Status status = db->Put(WriteOptions(), IDKey(USER_DATA, uID).toSlice(), dataValueSlice);
+		Status status = db->Put(WriteOptions(), dataKey.toSlice(), dataValueSlice);
 		verificarEstadoDB(status, "Error al guardar datos de usuario");
 	}
 }
@@ -147,9 +149,10 @@ DatosUsuario DBRaw::getDatos(uint32_t uID) {
 void DBRaw::setResumen(uint32_t uID, const string& resumen, WriteBatch *batch, bool verifUID) {
 	if (verifUID) verificarContador(LAST_UID, string("user ID"),
 				uID, NonexistentUserID(std::to_string(uID)));
-	if (batch) batch->Put(IDKey(USER_DATA, uID).toSlice(), Slice(resumen));
+	IDKey resumenKey(USER_DATA, uID);
+	if (batch) batch->Put(resumenKey.toSlice(), Slice(resumen));
 	else {
-		Status status = db->Put(WriteOptions(), IDKey(USER_DATA, uID).toSlice(), Slice(resumen));
+		Status status = db->Put(WriteOptions(), resumenKey.toSlice(), Slice(resumen));
 		verificarEstadoDB(status, "Error al guardar el resumen");
 	}
 }
@@ -158,12 +161,14 @@ string DBRaw::getResumen(uint32_t uID) {
 	verificarContador(LAST_UID, string("user ID"),
 				uID, NonexistentUserID(std::to_string(uID)));
 	string retVal;
-	Status status = db->Get(ReadOptions(), IDKey(USER_DATA, uID).toSlice(), &retVal);
+	IDKey resumenKey(USER_DATA, uID);
+	Status status = db->Get(ReadOptions(), resumenKey.toSlice(), &retVal);
 	verificarEstadoDB(status, "Error al obtener datos de usuario");
 	return retVal;
 }
 
 /*void DBRaw::setFoto(uint32_t uID, Foto& foto) {
+	// //TODO: Lock para evitar errores RAW con el ID
 
 }
 
