@@ -126,6 +126,13 @@ class DBRaw {
 	void setResumen(uint32_t uID, const string &resumen);
 
 	/**
+	 * Devuelve el resumen profesional del usuario
+	 * @param uID						User ID
+	 * @exception NonexistentUserID		El uID es inválido
+	 */
+	string getResumen(uint32_t uID);
+
+	/**
 	 * Devuelve todos los datos de usuario que el sistema tiene,
 	 * salvo por la foto y resumen
 	 * @param uID						User ID

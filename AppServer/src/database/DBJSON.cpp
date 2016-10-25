@@ -22,8 +22,8 @@ uint32_t DBJSON::registrarse(const Json &json) {
 	Geolocacion geo(longitud, latitud);
 	DatosUsuario datos(nombre, email, ciudad, nacimiento, geo);
 
-	string userName = json["user_name"].string_value();
-	string passHashStr = base64_decode(json["pass"].string_value());
+	string userName = json["username"].string_value();
+	string passHashStr = base64_decode(json["password"].string_value());
 	std::vector<char> passHash(passHashStr.begin(), passHashStr.end());
 	return db->registrarse(datos, userName, passHash);
 }

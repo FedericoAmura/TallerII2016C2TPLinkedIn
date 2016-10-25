@@ -40,6 +40,21 @@ enum KeyCode : uint8_t
 	CONV_PENDING_READ
 };
 
+/**
+ * Clase para simplificar la creacion de slices de tipo prefijo[1]uint32_t[4]
+ */
+class IDKey {
+public:
+ std::vector<char> data;
+ IDKey(KeyCode prefijo, uint32_t key) : data(5) {
+	 data[0] = prefijo;
+	 copy((char*)&key, (char*)(&key+1), ++data.begin());
+ }
+ Slice toSlice() {
+	 return Slice (data.data(), data.size());
+ }
+};
+
 DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
 	: logStream(logStream) {
 	dbLogAppender = new log4cpp::OstreamAppender("dbAppender", logStream);
@@ -72,7 +87,6 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 	if (status.IsNotFound()) { // Nombre de usuario disponible
 		WriteBatch batch;
 		uint32_t uID = contadorActual(LAST_UID, string("user ID"));
-
 		// Value de la key para login
 		vector<char> logValue(passHash.size()+sizeof(uID));
 		vector<char>::iterator it  = copy(passHash.begin(), passHash.end(), logValue.begin());
@@ -112,15 +126,11 @@ uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash)
 void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch, bool verifUID) {
 	if (verifUID) verificarContador(LAST_UID, string("user ID"),
 			uID, NonexistentUserID(std::to_string(uID)));
-	vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
-	dataKey[0] = USER_DATA;
-	copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
-	Slice dataKeySlice(dataKey.data(), dataKey.size());
 	vector<char> dataValue = datos.toBytes();
 	Slice dataValueSlice(dataValue.data(), dataValue.size());
-	if (batch) batch->Put(dataKeySlice, dataValueSlice);
+	if (batch) batch->Put(IDKey(USER_DATA, uID).toSlice(), dataValueSlice);
 	else {
-		Status status = db->Put(WriteOptions(), dataKeySlice, dataValueSlice);
+		Status status = db->Put(WriteOptions(), IDKey(USER_DATA, uID).toSlice(), dataValueSlice);
 		verificarEstadoDB(status, "Error al guardar datos de usuario");
 	}
 }
@@ -128,21 +138,20 @@ void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch,
 DatosUsuario DBRaw::getDatos(uint32_t uID) {
 	verificarContador(LAST_UID, string("user ID"),
 				uID, NonexistentUserID(std::to_string(uID)));
-	vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
-	dataKey[0] = USER_DATA;
-	copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
-	Slice dataKeySlice(dataKey.data(), dataKey.size());
 	string retVal;
-	Status status = db->Get(ReadOptions(), dataKeySlice, &retVal);
+	Status status = db->Get(ReadOptions(), IDKey(USER_DATA, uID).toSlice(), &retVal);
 	verificarEstadoDB(status, "Error al obtener datos de usuario");
 	return DatosUsuario(retVal.data());
 }
 
-/*
-void DBRaw::setFoto(uint32_t uID, Foto& foto) {
+void DBRaw::setResumen(uint32_t uID, const string& resumen) {
 }
 
-void DBRaw::setResumen(uint32_t uID, const string& resumen) {
+string DBRaw::getResumen(uint32_t uID){
+}
+
+/*
+void DBRaw::setFoto(uint32_t uID, Foto& foto) {
 }
 
 Foto DBRaw::getFoto(uint32_t uID) {
