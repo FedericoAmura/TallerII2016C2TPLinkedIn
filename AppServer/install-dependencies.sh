@@ -72,3 +72,20 @@ then
 	cd ../../..
 	rm -f -r ./cprsrc
 fi
+
+#libjpeg
+if [ ! -r ./lib/libjpeg.a ]
+then
+	if [ ! -d ./srcjpeg ]; then mkdir srcjpeg; fi
+	cd srcjpeg 
+	wget http://www.ijg.org/files/jpegsrc.v9b.tar.gz
+	tar -zxvf jpegsrc.v9b.tar.gz
+	cd jpeg-9b
+	./configure
+	make
+	mv .libs/libjpeg.a ../../lib/libjpeg.a
+	cd ../..
+	rm -f -r ./srcjpeg
+fi
+
+
