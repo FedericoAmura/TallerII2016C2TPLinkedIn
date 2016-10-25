@@ -55,14 +55,14 @@ http_response PUT_Handler::handleProfile() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
 		std::cout << "Error: Invalid Json Format. Update Profile failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
-	
+
 	uint32_t userID = std::stoi(userID_s);
 	try {
 		db_json->setDatos(userID, data);
@@ -97,11 +97,11 @@ http_response PUT_Handler::handleSummary() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
-		std::cout << "Error: Invalid Json Format. Update Profile failed." << std::endl;
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
+		std::cout << "Error: Invalid Json Format. Update Summary failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
 
@@ -122,7 +122,7 @@ http_response PUT_Handler::handlePhoto() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		std::cout << "Error: Token not found. User unauthorized. Update Photo failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
@@ -132,11 +132,11 @@ http_response PUT_Handler::handlePhoto() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
-		std::cout << "Error: Invalid Json Format. Update Profile failed." << std::endl;
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
+		std::cout << "Error: Invalid Json Format. Update Photo failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
 
@@ -162,7 +162,7 @@ http_response PUT_Handler::handleRecommend() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		std::cout << "Error: Token not found. User unauthorized. Recommend user failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
@@ -174,10 +174,10 @@ http_response PUT_Handler::handleRecommend() {
 */
 
 	/* TODO validar que userID1 == recommender ??? */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
 		std::cout << "Error: Invalid Json Format. Recommend user failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}

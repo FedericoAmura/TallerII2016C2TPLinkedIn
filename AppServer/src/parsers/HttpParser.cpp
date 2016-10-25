@@ -68,3 +68,14 @@ bool HttpParser::parse_user_properties(struct http_message* msg, struct user_pro
 	}
 	return parsed;
 }
+
+Json HttpParser::parse_json_from_body(struct http_message* msg) {
+	std::string json_string(msg->body.p, msg->body.len);
+	std::string err;
+	Json data = Json::parse(json_string, err);
+
+	if (!err.empty()){
+		throw InvalidJsonException();
+	}
+	return data;
+}

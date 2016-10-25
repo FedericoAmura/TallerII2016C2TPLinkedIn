@@ -76,11 +76,10 @@ http_response POST_Handler::handleLogIn() {
 }
 
 http_response POST_Handler::handleSignUp() {
-	std::string json_string(request->message->body.p, request->message->body.len);
-	std::string err;
-	Json data = Json::parse(json_string, err);
-
-	if (!err.empty()){
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
 		std::cout << "Error: Invalid Json Format. Sign Up failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
@@ -126,10 +125,10 @@ http_response POST_Handler::handleAcceptContactRequest() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
 		std::cout << "Error: Invalid Json Format. Accept contact request failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
@@ -152,7 +151,7 @@ http_response POST_Handler::handleContactRequest() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		std::cout << "Error: Token not found. User unauthorized. Create contact request failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
@@ -162,10 +161,10 @@ http_response POST_Handler::handleContactRequest() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
 		std::cout << "Error: Invalid Json Format. Create contact request failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
@@ -186,7 +185,7 @@ http_response POST_Handler::handleChatNotifyMsgSeen() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		std::cout << "Error: Token not found. User unauthorized. Notify Message Seen failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
@@ -196,10 +195,10 @@ http_response POST_Handler::handleChatNotifyMsgSeen() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
 		std::cout << "Error: Invalid Json Format. Notify Message Seen failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
@@ -220,7 +219,7 @@ http_response POST_Handler::handleChatSendMsg() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		std::cout << "Error: Token not found. User unauthorized. Send Message failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
@@ -230,10 +229,10 @@ http_response POST_Handler::handleChatSendMsg() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 */
-
-	std::string body(request->message->body.p, request->message->body.len), err;
-	Json data = Json::parse(body, err);
-	if ( !err.empty() ) {
+	Json data;
+	try {
+		data = HttpParser::parse_json_from_body(request->message);
+	} catch (InvalidJsonException &e) {
 		std::cout << "Error: Invalid Json Format. Send Message failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
 	}

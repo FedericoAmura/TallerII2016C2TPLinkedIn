@@ -10,9 +10,13 @@
 
 #include "../mongoose/mongoose.h"
 #include "../server/API_HttpRequest.h"
+#include "../common/Exceptions.h"
 #include "../users/User.h"
+#include "../json11/json11.hpp"
 #include <string>
 #include <stdlib.h>
+
+using json11::Json;
 
 class HttpParser {
 private:
@@ -25,6 +29,8 @@ public:
 	static bool parse_variable_from_authorization_header(struct http_message* msg, const std::string var_name, std::string &buffer);
 
 	static bool parse_user_properties(struct http_message* msg, struct user_properties &prop);
+
+	static Json parse_json_from_body(struct http_message* msg);
 };
 
 #endif /* APPSERVER_INCLUDE_PARSERS_HTTPPARSER_H_ */

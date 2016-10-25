@@ -1,27 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import unittest
+import base64
+import hashlib
 from Client import *
 
 user1_data = {}
 user2_data = {}
 
-user1_data["first_name"] = "fulanito"
+user1_data["first_name"] = "fulanito2"
 user1_data["last_name"] = "perez"
 user1_data["birth"] =  "11/2/2014"
-user1_data["email"] = "mmmm@gmail.com"
-user1_data["username"] = "cosmefulanito"
-user1_data["password"] = "mi_password"
+user1_data["email"] = "mmmma@gmail.com"
+user1_data["username"] = "cosmefulanito2"
+user1_data["password"] = base64.b64encode(hashlib.sha256("mi_password").hexdigest())
 user1_data["city"] = "ciudad_perdida"
 user1_data["longitude"] = 12.4
 user1_data["latitude"] = 3.4
 
-user2_data["first_name"] = "menganito"
+user2_data["first_name"] = "menganito2"
 user2_data["last_name"] = "perez"
 user2_data["birth"] =  "1/2/2012"
-user2_data["email"] = "rrrrr@gmail.com"
-user2_data["username"] = "cosmemenganito"
-user2_data["password"] = "mi_password"
+user2_data["email"] = "rrrrra@gmail.com"
+user2_data["username"] = "cosmemenganito2"
+user2_data["password"] = base64.b64encode(hashlib.sha256("mi_password").hexdigest())
 user2_data["city"] = "ciudad_perdida"
 user2_data["longitude"] = 10.4
 user2_data["latitude"] = 2.5
@@ -29,24 +31,29 @@ user2_data["latitude"] = 2.5
 client1 = Client(user1_data)
 client2 = Client(user2_data)
 
+client1.signup()
+client2.signup()
+
 class ClientTest(unittest.TestCase):
 ### POST
     def test_login(self):
-        res = client1.login()
-        self.assertNotEquals(200, res.status_code)
+        res1 = client1.login()
+        res2 = client2.login()
+        self.assertEquals(200, res1.status_code)
+        self.assertEquals(200, res2.status_code)
 
+    # hacer un signup con un username ya existente debería devolver 422
     def test_signup(self):
         res = client1.signup()
-        self.assertEquals(201, res.status_code)
+        self.assertEquals(422, res.status_code)
 
     def test_accept_contact_request(self):
-        other_userID = "123"
-        res = client1.accept_contact_request(other_userID)
+        another_userID = "123"
+        res = client1.accept_contact_request(another_userID)
         self.assertEquals(204, res.status_code)
 
     def test_create_contact_request(self):
         data = {}
-        data.clear()
         data["receiverID"] = "123"
         data["message"] = "Hello!!!"
         res = client1.create_contact_request(data)
@@ -54,14 +61,12 @@ class ClientTest(unittest.TestCase):
 
     def test_notify_message_seen(self):
         data = {}
-        data.clear()
         data["receiverID"] = "123"
         res = client1.notify_msg_seen(data)
         self.assertEquals(204, res.status_code)
 
     def test_send_message(self):
         data = {}
-        data.clear()
         data["targetID"] = "123"
         data["message"] = "blabla"
         res = client1.send_msg(data)
@@ -70,23 +75,19 @@ class ClientTest(unittest.TestCase):
 ### PUT
     def test_update_profile(self):
         data = {}
-        data.clear()
         data["name"] = "New Name"
         data["skills"] = ["skill1", "skill2"]
-#        print str(data)
         res = client1.update_profile(data)
         self.assertEquals(200, res.status_code)
 
     def test_update_summary(self):
         data = {}
-        data.clear()
         data = {"summary" : "new summary"}
         res = client1.update_summary(data)
         self.assertEquals(204, res.status_code)
 
     def test_update_photo(self):
         data = {}
-        data.clear()
         data = {"photo": "asd12as"}
         res = client1.update_photo(data)
         self.assertEquals(204, res.status_code)
@@ -94,7 +95,6 @@ class ClientTest(unittest.TestCase):
     def test_recommend_user(self):
         receiverID = "123"
         data = {}
-        data.clear()
         data["recommended"] = "456"
         data["recommends"] = True
         res = client1.recommend_user(receiverID, data)
