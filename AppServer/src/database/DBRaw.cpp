@@ -17,6 +17,7 @@ enum KeyCode : uint8_t
     LOG,
 	USER_DATA,
 	US_RESUMEN,
+	LAST_FID,
 	US_FOTO,
 	FOTO,
 	FOTO_THUMB,
@@ -50,7 +51,7 @@ DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
 	options.create_if_missing = true;
 	Status status = leveldb::DB::Open(options, rutaArchivo, &db);
 	verificarEstadoDB(status,  "Error al abrir la base de datos");
-	inicializarUID();
+	inicializarContador(LAST_UID, string("user ID"));
 }
 
 DBRaw::~DBRaw() {
@@ -70,7 +71,7 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 	Status status = db->Get(ReadOptions(), logKeySlice, &retVal);
 	if (status.IsNotFound()) { // Nombre de usuario disponible
 		WriteBatch batch;
-		uint32_t uID = uIDActual();
+		uint32_t uID = contadorActual(LAST_UID, string("user ID"));
 
 		// Value de la key para login
 		vector<char> logValue(passHash.size()+sizeof(uID));
@@ -81,13 +82,13 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		// Key y value para datos
 		setDatos(uID, datos, &batch, false);
 		// Escribir y aumentar el uID
-	    incrementarUID(&batch);
+	    incrementarContador(LAST_UID, string("user ID"),&batch);
 	    status = db->Write(WriteOptions(), &batch);
-	    verificarEstadoDB(status, "Error al registrar usuario");
+	    verificarEstadoDB(status, "Error 1 al registrar usuario");
 		return uID;
 	}
 	else if(status.ok()) throw PreexistentUsername(userName);
-	else verificarEstadoDB(status, "Error al registrar usuario");
+	else verificarEstadoDB(status, "Error 2 al registrar usuario");
 }
 
 uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash) {
@@ -109,7 +110,8 @@ uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash)
 }
 
 void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch, bool verifUID) {
-	if (verifUID) verificarUID(uID);
+	if (verifUID) verificarContador(LAST_UID, string("user ID"),
+			uID, NonexistentUserID(std::to_string(uID)));
 	vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
 	dataKey[0] = USER_DATA;
 	copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
@@ -124,7 +126,8 @@ void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch,
 }
 
 DatosUsuario DBRaw::getDatos(uint32_t uID) {
-	verificarUID(uID);
+	verificarContador(LAST_UID, string("user ID"),
+				uID, NonexistentUserID(std::to_string(uID)));
 	vector<char> dataKey(sizeof(USER_DATA)+sizeof(uID));
 	dataKey[0] = USER_DATA;
 	copy((char*) &uID, (char*) (&uID+1), ++dataKey.begin());
@@ -197,47 +200,6 @@ std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
 }*/
 
-void DBRaw::inicializarUID()
-{
-	try
-	{
-		uIDActual(false);
-	}
-	catch (LevelDBException &e)
-	{
-		char key = LAST_UID;
-		uint32_t value = 0;
-		Status status = db->Put(WriteOptions(), Slice(&key, 1), Slice((char*)&value, 4));
-		verificarEstadoDB(status, "Error al inicializar user IDs");
-	}
-}
-
-uint32_t DBRaw::uIDActual(bool log)
-{
-	char key = LAST_UID;
-	Slice lastIDKey(&key, 1);
-	string retVal;
-	Status status = db->Get(ReadOptions(), lastIDKey, &retVal);
-	verificarEstadoDB(status, "Error al consultar contador de uIDs", log);
-	uint32_t lastID;
-	copy(retVal.begin(), retVal.begin()+4, (char*) &lastID);
-	return lastID;
-}
-
-void DBRaw::incrementarUID(WriteBatch* batch)
-{
-	uint32_t proxUID = uIDActual() + 1;
-	char keyBytes = LAST_UID;
-	Slice key(&keyBytes, 1);
-	Slice value((char*) &proxUID, 4);
-	if (batch) batch->Put(key, value);
-	else
-	{
-		Status status = db->Put(WriteOptions(), key, value);
-		verificarEstadoDB(status, "Error al incrementar uID", log);
-	}
-}
-
 void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 {
 	if (!status.ok()) {
@@ -246,8 +208,62 @@ void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 	}
 }
 
-void DBRaw::verificarUID(uint32_t uID)
+void DBRaw::inicializarFID(const string &rutaFotoDefault)
 {
-	if (uID > uIDActual()) throw NonexistentUserID(std::to_string(uID));
+	if (inicializarContador(LAST_FID, "foto ID")) {
+
+	}
+}
+
+bool DBRaw::inicializarContador(KeyCode keyCode, const string &tipo)
+{
+	try
+	{
+		contadorActual(keyCode, tipo, false);
+		return false;
+	}
+	catch (LevelDBException &e)
+	{
+		char key = keyCode;
+		uint32_t value = 0;
+		Status status = db->Put(WriteOptions(), Slice(&key, 1), Slice((char*)&value, 4));
+		string errorMsg(string("Error al inicializar ").append(tipo));
+		verificarEstadoDB(status, errorMsg.c_str());
+		return true;
+	}
+}
+
+uint32_t DBRaw::contadorActual(KeyCode keyCode, const string &tipo, bool log)
+{
+	char key = keyCode;
+	Slice lastIDKey(&key, 1);
+	string retVal;
+	Status status = db->Get(ReadOptions(), lastIDKey, &retVal);
+	string errorMsg(string("Error al consultar contador de ").append(tipo));
+	verificarEstadoDB(status, errorMsg.c_str(), log);
+	uint32_t lastID;
+	copy(retVal.begin(), retVal.begin()+4, (char*) &lastID);
+	return lastID;
+}
+
+void DBRaw::incrementarContador(KeyCode keyCode, const string &tipo, WriteBatch* batch)
+{
+	uint32_t proxUID = contadorActual(keyCode, tipo) + 1;
+	char keyBytes = keyCode;
+	Slice key(&keyBytes, 1);
+	Slice value((char*) &proxUID, 4);
+	if (batch) batch->Put(key, value);
+	else
+	{
+		Status status = db->Put(WriteOptions(), key, value);
+		string errorMsg(string("Error al incrementar").append(tipo));
+		verificarEstadoDB(status, errorMsg.c_str(), log);
+	}
+}
+
+void DBRaw::verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID,
+		const std::runtime_error &exception)
+{
+	if (ID > contadorActual(keyCode, tipo)) throw exception;
 	return;
 }
