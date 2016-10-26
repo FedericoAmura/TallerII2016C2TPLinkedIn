@@ -71,10 +71,8 @@ class DBRaw {
 	 * @param keyCode					Keycode que identifica el tipo de contador
 	 * @param tipo						String que describe que es el contador para mensajes de error
 	 * @param uID						El ID
-	 * @param exception					Excepcion a arrojar en caso de falla
 	 */
-	void verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID,
-			const std::runtime_error &exception);
+	template<class T> void verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID);
 
 	/**
 	 * Inicializa el foto ID si no existe
@@ -173,6 +171,27 @@ class DBRaw {
 	 * @return							TODO: Ver retorno
 	 */
 	Foto getFotoThumbnail(uint32_t uID);
+
+	void setSkills(uint32_t uID, std::vector<string> skills,
+			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+	std::vector<string> getSkills(uint32_t uID);
+
+	/**
+	 * @param uID						User ID
+	 * @param puestos					Vecotr de puestos
+	 * @param batch						Null para escribir a db, puntero para batchear
+	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
+	 * @exception NonexistentUserID		El uID es inválido
+	 */
+	void setPuestos(uint32_t uID, std::vector<Puesto> puestos,
+			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+
+	/**
+	 * Devuelve la lista de puestos de un usuario
+	 * @param uID
+	 * @return
+	 */
+	std::vector<Puesto> getPuestos(uint32_t uID);
 
 	/**
 	 *  Hace login y devuelve un uid válido si la info es correcta

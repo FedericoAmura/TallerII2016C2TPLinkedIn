@@ -72,6 +72,14 @@ public:
 };
 
 /**
+ * Fin < Inicio
+ */
+class TimeTravel: public BadInputException {
+public:
+	TimeTravel(const std::string what_arg) : BadInputException(what_arg) {};
+};
+
+/**
  * Fechas que no se corresponden a otras dadas
  */
 class NonexistentDate: public BadInputException {

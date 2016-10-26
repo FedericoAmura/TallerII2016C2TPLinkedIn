@@ -53,6 +53,10 @@ class Fecha
 	 * @return
 	 */
 	uint32_t toUint32_t() const;
+	/**
+	 * Comparacion
+	 */
+	bool operator< (const Fecha &fecha);
  private:
 	uint32_t fecha;
 };

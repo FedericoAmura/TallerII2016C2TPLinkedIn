@@ -48,7 +48,7 @@ public:
  std::vector<char> data;
  IDKey(KeyCode prefijo, uint32_t key) : data(5) {
 	 data[0] = prefijo;
-	 copy((char*)&key, (char*)(&key+1), ++data.begin());
+	 copy((char*)&key, (char*)(&key+1), data.begin()+1);
  }
  Slice toSlice() {
 	 return Slice (data.data(), data.size());
@@ -67,6 +67,7 @@ DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
 	Status status = leveldb::DB::Open(options, rutaArchivo, &db);
 	verificarEstadoDB(status,  "Error al abrir la base de datos");
 	inicializarContador(LAST_UID, string("user ID"));
+	inicializarContador(LAST_FID, string("foto ID"));
 }
 
 DBRaw::~DBRaw() {
@@ -81,7 +82,7 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 	//TODO: Lock para evitar errores RAW con el ID
 	vector<char> logKey(sizeof(LOG)+userName.length());
 	logKey[0] = LOG;
-	copy(userName.begin(), userName.end(), ++logKey.begin());
+	copy(userName.begin(), userName.end(), logKey.begin()+1);
 	Slice logKeySlice(logKey.data(), logKey.size());
 	string retVal;
 	Status status = db->Get(ReadOptions(), logKeySlice, &retVal);
@@ -96,6 +97,10 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		batch.Put(logKeySlice, logValueSlice);
 		// Key y value para datos
 		setDatos(uID, datos, &batch, false);
+		// Inicializamos otros campos
+		setResumen(uID, string(""), &batch, false);
+		setPuestos(uID, std::vector<Puesto>(), &batch, false);
+		setSkills(uID, std::vector<string>(), &batch, false);
 		// Escribir y aumentar el uID
 	    incrementarContador(LAST_UID, string("user ID"),&batch);
 	    status = db->Write(WriteOptions(), &batch);
@@ -125,8 +130,7 @@ uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash)
 }
 
 void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch, bool verifUID) {
-	if (verifUID) verificarContador(LAST_UID, string("user ID"),
-			uID, NonexistentUserID(std::to_string(uID)));
+	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),	uID);
 	vector<char> dataValue = datos.toBytes();
 	Slice dataValueSlice(dataValue.data(), dataValue.size());
 	IDKey dataKey(USER_DATA, uID);
@@ -138,18 +142,19 @@ void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch,
 }
 
 DatosUsuario DBRaw::getDatos(uint32_t uID) {
-	verificarContador(LAST_UID, string("user ID"),
-				uID, NonexistentUserID(std::to_string(uID)));
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
 	string retVal;
-	Status status = db->Get(ReadOptions(), IDKey(USER_DATA, uID).toSlice(), &retVal);
+	IDKey datosKey(USER_DATA, uID);
+	Status status = db->Get(ReadOptions(), datosKey.toSlice(), &retVal);
+	if (status.IsNotFound()) throw NonexistentUserID(std::to_string(uID));
 	verificarEstadoDB(status, "Error al obtener datos de usuario");
 	return DatosUsuario(retVal.data());
 }
 
-void DBRaw::setResumen(uint32_t uID, const string& resumen, WriteBatch *batch, bool verifUID) {
-	if (verifUID) verificarContador(LAST_UID, string("user ID"),
-				uID, NonexistentUserID(std::to_string(uID)));
-	IDKey resumenKey(USER_DATA, uID);
+void DBRaw::setResumen(uint32_t uID, const string& resumen,
+		WriteBatch *batch, bool verifUID) {
+	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),uID);
+	IDKey resumenKey(US_RESUMEN, uID);
 	if (batch) batch->Put(resumenKey.toSlice(), Slice(resumen));
 	else {
 		Status status = db->Put(WriteOptions(), resumenKey.toSlice(), Slice(resumen));
@@ -158,13 +163,85 @@ void DBRaw::setResumen(uint32_t uID, const string& resumen, WriteBatch *batch, b
 }
 
 string DBRaw::getResumen(uint32_t uID) {
-	verificarContador(LAST_UID, string("user ID"),
-				uID, NonexistentUserID(std::to_string(uID)));
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
 	string retVal;
-	IDKey resumenKey(USER_DATA, uID);
+	IDKey resumenKey(US_RESUMEN, uID);
 	Status status = db->Get(ReadOptions(), resumenKey.toSlice(), &retVal);
 	verificarEstadoDB(status, "Error al obtener datos de usuario");
 	return retVal;
+}
+
+void DBRaw::setSkills(uint32_t uID, std::vector<string> skills,
+		leveldb::WriteBatch *batch, bool verifUID) {
+	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	vector<char> bytes;
+	for (string sk : skills) {
+		// TODO: Verificar contra el shared
+		bytes.push_back(sk.length());
+		std::copy(sk.begin(), sk.end(), back_inserter(bytes));
+	}
+	IDKey skillsKey(US_SKILL, uID);
+	Slice data(bytes.data(), bytes.size());
+	if (batch) batch->Put(skillsKey.toSlice(), data);
+	else {
+		Status status = db->Put(WriteOptions(), skillsKey.toSlice(), data);
+		verificarEstadoDB(status, "Error al guardar skills");
+	}
+	// TODO: Agregar a reverse lookup
+}
+
+vector<string> DBRaw::getSkills(uint32_t uID) {
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	IDKey skillsKey(US_SKILL, uID);
+	string retVal;
+	vector<string> result;
+	size_t contador = 0;
+	Status status = db->Get(ReadOptions(), skillsKey.toSlice(), &retVal);
+	verificarEstadoDB(status, "Error al consultar skills.");
+	while (contador < retVal.length())
+	{
+		uint8_t len = retVal[contador];
+		string skill(retVal.data()+contador+1, len);
+		result.push_back(skill);
+		contador += (1+skill.length());
+	}
+	return result;
+}
+
+void DBRaw::setPuestos(uint32_t uID, std::vector<Puesto> puestos,
+		leveldb::WriteBatch *batch, bool verifUID) {
+	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	vector<char> bytes;
+	for (Puesto p : puestos) {
+		// TODO: Verificar contra el shared
+		vector<char> pBytes = p.toBytes();
+		bytes.insert(bytes.end(), pBytes.begin(), pBytes.end());
+	}
+	IDKey puestosKey(US_POS, uID);
+	Slice data(bytes.data(), bytes.size());
+	if (batch) batch->Put(puestosKey.toSlice(), data);
+	else {
+		Status status = db->Put(WriteOptions(), puestosKey.toSlice(), data);
+		verificarEstadoDB(status, "Error al guardar puestos");
+	}
+	// TODO: Agregar a reverse lookup
+}
+
+vector<Puesto> DBRaw::getPuestos(uint32_t uID) {
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	IDKey puestosKey(US_POS, uID);
+	string retVal;
+	vector<Puesto> result;
+	size_t contador = 0;
+	Status status = db->Get(ReadOptions(), puestosKey.toSlice(), &retVal);
+	verificarEstadoDB(status, "Error al consultar puestos.");
+	while (contador < retVal.length())
+	{
+		Puesto puesto(retVal.data()+contador);
+		result.push_back(puesto);
+		contador += (1+puesto.length());
+	}
+	return result;
 }
 
 /*void DBRaw::setFoto(uint32_t uID, Foto& foto) {
@@ -240,7 +317,7 @@ void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 void DBRaw::inicializarFID(const string &rutaFotoDefault)
 {
 	if (inicializarContador(LAST_FID, "foto ID")) {
-
+		// Cargar foto por defecto
 	}
 }
 
@@ -271,7 +348,7 @@ uint32_t DBRaw::contadorActual(KeyCode keyCode, const string &tipo, bool log)
 	string errorMsg(string("Error al consultar contador de ").append(tipo));
 	verificarEstadoDB(status, errorMsg.c_str(), log);
 	uint32_t lastID;
-	copy(retVal.begin(), retVal.begin()+4, (char*) &lastID);
+	copy(retVal.begin(), retVal.end(), (char*) &lastID);
 	return lastID;
 }
 
@@ -290,9 +367,7 @@ void DBRaw::incrementarContador(KeyCode keyCode, const string &tipo, WriteBatch*
 	}
 }
 
-void DBRaw::verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID,
-		const std::runtime_error &exception)
-{
-	if (ID > contadorActual(keyCode, tipo)) throw exception;
+template<class TException> void DBRaw::verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID) {
+	if (ID >= contadorActual(keyCode, tipo)) throw TException(std::to_string(ID));
 	return;
 }
