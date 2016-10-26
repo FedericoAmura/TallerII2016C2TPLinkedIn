@@ -1,5 +1,13 @@
 html, body {
 	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.fullwidth {
+	width: 100%;
 }
 
 .centered {
@@ -7,4 +15,48 @@ html, body {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+}
+
+.header {
+	padding-left: 10px;
+}
+
+.visible {
+	flex-grow: 1;
+	width: 100%;
+}
+
+.not-visible {
+	display: none;
+}
+
+.footer {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.details {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.footer-title {
+	padding: 10px;
+	flex-grow: 1;
+}
+
+.links {
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-end;
+}
+
+.copyright {
+	padding: 10px;
 }

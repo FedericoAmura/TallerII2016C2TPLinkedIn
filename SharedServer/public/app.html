@@ -1,35 +1,63 @@
 <!DOCTYPE html>
-<html ng-app>
+<html>
 <head>
-<title>Jobify Database Manager</title>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+	<title>Jobify SharedServer Database Manager</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<link rel="stylesheet" href="style.css">
+	<script>
+	$( document ).ready(function){
+		$(".dropdown-button").dropdown();
+	});
+	</script>
 </head>
-<body>
-	<div>
-		<div>
-			<form action="http://127.0.0.1:8080/login" method="GET">
-				First Name: <input type="text" name="first_name"> <br>
 
-				Last Name: <input type="text" name="last_name"> <input
-					type="submit" value="Submit">
-			</form>
-		</div>
-		<div>
-			<form action="http://127.0.0.1:8080/login" method="GET">
-				First Name: <input type="text" name="first_name"> <br>
+<body ng-app="jobify" class="fullwidth green lighten-1">
+  <!-- http://materializecss.com/ -->
+  <div class="fullwidth">
+        <nav class="header fullwidth green darken-3"><div class="nav-wrapper">
+              <a href="#" class="brand-logo">Jobify manager</a>
+              <ul id="nav-mobile" class="right hide-on-large-only">
+                     <li><a class="dropdown-button" href="#!" data-activates="sectionDropDown">Section<i class="material-icons right">arrow_drop_down</i></a></li>
+              </ul>
+             <ul id="sectionDropDown" class="dropdown-content">
+                 <li><a href="#">Jobs</a></li>
+                 <li><a href="#">Skills</a></li>
+                 <li><a href="#">Categories</a></li>
+              </ul>
+              <ul id="nav-mobile" class="right hide-on-med-and-down">
+                 <li><a href="#">Jobs</a></li>
+                 <li><a href="#">Skills</a></li>
+                 <li><a href="#">Categories</a></li>
+              </ul>
+        </div></nav>
+  </div>
 
-				Last Name: <input type="text" name="last_name"> <input
-					type="submit" value="Submit">
-			</form>
-		</div>
-		<div>
-			<form action="http://127.0.0.1:8080/login" method="GET">
-				First Name: <input type="text" name="first_name"> <br>
-
-				Last Name: <input type="text" name="last_name"> <input
-					type="submit" value="Submit">
-			</form>
-		</div>
-	</div>
+  <div class="centered green darken-1 not-visible" ng-controller="JobController">
+  	Los jobs
+  </div>
+  <div class="centered green darken-1 not-visible" ng-controller="SkillController">
+  	Las skills
+  </div>
+  <div class="centered green darken-1 visible ng-controller="CategoryController">
+  	Las categories
+  </div>
+  
+  <div class="footer fullwidth">
+  	<div class="details fullwidth green darken-3">
+  		<h5 class="footer-title">Jobify</h5>
+  		<div class="links">
+  			<a href="http://www.7552.fi.uba.ar" class="grey-text text-lighten-4 right">Pagina de la materia</a>
+  			<a href="https://github.com/FedericoAmura/TallerII2016C2TPLinkedIn" class="grey-text text-lighten-4 right">Github</a>
+  		</div>
+  	</div>
+  	<div class="copyright fullwidth green darken-1">
+  		© 2016 Made by group X
+  	</div>
+  </div>
 </body>
 </html>
