@@ -43,8 +43,24 @@
   <div class="centered green darken-1 not-visible" ng-controller="SkillController">
   	Las skills
   </div>
-  <div class="centered green darken-1 visible ng-controller="CategoryController">
-  	Las categories
+  <div class="centered green darken-1 visible" style="position:relative;" ng-controller="CategoryController">
+  	<ul class="collection fullwidth collapsible" data-collapsible="expandable">
+  		<li>
+  			<div class="collapsible-header">First</div>
+  			<div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+  		</li>
+  		<li>
+  			<div class="collapsible-header">Second</div>
+  			<div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+  		</li>
+  		<li>
+  			<div class="collapsible-header">Third</div>
+  			<div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+  		</li>
+  	</ul>
+  	<div style="position: absolute; bottom: 4%; right: 2%;">
+  		<a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+  	</div>
   </div>
   
   <div class="footer fullwidth">
