@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "../../include/leveldb/slice.h"
 
 /**
  * Clase que representa la información de una foto
@@ -48,7 +49,12 @@ class Foto
 	 * @param quality				Calidad
 	 * @return
 	 */
-	Foto resize(const Foto &foto, size_t width, size_t height, int quality);
+	Foto resize(int quality = 8, size_t width = 64, size_t height = 64) const;
+	/**
+	 * Devuelve slice
+	 * @return
+	 */
+	leveldb::Slice toSlice();
  private:
 	std::vector<char> data;
 };

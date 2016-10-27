@@ -15,6 +15,8 @@
 
 using std::string;
 
+// Foto por defecto
+static const char* defaultFotoPath = "default.jpg";
 enum KeyCode : uint8_t;
 
 /**
@@ -110,10 +112,13 @@ class DBRaw {
 	 * En caso de que ya existiera una foto para este usuario, la reemplaza
 	 * @param uID						User ID del usuario
 	 * @param foto						Foto
+	 * @param batch						Null para escribir a db, puntero para batchear
+	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @exception BadInputException		La foto no es un jpg
 	 */
-	void setFoto(uint32_t uID, Foto &foto);
+	void setFoto(uint32_t uID, const Foto &foto,
+			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Actualiza el resumen profesional del usuario

@@ -2,6 +2,7 @@
 #include "../../include/database/DBExceptions.h"
 #include "../../include/log4cpp/OstreamAppender.hh"
 #include "../../include/log4cpp/BasicLayout.hh"
+#include <fstream>
 
 using leveldb::Slice;
 using leveldb::WriteBatch;
@@ -10,6 +11,7 @@ using leveldb::WriteOptions;
 using leveldb::Status;
 using std::vector;
 using std::copy;
+using std::string;
 
 enum KeyCode : uint8_t
 {
@@ -18,7 +20,6 @@ enum KeyCode : uint8_t
 	USER_DATA,
 	US_RESUMEN,
 	LAST_FID,
-	US_FOTO,
 	FOTO,
 	FOTO_THUMB,
 	US_POS,
@@ -55,11 +56,11 @@ public:
  }
 };
 
-DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
+DBRaw::DBRaw(const string& rutaArchivo, std::ostream *logStream)
 	: logStream(logStream) {
 	dbLogAppender = new log4cpp::OstreamAppender("dbAppender", logStream);
 	dbLogAppender->setLayout(new log4cpp::BasicLayout());
-	dbLog = &log4cpp::Category::getInstance(std::string("dbLog"));
+	dbLog = &log4cpp::Category::getInstance(string("dbLog"));
 	dbLog->addAppender(dbLogAppender);
 
 	leveldb::Options options;
@@ -67,13 +68,15 @@ DBRaw::DBRaw(const std::string& rutaArchivo, std::ostream *logStream)
 	Status status = leveldb::DB::Open(options, rutaArchivo, &db);
 	verificarEstadoDB(status,  "Error al abrir la base de datos");
 	inicializarContador(LAST_UID, string("user ID"));
-	inicializarContador(LAST_FID, string("foto ID"));
+	inicializarFID(defaultFotoPath);
 }
 
 DBRaw::~DBRaw() {
 	dbLog->shutdown();
 	delete db;
 }
+
+
 
 
 uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
@@ -134,6 +137,7 @@ void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch,
 	vector<char> dataValue = datos.toBytes();
 	Slice dataValueSlice(dataValue.data(), dataValue.size());
 	IDKey dataKey(USER_DATA, uID);
+	// TODO : Reverse lookup geoloc
 	if (batch) batch->Put(dataKey.toSlice(), dataValueSlice);
 	else {
 		Status status = db->Put(WriteOptions(), dataKey.toSlice(), dataValueSlice);
@@ -244,17 +248,39 @@ vector<Puesto> DBRaw::getPuestos(uint32_t uID) {
 	return result;
 }
 
-/*void DBRaw::setFoto(uint32_t uID, Foto& foto) {
-	// //TODO: Lock para evitar errores RAW con el ID
+void DBRaw::setFoto(uint32_t uID, const Foto &foto,
+		WriteBatch *batch, bool verifUID) {
+	// TODO: Lock para evitar errores RAW con el ID
+	/*if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),uID);
+	DatosUsuario datos = getDatos(uID);
+	bool writeToDB = batch;
+	bool newFid = (datos.fotoID == 0);
+	uint32_t nuevoFid = contadorActual(F)
+	if (batch) batch->Put(resumenKey.toSlice(), Slice(resumen));
+	else {
+		Status status = db->Put(WriteOptions(), resumenKey.toSlice(), Slice(resumen));
+		verificarEstadoDB(status, "Error al guardar el resumen");
+	}*/
 
 }
 
 Foto DBRaw::getFoto(uint32_t uID) {
-
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	string retVal;
+	IDKey fotoKey(FOTO, uID);
+	Status status = db->Get(ReadOptions(), fotoKey.toSlice(), &retVal);
+	verificarEstadoDB(status, "Error al obtener la foto del usuario");
+	return Foto(retVal.data(), retVal.length());
 }
 
 Foto DBRaw::getFotoThumbnail(uint32_t uID) {
-}*/
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	string retVal;
+	IDKey thumbKey(FOTO_THUMB, uID);
+	Status status = db->Get(ReadOptions(), thumbKey.toSlice(), &retVal);
+	verificarEstadoDB(status, "Error al obtener el thumbnail de la foto del usuario");
+	return Foto(retVal.data(), retVal.length());
+}
 
 /*
 std::vector<uint32_t> DBRaw::busquedaProfresional(
@@ -296,8 +322,7 @@ void DBRaw::eliminarContacto(uint32_t uID1, uint32_t uID2) {
 std::vector<uint32_t> DBRaw::getContactos(uint32_t uID) {
 }
 
-uint DBRaw::getNumContactos(uint32_t uID) {
-}
+
 
 uint32_t DBRaw::numUltMensaje(uint32_t uID1, uint32_t uID2) {
 }
@@ -305,6 +330,10 @@ uint32_t DBRaw::numUltMensaje(uint32_t uID1, uint32_t uID2) {
 std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
 }*/
+
+uint DBRaw::getNumContactos(uint32_t uID) {
+	return 0; //TODO: Implementar
+}
 
 void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 {
@@ -316,9 +345,20 @@ void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 
 void DBRaw::inicializarFID(const string &rutaFotoDefault)
 {
-	if (inicializarContador(LAST_FID, "foto ID")) {
-		// Cargar foto por defecto
-	}
+	if (!inicializarContador(LAST_FID, "foto ID")) return;
+	std::ifstream fotoFile(rutaFotoDefault);
+	if (!fotoFile.is_open()) throw std::ios_base::failure
+			(string("No se encontro ").append(defaultFotoPath));
+	string content = string(std::istreambuf_iterator<char>(fotoFile),
+			std::istreambuf_iterator<char>());
+	IDKey fotoKey(FOTO,0);
+	IDKey thumbKey(FOTO_THUMB,0);
+	Slice fotoSlice(content.data(), content.length());
+	Slice thumbSlice = Foto(content.data(), content.length()).resize().toSlice();
+	WriteOptions options;
+	db->Put(options, fotoKey.toSlice(), fotoSlice);
+	db->Put(options, thumbKey.toSlice(), thumbSlice);
+	incrementarContador(LAST_FID, "foto ID");
 }
 
 bool DBRaw::inicializarContador(KeyCode keyCode, const string &tipo)
