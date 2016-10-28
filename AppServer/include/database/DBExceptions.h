@@ -61,6 +61,14 @@ public:
 };
 
 /**
+ * Password no es de 32 bytes
+ */
+class BadPasswordSize: public BadInputException {
+public:
+	BadPasswordSize(const std::string what_arg) : BadInputException(what_arg) {};
+};
+
+/**
  * Fechas que no se corresponden con el formato estipulado
  * El formato para strings es AAAA/MM/DD
  * El formato para bytes es Año[2] Mes[1] Dia[1]

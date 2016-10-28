@@ -29,6 +29,7 @@ class DBJSON {
 	 * @exception NonexistentEmail		El email no es un mail valido
 	 * @exception BadGeolocation		Latitud/longitud fuera de rango
 	 * @exception MalformedDate			Fecha malformada
+	 * @exception BadPasswordSize		La password provista no es un hash de 32 bytes
 	 * @return							El uID (user ID) del nuevo usuario creado
 	 */
 	uint32_t registrarse(const Json &json);
@@ -38,6 +39,7 @@ class DBJSON {
 	 * @param json						{"username" : <username>, "password" : <stringbase64password>}
 	 * @exception NonexistentUsername	Datos de login incorrectos por username inexistente
 	 * @exception BadPassword			Datos de login incorrectos por password incorrecto
+	 * @exception BadPasswordSize		La password provista no es un hash de 32 bytes
 	 * @return							Ver documentacion API: "Login"
 	 */
 	uint32_t login(const Json &json);
