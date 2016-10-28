@@ -16,19 +16,19 @@ http_response PUT_Handler::handleRequest() {
 	switch (uri){
 		case _USER_PROFILE:
 			// /users/<user_id>
-			res = handleProfile();
+			res = handle_update_profile();
 			break;
 		case _USER_SUMMARY:
 			// /users/<user_id>/summary
-			res = handleSummary();
+			res = handle_update_resume();
 			break;
 		case _USER_PHOTO:
 			// /users/<user_id>/photo
-			res = handlePhoto();
+			res = handle_update_photo();
 			break;
 		case _POPULAR_RECOMMEND:
 			// /users/popular/<user_id1>/<user_id2>
-			res = handleRecommend();
+			res = handle_recommend_user();
 			break;
 		default:
 			std::cout << "ERROR >> Method Not Allowed" << std::endl;
@@ -38,7 +38,7 @@ http_response PUT_Handler::handleRequest() {
 	return res;
 }
 
-http_response PUT_Handler::handleProfile() {
+http_response PUT_Handler::handle_update_profile() {
 	/* uri = /users/<userID> */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	std::string userID_s = vec_uri[1];
@@ -49,12 +49,16 @@ http_response PUT_Handler::handleProfile() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
-/*	TODO
-	if (validate_token) {
-		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "Error: Invalid token. Non existent token. Update profile failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}catch (TokenHasExpired &e) {
+		std::cout << "Error: Invalid token. Token has expired. Update profile failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
-*/
+
 	Json data;
 	try {
 		data = HttpParser::parse_json_from_body(request->message);
@@ -80,23 +84,27 @@ http_response PUT_Handler::handleProfile() {
 	return http_response("", STATUS_OK);
 }
 
-http_response PUT_Handler::handleSummary() {
+http_response PUT_Handler::handle_update_resume() {
 	/* uri = /users/<userID>/summary */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	std::string userID_s = vec_uri[1];
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
+		std::cout << "Error: Token not found. User unauthorized. Update summary failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
-/*	TODO
-	if (validate_token) {
-		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "Error: Invalid token. Non existent token. Update summary failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}catch (TokenHasExpired &e) {
+		std::cout << "Error: Invalid token. Token has expired. Update summary failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
-*/
+
 	Json data;
 	try {
 		data = HttpParser::parse_json_from_body(request->message);
@@ -115,7 +123,7 @@ http_response PUT_Handler::handleSummary() {
 	return http_response("", STATUS_NO_CONTENT);
 }
 
-http_response PUT_Handler::handlePhoto() {
+http_response PUT_Handler::handle_update_photo() {
 	/* uri = /users/<userID>/photo */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	std::string userID_s = vec_uri[1];
@@ -126,12 +134,16 @@ http_response PUT_Handler::handlePhoto() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
-/*	TODO
-	if (validate_token) {
-		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "Error: Invalid token. Non existent token. Update photo failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}catch (TokenHasExpired &e) {
+		std::cout << "Error: Invalid token. Token has expired. Update photo failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
-*/
+
 	Json data;
 	try {
 		data = HttpParser::parse_json_from_body(request->message);
@@ -153,7 +165,7 @@ http_response PUT_Handler::handlePhoto() {
 	return http_response("", STATUS_NO_CONTENT);
 }
 
-http_response PUT_Handler::handleRecommend() {
+http_response PUT_Handler::handle_recommend_user() {
 	/* uri = /users/popular/<userID1>/<userID2> */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	std::string userID1_s = vec_uri[2];
@@ -166,12 +178,15 @@ http_response PUT_Handler::handleRecommend() {
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
 
-/*	TODO
-	if (validate_token) {
-		std::cout << "Error: Invalid token and userID. User unauthorized. Update profile failed." << std::endl;
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "Error: Invalid token. Non existent token. Recommend user failed." << std::endl;
+		return http_response("", STATUS_UNAUTHORIZED);
+	}catch (TokenHasExpired &e) {
+		std::cout << "Error: Invalid token. Token has expired. Recommend user failed." << std::endl;
 		return http_response("", STATUS_UNAUTHORIZED);
 	}
-*/
 
 	/* TODO validar que userID1 == recommender ??? */
 	Json data;

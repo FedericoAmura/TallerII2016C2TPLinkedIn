@@ -7,6 +7,37 @@ DBJSON::DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db) :
 
 DBJSON::~DBJSON() {
 	delete db;
+	tokens.clear();
+}
+
+string DBJSON::generarToken(const Json &json) {
+	string username = json["username"].string_value();
+	string current_timestamp = get_current_timestamp();
+	string to_hash = username + "|" + current_timestamp;
+	string token_hash = base64_encode((const unsigned char*)to_hash.c_str(), to_hash.length());
+	tokens[token_hash] = current_timestamp;
+	return token_hash;
+}
+
+/**
+ * Generar token
+ * @param json                      Información de usuario
+ * @exception NonexistentToken      El token no existe
+ * @exception TokenHasExpired       El token ha expirado
+ * @return                          Un token de sesión
+ */
+bool DBJSON::validar_token(const string &token) {
+	double EXPIRATION_TIME_SEC = 86400; // 86400 sec == 1 día
+	if (tokens.count(token) > 0) {
+		string timestamp = tokens[token];
+		double diff = time_difference_seconds(timestamp);
+		if (diff > EXPIRATION_TIME_SEC) {
+			tokens.erase(token);
+			throw TokenHasExpired("Token ha expirado");
+		} else
+			return true;
+	} else
+		throw NonexistentToken("Token inexistente");
 }
 
 uint32_t DBJSON::registrarse(const Json &json) {

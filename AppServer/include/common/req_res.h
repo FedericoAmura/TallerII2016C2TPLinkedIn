@@ -37,6 +37,14 @@ struct http_request{
 		_uri.assign(message->uri.p, message->uri.len);
 		return _uri;
 	}
+
+	std::string query_string() {
+		std::string qs;
+		qs.assign(message->query_string.p, message->query_string.len);
+		if (qs.empty())
+			return "";
+		return ("?" + qs);
+	}
 };
 
 struct http_response {

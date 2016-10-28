@@ -19,8 +19,8 @@ data = {
 class Client:
     def __init__(self, data):
         self.data = data;
-        self.userID = "000"
-        self.token = "111"
+        self.userID = ""
+        self.token = ""
         self.url_base = "http://127.0.0.1:8888" #AppServer (localhost con puerto 8888)
 
     def getAuthHeaderLogin(self):
@@ -35,6 +35,9 @@ class Client:
         headers["Content-Type"] = "application/json"
         headers["Authorization"] = "token=" + self.token
         return headers
+
+    def get_user_id(self):
+        return self.userID
 
     def makeRequest_GET(self, url, params, headers):
         if (not bool(params)):
@@ -54,21 +57,26 @@ class Client:
     def login(self):
         url = self.url_base + "/login"
         headers = self.getAuthHeaderLogin()
-        return self.makeRequest_POST(url, "", headers)
+        res = self.makeRequest_POST(url, "", headers)
+        if (res.status_code == 200):
+            data = json.loads(res.text)
+            self.userID = data["userID"]
+            self.token = data["token"]
+        return res
 
     def signup(self):
         url = self.url_base + "/signup"
         return self.makeRequest_POST(url, self.data, {})
 
-    def accept_contact_request(self, other_userID):
-        url = self.url_base + "/users/" + self.userID + "/notif/" + other_userID
+    def accept_contact_request(self, another_userID):
+        url = self.url_base + "/users/" + self.userID + "/notif/" + another_userID
         headers = self.getAuthHeaderToken()
         return self.makeRequest_POST(url, "", headers)
 
     def create_contact_request(self, data):
         url = self.url_base + "/users/" + self.userID + "/contacts"
         headers = self.getAuthHeaderToken()
-        data["senderID"] = self.userID
+        data["userID"] = self.userID
         return self.makeRequest_POST(url, data, headers)
 
     def notify_msg_seen(self, data):
@@ -78,8 +86,7 @@ class Client:
         return self.makeRequest_POST(url, data, headers)
 
     def send_msg(self, data):
-        other_userID = "123"
-        url = self.url_base + "/chat/" + self.userID + "/" + other_userID
+        url = self.url_base + "/chat/" + self.userID + "/" + data["receiverID"]
         headers = self.getAuthHeaderToken()
         data["senderID"] = self.userID
         return self.makeRequest_POST(url, data, headers)
@@ -90,8 +97,8 @@ class Client:
         headers = self.getAuthHeaderToken()
         return self.makeRequest_PUT(url, data, headers)
 
-    def update_summary(self, data):
-        url = self.url_base + "/users/" + self.userID + "/summary"
+    def update_resume(self, data):
+        url = self.url_base + "/users/" + self.userID + "/resume"
         headers = self.getAuthHeaderToken()
         return self.makeRequest_PUT(url, data, headers)
 
@@ -107,18 +114,18 @@ class Client:
         return self.makeRequest_PUT(url, data, headers)
 
 ### DELETE  (data es un json, luego makeRequest_*** hace un dump del json)
-    def close_session(self):
+    def logout(self):
         url = self.url_base + "/login"
         headers = self.getAuthHeaderToken()
         return self.makeRequest_DELETE(url, "", headers)
 
-    def reject_contact_request(self, other_userID):
-        url = self.url_base + "/users/" + self.userID + "/notif/" + other_userID
+    def reject_contact_request(self, another_userID):
+        url = self.url_base + "/users/" + self.userID + "/notif/" + another_userID
         headers = self.getAuthHeaderToken()
         return self.makeRequest_DELETE(url, "", headers)
 
-    def delete_contact(self, other_userID):
-        url = self.url_base + "/users/" + self.userID + "/contacts/" + other_userID
+    def delete_contact(self, another_userID):
+        url = self.url_base + "/users/" + self.userID + "/contacts/" + another_userID
         headers = self.getAuthHeaderToken()
         return self.makeRequest_DELETE(url, "", headers)
 
@@ -128,24 +135,24 @@ class Client:
         url = self.url_base + "/users/"
         return self.makeRequest_GET(url, params, {})
 
-    def get_profile_from(self, other_userID):
-        url = self.url_base + "/users/" + other_userID
+    def get_profile_from(self, another_userID):
+        url = self.url_base + "/users/" + another_userID
         return self.makeRequest_GET(url, "", {})
 
-    def get_summary_from(self, other_userID):
-        url = self.url_base + "/users/" + other_userID + "/summary"
+    def get_resume_from(self, another_userID):
+        url = self.url_base + "/users/" + another_userID + "/resume"
         return self.makeRequest_GET(url, "", {})
 
-    def get_photo_from(self, other_userID):
-        url = self.url_base + "/users/" + other_userID + "/photo"
+    def get_photo_from(self, another_userID):
+        url = self.url_base + "/users/" + another_userID + "/photo"
         return self.makeRequest_GET(url, "", {})
 
-    def get_photo_thumb_from(self, other_userID):
-        url = self.url_base + "/users/" + other_userID + "/thumb"
+    def get_photo_thumb_from(self, another_userID):
+        url = self.url_base + "/users/" + another_userID + "/thumb"
         return self.makeRequest_GET(url, "", {})
 
-    def get_info_brief_from(self, other_userID):
-        url = self.url_base + "/users/" + other_userID + "/brief"
+    def get_info_brief_from(self, another_userID):
+        url = self.url_base + "/users/" + another_userID + "/brief"
         return self.makeRequest_GET(url, "", {})
 
     def get_pending_contact_request(self):
@@ -158,8 +165,8 @@ class Client:
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
-    def get_particuliar_request(self, other_userID):
-        url = self.url_base + "/users/" + self.userID + "/notif/" + other_userID
+    def get_particuliar_request(self, another_userID):
+        url = self.url_base + "/users/" + self.userID + "/notif/" + another_userID
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
@@ -168,8 +175,8 @@ class Client:
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
-    def get_are_we_contacts(self, other_userID):
-        url = self.url_base + "/users/" + self.userID + "/contacts/" + other_userID
+    def get_are_we_contacts(self, another_userID):
+        url = self.url_base + "/users/" + self.userID + "/contacts/" + another_userID
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
@@ -178,13 +185,13 @@ class Client:
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
-    def get_id_last_message(self, other_userID):
-        url = self.url_base + "/chat/" + self.userID + "/" + other_userID + "/last"
+    def get_id_last_message(self, another_userID):
+        url = self.url_base + "/chat/" + self.userID + "/" + another_userID + "/last"
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
-    def get_including_messages(self, other_userID, params):
-        url = self.url_base + "/chat/" + self.userID + "/" + other_userID + "/"
+    def get_including_messages(self, another_userID, params):
+        url = self.url_base + "/chat/" + self.userID + "/" + another_userID + "/"
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, params, headers)
 
@@ -193,8 +200,8 @@ class Client:
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
-    def get_user_recommended_to_another_user(self, other_userID):
-        url = self.url_base + "/users/popular/" + self.userID + "/" + other_userID
+    def get_user_recommended_to_another_user(self, another_userID):
+        url = self.url_base + "/users/popular/" + self.userID + "/" + another_userID
         return self.makeRequest_GET(url, "", {})
 
     def get_popular_by_position(self, position):

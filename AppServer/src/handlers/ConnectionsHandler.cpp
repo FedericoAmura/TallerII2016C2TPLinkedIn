@@ -16,7 +16,7 @@ static void event_handler(struct mg_connection* c, int event, void* data) {
 	  	  case MG_EV_HTTP_REQUEST:
 	  	  {
 	  		  http_request request(c, message);
-	  		  std::cout << MethodtoString(request.method()) << "\t" << request.uri() <<std::endl;
+	  		  std::cout << MethodtoString(request.method()) << "\t" << request.uri() + request.query_string() <<std::endl;
 	  		  RequestHandler req_handler(&request);
 	  		  http_response response = req_handler.handleRequest();
 	  		  req_handler.sendReply(&response);

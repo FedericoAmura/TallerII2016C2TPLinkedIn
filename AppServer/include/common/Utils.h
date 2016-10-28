@@ -13,6 +13,7 @@
 #include <string.h>
 #include <vector>
 #include <regex>
+#include <time.h>
 
 enum METHOD {_GET, _POST, _PUT, _DELETE, _INVALID_METHOD};
 
@@ -98,6 +99,33 @@ static std::vector<std::string> split(std::string line, const char* separator) {
     }
     free(dup);
 	return vec;
+}
+
+static std::string get_current_timestamp() {
+	time_t t = time(0);
+	struct tm *now = localtime(&t);
+	std::string year, month, day, hour, min, sec;
+	year = std::to_string(now->tm_year);
+	month = std::to_string(now->tm_mon);
+	day = std::to_string(now->tm_mday);
+	hour = std::to_string(now->tm_hour);
+	min = std::to_string(now->tm_min);
+	sec = std::to_string(now->tm_sec);
+	return (year + "-" + month + "-" + day + "-" + hour + "-" + min + "-" + sec);
+}
+
+static double time_difference_seconds(std::string timestamp) {
+	time_t now = time(0);
+	struct tm then = {0};
+	std::vector<std::string> times = split(timestamp, "-");
+	then.tm_year = std::stoi(times[0]);
+	then.tm_mon = std::stoi(times[1]);
+	then.tm_mday = std::stoi(times[2]);
+	then.tm_hour = std::stoi(times[3]);
+	then.tm_min = std::stoi(times[4]);
+	then.tm_sec = std::stoi(times[5]);
+
+	return difftime(now, mktime(&then));
 }
 
 #endif /* APPSERVER_INCLUDE_COMMON_UTILS_H_ */

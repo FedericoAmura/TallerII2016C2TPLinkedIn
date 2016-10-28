@@ -16,25 +16,25 @@ private:
 	 * Actualización de perfil
 	 * @return
 	 * */
-	http_response handleProfile();
+	http_response handle_update_profile();
 
 	/*
 	 * Actualización de Resumen de usuario
 	 * @return
 	 * */
-	http_response handleSummary();
+	http_response handle_update_resume();
 
 	/*
 	 * Actualización de Foto
 	 * @return
 	 * */
-	http_response handlePhoto();
+	http_response handle_update_photo();
 
 	/*
 	 * Recomendar usuario
 	 * @return
 	 * */
-	http_response handleRecommend();
+	http_response handle_recommend_user();
 
 public:
 	/*

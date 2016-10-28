@@ -7,67 +7,103 @@ from Client import *
 
 user1_data = {}
 user2_data = {}
+user3_data = {}
 
-user1_data["first_name"] = "fulanito2"
+user1_data["first_name"] = "fulanito3"
 user1_data["last_name"] = "perez"
 user1_data["birth"] =  "11/2/2014"
 user1_data["email"] = "mmmma@gmail.com"
-user1_data["username"] = "cosmefulanito2"
-user1_data["password"] = base64.b64encode(hashlib.sha256("mi_password").hexdigest())
+user1_data["username"] = "guidonegri"
+user1_data["password"] = base64.b64encode(hashlib.sha256("holaSoyFulano").hexdigest())
 user1_data["city"] = "ciudad_perdida"
 user1_data["longitude"] = 12.4
 user1_data["latitude"] = 3.4
 
-user2_data["first_name"] = "menganito2"
+user2_data["first_name"] = "menganito3"
 user2_data["last_name"] = "perez"
 user2_data["birth"] =  "1/2/2012"
 user2_data["email"] = "rrrrra@gmail.com"
-user2_data["username"] = "cosmemenganito2"
-user2_data["password"] = base64.b64encode(hashlib.sha256("mi_password").hexdigest())
+user2_data["username"] = "pepepipo"
+user2_data["password"] = base64.b64encode(hashlib.sha256("holaSoyMengano").hexdigest())
 user2_data["city"] = "ciudad_perdida"
 user2_data["longitude"] = 10.4
 user2_data["latitude"] = 2.5
 
+user3_data["first_name"] = "juan"
+user3_data["last_name"] = "perez"
+user3_data["birth"] =  "1/2/2012"
+user3_data["email"] = "rrrrra@gmail.com"
+user3_data["username"] = "juanperez"
+user3_data["password"] = base64.b64encode(hashlib.sha256("holaSoyPerez").hexdigest())
+user3_data["city"] = "ciudad_perdida"
+user3_data["longitude"] = 10.4
+user3_data["latitude"] = 2.5
+
 client1 = Client(user1_data)
 client2 = Client(user2_data)
+client3 = Client(user3_data)
 
 client1.signup()
 client2.signup()
+client3.signup()
 
-class ClientTest(unittest.TestCase):
-### POST
-    def test_login(self):
+client1.login()
+client2.login()
+
+'''
+    def setUp(self):
+        res1 = client1.signup()
+        res2 = client2.signup()
+        self.assertEquals(201, res1.status_code)
+        self.assertEquals(201, res2.status_code)
+
         res1 = client1.login()
         res2 = client2.login()
         self.assertEquals(200, res1.status_code)
         self.assertEquals(200, res2.status_code)
 
+    def tearDown(self):
+        res1 = client1.logout()
+        res2 = client2.logout()
+        self.assertEquals(204, res1.status_code)
+        self.assertEquals(204, res2.status_code)
+'''
+
+class ClientTest(unittest.TestCase):
+
+### POST
+#    def test_login(self):
+#        res1 = client1.login()
+#        res2 = client2.login()
+#        self.assertEquals(200, res1.status_code)
+#        self.assertEquals(200, res2.status_code)
+
     # hacer un signup con un username ya existente debería devolver 422
-    def test_signup(self):
+    def test_signup_again(self):
         res = client1.signup()
         self.assertEquals(422, res.status_code)
 
     def test_accept_contact_request(self):
-        another_userID = "123"
+        another_userID = client2.get_user_id()
         res = client1.accept_contact_request(another_userID)
         self.assertEquals(204, res.status_code)
 
     def test_create_contact_request(self):
         data = {}
-        data["receiverID"] = "123"
+        data["targetID"] = client2.get_user_id()
         data["message"] = "Hello!!!"
         res = client1.create_contact_request(data)
         self.assertEquals(201, res.status_code)
 
     def test_notify_message_seen(self):
         data = {}
-        data["receiverID"] = "123"
+        data["targetID"] = client2.get_user_id()
         res = client1.notify_msg_seen(data)
         self.assertEquals(204, res.status_code)
 
     def test_send_message(self):
         data = {}
-        data["targetID"] = "123"
+        data["receiverID"] = client2.get_user_id()
         data["message"] = "blabla"
         res = client1.send_msg(data)
         self.assertEquals(201, res.status_code)
@@ -80,10 +116,10 @@ class ClientTest(unittest.TestCase):
         res = client1.update_profile(data)
         self.assertEquals(200, res.status_code)
 
-    def test_update_summary(self):
+    def test_update_resume(self):
         data = {}
-        data = {"summary" : "new summary"}
-        res = client1.update_summary(data)
+        data = {"resume" : "new resume"}
+        res = client1.update_resume(data)
         self.assertEquals(204, res.status_code)
 
     def test_update_photo(self):
@@ -93,24 +129,27 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(204, res.status_code)
 
     def test_recommend_user(self):
-        receiverID = "123"
+        receiverID = client2.get_user_id()
         data = {}
-        data["recommended"] = "456"
+        data["recommended"] = client3.get_user_id()
+        data["receiver"] = receiverID
         data["recommends"] = True
         res = client1.recommend_user(receiverID, data)
         self.assertEquals(204, res.status_code)
 
 ### DELETE
     def test_logout(self):
-        res = client1.close_session()
+        res = client3.login()
+        self.assertEquals(200, res.status_code)
+        res = client3.logout()
         self.assertEquals(204, res.status_code)
 
     def test_reject_contact_request(self):
-        res = client1.reject_contact_request("456")
+        res = client1.reject_contact_request(client2.get_user_id())
         self.assertEquals(204, res.status_code)
 
     def test_delete_contact(self):
-        res = client1.delete_contact("123")
+        res = client1.delete_contact(client2.get_user_id())
         self.assertEquals(204, res.status_code)
 
 ### GET
@@ -122,23 +161,23 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
 
     def test_get_profile_from_user(self):
-        res = client1.get_profile_from("123")
+        res = client1.get_profile_from(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
-    def test_get_summary_from_user(self):
-        res = client1.get_summary_from("123")
+    def test_get_resume_from_user(self):
+        res = client1.get_resume_from(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_photo_from_user(self):
-        res = client1.get_photo_from("123")
+        res = client1.get_photo_from(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_thumbnail_from_user(self):
-        res = client1.get_photo_thumb_from("123")
+        res = client1.get_photo_thumb_from(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_info_brief_from_user(self):
-        res = client1.get_info_brief_from("123")
+        res = client1.get_info_brief_from(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_pending_contact_request(self):
@@ -150,7 +189,7 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
 
     def test_get_particuliar_request(self):
-        res = client1.get_particuliar_request("123")
+        res = client1.get_particuliar_request(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_contacts(self):
@@ -158,7 +197,7 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
 
     def test_get_are_we_contacts(self):
-        res = client1.get_are_we_contacts("123")
+        res = client1.get_are_we_contacts(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_number_new_messages(self):
@@ -166,12 +205,12 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
 
     def test_get_id_last_msg_from_user(self):
-        res = client1.get_id_last_message("123")
+        res = client1.get_id_last_message(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_including_messages(self):
         params = {"start":"12/2/2015", "end":"20/3/2015"}
-        res = client1.get_including_messages("123", params)
+        res = client1.get_including_messages(client2.get_user_id(), params)
         self.assertEquals(200, res.status_code)
 
     def test_get_popular(self):
@@ -179,7 +218,7 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
 
     def test_if_user_recommended_to_another_user(self):
-        res = client1.get_user_recommended_to_another_user("123")
+        res = client1.get_user_recommended_to_another_user(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_popular_by_position(self):
@@ -209,7 +248,6 @@ class ClientTest(unittest.TestCase):
     def test_get_skill(self):
         res = client1.get_skill("java")
         self.assertEquals(200, res.status_code)
-
 
 
 if __name__ == '__main__':

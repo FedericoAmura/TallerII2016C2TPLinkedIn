@@ -19,7 +19,7 @@ private:
 	 * 			en la uri y el código de respuesta, sino devuelve una respuesta
 	 * 			vacía y el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handleUsers();
+	http_response handle_get_search_for_users();
 
 	/*
 	 * Perfil de un usuario
@@ -28,7 +28,7 @@ private:
 	 * 			sino devuelve una respuesta vacía y el código de respuesta
 	 * 			queda específicado en http_response.res_code
 	 * */
-	http_response handleUserProfile();
+	http_response handle_get_user_profile();
 
 	/*
 	 * Résumen de un usuario
@@ -37,7 +37,7 @@ private:
 	 * 			sino devuelve una respuesta vacía y el código de respuesta
 	 * 			queda específicado en http_response.res_code
 	 * */
-	http_response handleUserSummary();
+	http_response handle_get_user_resume();
 
 	/*
 	 * Foto de un usuario
@@ -46,7 +46,7 @@ private:
 	 * 			sino devuelve una respuesta vacía y el código de respuesta queda
 	 * 			específicado en http_response.res_code
 	 * */
-	http_response handleUserPhoto();
+	http_response handle_get_user_photo();
 
 	/*
 	 * Thumbnail de la foto
@@ -55,7 +55,7 @@ private:
 	 * 			sino devuelve una respuesta	vacía y el código de respuesta
 	 * 			queda específicado en http_response.res_code
 	 * */
-	http_response handleUserThumb();
+	http_response handle_get_user_thumb();
 
 	/*
 	 * Bief de un usuario
@@ -64,7 +64,7 @@ private:
 	 * 			y código de respuesta, sino devuelve una respuesta	vacía y
 	 * 			el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handleUserBrief();
+	http_response handle_get_user_brief();
 
 	/*
 	 * Notificaciones de un usuario
@@ -73,7 +73,7 @@ private:
 	 * 			si está autenticado) y código de respuesta, sino devuelve una respuesta	vacía y
 	 * 			el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handleUsersNotif();
+	http_response handle_get_pending_contact_requests();
 
 	/*
 	 * Notificaciones pendiente de un usuario
@@ -82,7 +82,7 @@ private:
 	 * 			código de respuesta, sino devuelve una respuesta vacía y
 	 * 			el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handleUsersNewNotif();
+	http_response handle_get_number_pending_requests();
 
 	/*
 	 * Notificación sobre solicitud de contacto
@@ -91,7 +91,7 @@ private:
 	 * 			código de respuesta, sino devuelve una respuesta vacía y
 	 * 			el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handleUsersNotifyRequest();
+	http_response handle_get_special_request();
 
 	/*
 	 * Contactos de un usuario
@@ -100,7 +100,7 @@ private:
 	 * 			sino devuelve una respuesta vacía y	el código de respuesta
 	 * 			queda específicado en http_response.res_code
 	 * */
-	http_response handleUsersContacts();
+	http_response handle_get_user_contacts();
 
 	/*
 	 * Consulta sobre conexión con otro usuario
@@ -109,7 +109,7 @@ private:
 	 * 			sino devuelve una respuesta vacía y	el código de respuesta
 	 * 			queda específicado en http_response.res_code
 	 * */
-	http_response handleUsersContactManagement();
+	http_response handle_get_are_they_connected();
 
 	/*
 	 * Usuarios más populares
@@ -117,7 +117,7 @@ private:
 	 * 			sino devuelve "" y el código de respuesta queda específicado
 	 * 			en http_response.res_code
 	 * */
-	http_response handlePopular();
+	http_response handle_get_popular();
 
 	/*
 	 * Recomendación entre usuarios
@@ -125,7 +125,7 @@ private:
 	 * 			a otro, sino devuelve "" y el código de respuesta queda específicado
 	 * 			en http_response.res_code
 	 * */
-	http_response handlePopularRecommend();
+	http_response handle_get_user_recommendations();
 
 	/*
 	 * Populares por posición
@@ -133,7 +133,7 @@ private:
 	 * 			por la posición específicada y el código de respuesta queda específicado
 	 * 			en http_response.res_code, sino retorna información nula.
 	 * */
-	http_response handlePopularByPosition();
+	http_response handle_get_popular_by_position();
 
 	/*
 	 * Populares por skill
@@ -141,7 +141,7 @@ private:
 	 * 			por la skill específicada y el código de respuesta queda específicado
 	 * 			en http_response.res_code, sino retorna información nula.
 	 * */
-	http_response handlePopularBySkill();
+	http_response handle_get_popular_by_skill();
 
 	/*
 	 * Notificaciones del Chat
@@ -149,7 +149,7 @@ private:
 	 * 			(si está autenticado) y el código de respuesta queda específicado
 	 * 			en http_response.res_code, sino retorna información nula.
 	 * */
-	http_response handleChatNew();
+	http_response handle_get_number_new_messages();
 
 	/*
 	 * Ultimo mensaje de la conversación
@@ -158,7 +158,7 @@ private:
 	 * 			y el código de respuesta queda específicado	en http_response.res_code,
 	 * 			sino retorna información nula.
 	 * */
-	http_response handleChatLastMsg();
+	http_response handle_get_id_last_message();
 
 	/*
 	 * Mensajes comprendidos entre un período
@@ -167,39 +167,39 @@ private:
 	 * 			y el código de respuesta queda específicado	en http_response.res_code,
 	 * 			sino retorna información nula.
 	 * */
-	http_response handleChatIncMsg();
+	http_response handle_get_including_messages();
 
 	/*
 	 * Categorías
 	 * @return	en caso de éxito, retorna todas las categorías disponibles.
 	 * */
-	http_response handleCategories();
+	http_response handle_get_categories();
 
 	/*
 	 * Posición de trabajo por categoría
 	 * @return	en caso de éxito, retorna las posiciones de trabajo asociadas a una
 	 *			categoría.
 	 * */
-	http_response handleJobPositionsByCategory();
+	http_response handle_get_jobpositions_by_category();
 
 	/*
 	 * Posición de trabajo particular
 	 * @return	en caso de éxito, retorna información sobre una posición de trabajo
 	 *			en particular.
 	 * */
-	http_response handleJobPosition();
+	http_response handle_get_jobposition();
 
 	/*
 	 * Skills por categoría
 	 * @return	en caso de éxito, retorna los skills asociadas a una categoría.
 	 * */
-	http_response handleSkillsByCategory();
+	http_response handle_get_skills_by_category();
 
 	/*
 	 * Skill particular
 	 * @return	en caso de éxito, retorna información sobre una skill en particular.
 	 * */
-	http_response handleSkill();
+	http_response handle_get_skill();
 
 public:
 	/*

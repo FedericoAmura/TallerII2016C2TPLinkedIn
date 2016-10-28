@@ -151,4 +151,20 @@ public:
 	NonexistentChat(const std::string what_arg) : BadInputException(what_arg) {};
 };
 
+/**
+ * No existe token
+ */
+class NonexistentToken: public BadInputException {
+public:
+	NonexistentToken(const std::string what_arg) : BadInputException(what_arg) {};
+};
+
+/**
+ * Token ha expirado
+ */
+class TokenHasExpired: public BadInputException {
+public:
+	TokenHasExpired(const std::string what_arg) : BadInputException(what_arg) {};
+};
+
 #endif /* APPSERVER_INCLUDE_DATABASE_DBEXCEPTIONS_H_ */
