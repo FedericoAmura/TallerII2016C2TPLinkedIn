@@ -42,11 +42,11 @@ bool DBJSON::validar_token(const string &token) {
 
 uint32_t DBJSON::registrarse(const Json &json) {
 	//TODO: Chequeo de existencia de campos
-	string nombre = json["first_name"].string_value();
+	string nombre(json["first_name"].string_value());
 	nombre.append(" ");
 	nombre.append(json["last_name"].string_value());
-	string email = json["email"].string_value();
-	string ciudad = json["city"].string_value();
+	string email(json["email"].string_value());
+	string ciudad(json["city"].string_value());
 	Fecha nacimiento(json["birth"].string_value());
 	double longitud = json["longitude"].number_value();
 	double latitud = json["latitude"].number_value();
@@ -69,6 +69,9 @@ uint32_t DBJSON::login(const Json &json) {
 }
 
 Json DBJSON::getDatos(uint32_t userID) {
+	DatosUsuario datos = db->getDatos(userID);
+	string resumen = db->getResumen(userID);
+	Foto foto = db->getFoto(userID);
 	Json data = Json::object {};
 	return data;
 }
@@ -82,24 +85,31 @@ void DBJSON::setDatos(uint32_t userID, const Json &json) {
 }
 
 Json DBJSON::getResumen(uint32_t userID) {
-	Json data = Json::object {};
+	string resumen(db->getResumen(userID));
+	Json data = Json::object { {"resumen", resumen} };
 	return data;
 }
 
 void DBJSON::setResumen(uint32_t userID, const Json &json) {
+	string resumen(json["resumen"].string_value());
+	db->setResumen(userID, resumen);
 }
 
 Json DBJSON::getFoto(uint32_t userID) {
-	Json data = Json::object {};
+	string foto(db->getFoto(userID).toBase64String());
+	Json data = Json::object { {"foto", foto} };
 	return data;
 }
 
 Json DBJSON::getFotoThumbnail(uint32_t userID) {
-	Json data = Json::object {};
+	string foto(db->getFotoThumbnail(userID).toBase64String());
+	Json data = Json::object { {"thumb", foto} };
 	return data;
 }
 
 void DBJSON::setFoto(uint32_t userID, const Json &json) {
+	Foto foto(json["foto"].string_value());
+	db->setFoto(userID, foto);
 }
 
 Json DBJSON::busqueda_profresional(const std::vector<string>

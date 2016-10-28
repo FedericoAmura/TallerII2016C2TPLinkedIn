@@ -22,7 +22,11 @@ std::vector<char> Foto::toBytes() const {
 	return data;
 }
 
-Foto Foto::resize(const Foto &foto, size_t width, size_t height, int quality) {
+Foto Foto::resize(int quality, size_t width, size_t height) const {
 	//TODO: Implementar
 	return Foto(*this);
+}
+
+leveldb::Slice Foto::toSlice() {
+	return leveldb::Slice(data.data(), data.size());
 }

@@ -105,7 +105,7 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			| }
 ======================  ==========================
 
-Perfil : Actualizar (Salvo foto y resumen)
+Perfil : Actualizar (con/sin foto y resumen)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
@@ -149,7 +149,7 @@ PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID inexistente
 			| 200 - OK + Siguiente JSON:
 			| {
-			| “photo” = “ab03d7f4c80239b8…”
+			| “foto” = “ab03d7f4c80239b8…”
 			| }
 ======================  ==========================
 
@@ -163,7 +163,7 @@ URL                  	| \http://<appserver>/users/<userID>/photo
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
-			| “photo” = “ab03d7f4c80239b8…”
+			| “foto” = “ab03d7f4c80239b8…”
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No aurotizado
@@ -208,6 +208,36 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			|  “city” : “<ciudad>”,
 			|  “thumb” : “f0a4b34692d4...”
 			| }
+======================  ==========================
+
+Resumen : Consulta
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================  ==========================
+URL                  	| \http://<appserver>/users/<user_id>/resumen
+AUTH                 	| No hace falta
+VERB                 	| GET
+PARAMETROS           	|
+POSIBLES RESPUESTAS	| 404 - UserID Inexistente
+			| 200 - OK + Siguiente JSON:
+			| {
+			| “resumen” : “Bla Bla Bla.“
+			| }
+======================  ==========================
+
+Resumen : Actualizar
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======================  ==========================
+URL                  	| \http://<appserver>/users/<user_id>/resumen
+AUTH                 	| Si
+VERB                 	| PUT
+PARAMETROS           	| {
+			| “resumen” : “Bla Bla Bla.“
+			| }
+POSIBLES RESPUESTAS	| 204 - OK
+			| 401 - No aurotizado
+			| 404 - UserID inexistente
 ======================  ==========================
 
 --------------------------------------------------------

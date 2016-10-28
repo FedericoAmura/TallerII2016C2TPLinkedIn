@@ -15,6 +15,8 @@
 
 using std::string;
 
+// Foto por defecto
+static const char* defaultFotoPath = "default.jpg";
 enum KeyCode : uint8_t;
 
 /**
@@ -110,10 +112,13 @@ class DBRaw {
 	 * En caso de que ya existiera una foto para este usuario, la reemplaza
 	 * @param uID						User ID del usuario
 	 * @param foto						Foto
+	 * @param batch						Null para escribir a db, puntero para batchear
+	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @exception BadInputException		La foto no es un jpg
 	 */
-	void setFoto(uint32_t uID, Foto &foto);
+	void setFoto(uint32_t uID, const Foto &foto,
+			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Actualiza el resumen profesional del usuario
@@ -172,8 +177,36 @@ class DBRaw {
 	 */
 	Foto getFotoThumbnail(uint32_t uID);
 
+	/**
+	 * Setea datos, foto, y resumen juntos
+	 * @param uID						User ID
+	 * @param datos						Datos
+	 * @param resumen					Resumen, o null
+	 * @param foto						Foto, o null
+	 * @exception NonexistentUserID		El uID no es válido
+	 * @exception BadInputException		La foto, si fue mandada, no es un jpg
+	 */
+	void setPerfil(uint32_t uID, const DatosUsuario &datos,
+			string *resumen = NULL, Foto *foto = NULL);
+
+	/**
+	 * Setea los skills de un usuario
+	 * @param uID						User ID
+	 * @param skills					Skills
+	 * @param batch						Batch de ser necesario, null sino
+	 * @param verifUID					Si se debe verificar que el uID sea valido
+	 * @exception NonexistentUserID		El uID no es válido
+	 * @exception NonexistentSkill		Alguno de los skills no existe en el shared
+	 */
 	void setSkills(uint32_t uID, std::vector<string> skills,
 			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+
+	/**
+	 * Devuelve los skills de un usuario
+	 * @param uID						User ID
+	 * @exception NonexistentUserID		El uID no es válido
+	 * @return							Vector de nombres de skill
+	 */
 	std::vector<string> getSkills(uint32_t uID);
 
 	/**
@@ -182,14 +215,16 @@ class DBRaw {
 	 * @param batch						Null para escribir a db, puntero para batchear
 	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
 	 * @exception NonexistentUserID		El uID es inválido
+	 * @exception NonexistentPosition	Alguno de los puestos no existe en el shared
 	 */
 	void setPuestos(uint32_t uID, std::vector<Puesto> puestos,
 			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Devuelve la lista de puestos de un usuario
-	 * @param uID
-	 * @return
+	 * @param uID						User ID
+	 * @exception NonexistentUserID		El uID no es válido
+	 * @return							Vector de puestos
 	 */
 	std::vector<Puesto> getPuestos(uint32_t uID);
 

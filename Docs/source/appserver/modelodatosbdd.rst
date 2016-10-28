@@ -45,10 +45,6 @@ USER_DATA[1] uID[4] = nombreLen[1] nombre[VAR] emailLen[1] email[VAR] ciudadLen[
 
 US_RESUMEN[1] uID[4] = resumen[VAR]
 
-**Foto de un usuario**
-
-US_FOTO[1] uID[4] = fID[4]
-
 **Foto por fID**
 
 FOTO[1] fID[4] = foto[VAR]

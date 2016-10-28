@@ -63,7 +63,7 @@ class DBJSON {
 	uint32_t login(const Json &json);
 
 	/**
-	 * Devuelve los datos de perfil, salvo foto y resumen
+	 * Devuelve los datos de perfil, con foto y resumen
 	 * @param uID						User ID
 	 * @exception NonexistentUserID		El uID es inválido
 	 * @return							Ver documentacion API: "Perfil (...) : Consulta"
@@ -80,7 +80,7 @@ class DBJSON {
 
 
 	/**
-	 * Guarda nuevos datos de perfil, salvo foto y resumen
+	 * Guarda nuevos datos de perfil, foto y resumen optativos
 	 * @param uID						User ID
 	 * @param json						Ver documentacion API: "Perfil (...) : Actualizar"
 	 * @exception NonexistentUserID		El uID es inválido
