@@ -251,35 +251,59 @@ vector<Puesto> DBRaw::getPuestos(uint32_t uID) {
 void DBRaw::setFoto(uint32_t uID, const Foto &foto,
 		WriteBatch *batch, bool verifUID) {
 	// TODO: Lock para evitar errores RAW con el ID
-	/*if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),uID);
+	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),uID);
+	WriteBatch localBatch;
+	bool writeToDB = !batch;
+	if (writeToDB) batch = &localBatch;
 	DatosUsuario datos = getDatos(uID);
-	bool writeToDB = batch;
-	bool newFid = (datos.fotoID == 0);
-	uint32_t nuevoFid = contadorActual(F)
-	if (batch) batch->Put(resumenKey.toSlice(), Slice(resumen));
-	else {
-		Status status = db->Put(WriteOptions(), resumenKey.toSlice(), Slice(resumen));
-		verificarEstadoDB(status, "Error al guardar el resumen");
-	}*/
+	if (datos.fotoID == 0)
+	{
+		datos.fotoID = contadorActual(LAST_FID,"foto ID");
+		incrementarContador(LAST_FID,"foto ID", batch);
+	}
+	// Creamos key y data para FID y THUMB
+	IDKey keyFoto(FOTO, datos.fotoID);
+	IDKey keyThumb(FOTO_THUMB, datos.fotoID);
+	vector<char> bytesFoto(foto.toBytes());
+	vector<char> bytesThumb(foto.resize().toBytes());
+	Slice fotoData(bytesFoto.data(), bytesFoto.size());
+	Slice thumbData(bytesThumb.data(), bytesThumb.size());
+	batch->Put(keyFoto.toSlice(), fotoData);
+	batch->Put(keyThumb.toSlice(), thumbData);
+	setDatos(uID, datos, batch, false);
+	if (writeToDB) {
+		Status status = db->Write(WriteOptions(), batch);
+		verificarEstadoDB(status, "Error al guardar fotos");
+	}
 
 }
 
 Foto DBRaw::getFoto(uint32_t uID) {
-	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	DatosUsuario datos = getDatos(uID);
 	string retVal;
-	IDKey fotoKey(FOTO, uID);
+	IDKey fotoKey(FOTO, datos.fotoID);
 	Status status = db->Get(ReadOptions(), fotoKey.toSlice(), &retVal);
 	verificarEstadoDB(status, "Error al obtener la foto del usuario");
 	return Foto(retVal.data(), retVal.length());
 }
 
 Foto DBRaw::getFotoThumbnail(uint32_t uID) {
-	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	DatosUsuario datos = getDatos(uID);
 	string retVal;
-	IDKey thumbKey(FOTO_THUMB, uID);
+	IDKey thumbKey(FOTO_THUMB, datos.fotoID);
 	Status status = db->Get(ReadOptions(), thumbKey.toSlice(), &retVal);
 	verificarEstadoDB(status, "Error al obtener el thumbnail de la foto del usuario");
 	return Foto(retVal.data(), retVal.length());
+}
+
+void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
+			string *resumen, Foto *foto)
+{
+	WriteBatch batch;
+	setDatos(uID, datos, &batch, true);
+	if(resumen) setResumen(uID, *resumen, &batch, false);
+	if(foto) setFoto(uID, *foto, &batch, false);
+	db->Write(WriteOptions(), &batch);
 }
 
 /*

@@ -171,12 +171,16 @@ TEST_F(DBRawTest, testGetSetFoto) {
 	EXPECT_TRUE(fotoFile.is_open());
 	string content = string(std::istreambuf_iterator<char>(fotoFile),
 			std::istreambuf_iterator<char>());
-	std::vector<char> bytes = db->getFoto(0).toBytes();
+	std::vector<char> bytes = db->getFoto(uID).toBytes();
+	EXPECT_EQ(content.length(), bytes.size());
 	EXPECT_THAT(content, ::testing::ElementsAreArray(bytes));
+	bytes = db->getFotoThumbnail(uID).toBytes();
+	EXPECT_LE(content.length(), bytes.size());
 
 	Foto foto(tinyJPGBase64);
-	db->setFoto(0, foto);
-	bytes = db->getFoto(0).toBytes();
+	db->setFoto(uID, foto);
+	bytes = db->getFoto(uID).toBytes();
+	EXPECT_EQ(tinyJPG.size(), bytes.size());
 	EXPECT_THAT(tinyJPG, ::testing::ElementsAreArray(bytes));
 }
 

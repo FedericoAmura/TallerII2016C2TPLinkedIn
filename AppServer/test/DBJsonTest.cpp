@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstdio>
 
+using json11::Json;
+
 /**
  * Tests sobre la clase DBJSON
  */
@@ -15,6 +17,10 @@ static const string defaultEmail("email@dominio.com");
 static const string defaultCiudad("Ciudad");
 static const string defaultBase64PassHash("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dncwMTIzNDU2Nzg=");
 static const string dbPath("/tmp/testjsondb");
+static const std::string tinyJPGBase64 = "/9j/4AAQSkZJRgABAQEASABIA"
+		"AD/2wBDAP/////////////////////////////////////////////////"
+		"/////////////////////////////////////wgALCAABAAEBAREA/8QAF"
+		"BABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
 
 class DBJsonTest : public ::testing::Test {
  public:
@@ -38,7 +44,7 @@ class DBJsonTest : public ::testing::Test {
 	 * @return						El hash de la password
 	 */
 	void registrarTest(string userName, double latitud, double longitud) {
-		json11::Json json = json11::Json::object {
+		Json json = Json::object {
 			{ "first_name", defaultNombre },
 			{ "last_name", defaultApellido },
 			{ "birth", defaultFecha },
@@ -59,10 +65,83 @@ TEST_F(DBJsonTest, testRegistroYLogin)
 	string userName2("TUsername2");
 	registrarTest(userName1, 1.0, 0.5);
 	registrarTest(userName2, 0.4, 0.3);
-	json11::Json loginJson = json11::Json::object {
+	Json loginJson = Json::object {
 				{ "username", userName2 },
 				{ "password", defaultBase64PassHash },
 	};
 	uint32_t uid = dbj->login(loginJson);
 	EXPECT_EQ(uid,1);
+}
+
+TEST_F(DBJsonTest, testGetSetResumen)
+{
+	string userName("Username");
+	registrarTest(userName, 1.0, 0.5);
+	Json loginJson = Json::object {
+				{ "username", userName },
+				{ "password", defaultBase64PassHash },
+	};
+	uint32_t uid = dbj->login(loginJson);
+
+	Json resumenJson = Json::object {
+				{ "resumen", "Test resumen." }
+	};
+	dbj->setResumen(uid, resumenJson);
+	Json result(dbj->getResumen(uid));
+	EXPECT_STREQ(result["resumen"].string_value().c_str(), "Test resumen.");
+}
+
+TEST_F(DBJsonTest, testGetSetFoto)
+{
+	string userName("Username");
+	registrarTest(userName, 1.0, 0.5);
+	Json loginJson = Json::object {
+				{ "username", userName },
+				{ "password", defaultBase64PassHash },
+	};
+	uint32_t uid = dbj->login(loginJson);
+
+	Json fotoJson = Json::object {
+				{ "foto", tinyJPGBase64 }
+	};
+	dbj->setFoto(uid, fotoJson);
+	Json resultFoto(dbj->getFoto(uid));
+	Json resultThumb(dbj->getFotoThumbnail(uid));
+	EXPECT_STREQ(tinyJPGBase64.c_str(), resultFoto["foto"].string_value().c_str());
+	EXPECT_GT(resultThumb["thumb"].string_value().length(), 1);
+}
+
+TEST_F(DBJsonTest, testGetSetPerfil)
+{
+	string userName("Username");
+	registrarTest(userName, 1.0, 0.5);
+	Json loginJson = Json::object {
+				{ "username", userName },
+				{ "password", defaultBase64PassHash },
+	};
+	uint32_t uid = dbj->login(loginJson);
+	EXPECT_TRUE(true);
+
+	Json datosJson = Json::object {
+			{ "name" , "Nombre Test" },
+			{ "skills", Json::array { "Skill1", "Skill2" } },
+			{"job_positions",  Json::array { Json::object {
+				{ "name", "<positionname1>"},
+				{ "start" , "4/11/1994"},
+				{ "end" , "current"}
+				},
+				Json::object {
+				{ "name", "<positionname2>"},
+				{ "start", "4/2/1990"},
+				{ "end" , "11/3/1992"}
+				} } },
+			{ "city" , "Una ciudad" },
+			{ "resumen" , "Test Resumen" },
+			{ "foto" , tinyJPGBase64 },
+		};
+	dbj->setDatos(uid, datosJson);
+	Json result(dbj->getDatos(uid));
+
+	EXPECT_STREQ(result["resumen"].string_value().c_str(), "Test resumen.");
+	EXPECT_STREQ(tinyJPGBase64.c_str(), result["foto"].string_value().c_str());
 }
