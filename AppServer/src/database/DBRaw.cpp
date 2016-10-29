@@ -76,9 +76,6 @@ DBRaw::~DBRaw() {
 	delete db;
 }
 
-
-
-
 uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		const std::vector<char> &passHash)
 {
@@ -433,7 +430,8 @@ void DBRaw::incrementarContador(KeyCode keyCode, const string &tipo, WriteBatch*
 	}
 }
 
-template<class TException> void DBRaw::verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID) {
+template<class TException> void DBRaw::verificarContador(KeyCode keyCode,
+		const string &tipo, uint32_t ID) {
 	if (ID >= contadorActual(keyCode, tipo)) throw TException(std::to_string(ID));
 	return;
 }

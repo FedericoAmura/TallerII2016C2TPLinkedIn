@@ -1,6 +1,7 @@
 #include "../include/gtest/gtest.h"
 #include "../include/database/DBJSON.h"
 #include "../include/database/DBExceptions.h"
+#include "../include/database/JsonChecker.h"
 #include <iostream>
 #include <cstdio>
 
@@ -43,7 +44,7 @@ class DBJsonTest : public ::testing::Test {
 	 * @param longitud				Longitud
 	 * @return						El hash de la password
 	 */
-	void registrarTest(string userName, double latitud, double longitud) {
+	uint32_t registrarTest(string userName, double latitud, double longitud) {
 		Json json = Json::object {
 			{ "first_name", defaultNombre },
 			{ "last_name", defaultApellido },
@@ -55,7 +56,7 @@ class DBJsonTest : public ::testing::Test {
 			{ "longitude", longitud },
 			{ "latitude", latitud },
 		};
-		dbj->registrarse(json);
+		return dbj->registrarse(json);
 	}
 };
 
@@ -63,14 +64,31 @@ TEST_F(DBJsonTest, testRegistroYLogin)
 {
 	string userName1("TUsername1");
 	string userName2("TUsername2");
-	registrarTest(userName1, 1.0, 0.5);
-	registrarTest(userName2, 0.4, 0.3);
-	Json loginJson = Json::object {
+	EXPECT_EQ(registrarTest(userName1, 1.0, 0.5),0);
+	EXPECT_EQ(registrarTest(userName2, 0.4, 0.3),1);
+	EXPECT_THROW(registrarTest(userName2, 0.4, 0.3),PreexistentUsername);
+	Json loginJson1 = Json::object {
+				{ "username", userName1 },
+				{ "password", defaultBase64PassHash },
+	};
+	EXPECT_EQ(dbj->login(loginJson1),0);
+	Json loginJson2 = Json::object {
 				{ "username", userName2 },
 				{ "password", defaultBase64PassHash },
 	};
-	uint32_t uid = dbj->login(loginJson);
-	EXPECT_EQ(uid,1);
+	EXPECT_EQ(dbj->login(loginJson2),1);
+	Json loginJson3 = Json::object {
+				{ "username", userName2 },
+				{ "password", "asd" },
+	};
+	EXPECT_THROW(dbj->login(loginJson3),BadPasswordSize);
+	string casiPass(defaultBase64PassHash);
+	casiPass[0] = 'E';
+	Json loginJson4 = Json::object {
+				{ "username", userName2 },
+				{ "password", casiPass },
+	};
+	EXPECT_THROW(dbj->login(loginJson4),BadPassword);
 }
 
 TEST_F(DBJsonTest, testGetSetResumen)
@@ -144,4 +162,14 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 
 	EXPECT_STREQ(result["resumen"].string_value().c_str(), "Test resumen.");
 	EXPECT_STREQ(tinyJPGBase64.c_str(), result["foto"].string_value().c_str());
+}
+
+TEST(JsonTest, TestJsonChecker)
+{
+	Json json = Json::object {
+				{ "username", "UN" },
+				{ "password", defaultBase64PassHash },
+	};
+	camposExisten(json, "username", "password");
+	EXPECT_THROW(camposExisten(json, "no"), BadInputException);
 }

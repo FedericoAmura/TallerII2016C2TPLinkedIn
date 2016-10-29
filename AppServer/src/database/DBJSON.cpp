@@ -1,6 +1,7 @@
 #include "../../include/database/DBJSON.h"
 #include "../../include/database/DatosUsuario.h"
 #include "../../include/base64/base64.h"
+#include "../../include/database/JsonChecker.h"
 
 DBJSON::DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db) :
 	sharedServerHandler(sharedServerHandler), db(db) {}
@@ -10,7 +11,8 @@ DBJSON::~DBJSON() {
 }
 
 uint32_t DBJSON::registrarse(const Json &json) {
-	//TODO: Chequeo de existencia de campos
+	camposExisten(json, "first_name", "last_name", "email", "city",
+			"birth", "longitude", "latitude");
 	string nombre(json["first_name"].string_value());
 	nombre.append(" ");
 	nombre.append(json["last_name"].string_value());
@@ -30,7 +32,7 @@ uint32_t DBJSON::registrarse(const Json &json) {
 
 
 uint32_t DBJSON::login(const Json &json) {
-	//TODO: Chequeo de existencia de campos
+	camposExisten(json, "username", "password");
 	string userName = json["username"].string_value();
 	string passHashStr = base64_decode(json["password"].string_value());
 	std::vector<char> passHash(passHashStr.begin(), passHashStr.end());
@@ -77,6 +79,7 @@ Json DBJSON::getFotoThumbnail(uint32_t userID) {
 }
 
 void DBJSON::setFoto(uint32_t userID, const Json &json) {
+	camposExisten(json, "foto");
 	Foto foto(json["foto"].string_value());
 	db->setFoto(userID, foto);
 }
@@ -159,3 +162,4 @@ void DBJSON::marcarChatLeido(const Json &json) {
 
 void DBJSON::enviarMensaje(const Json &json) {
 }
+
