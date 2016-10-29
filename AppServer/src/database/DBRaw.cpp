@@ -310,6 +310,12 @@ void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
 	db->Write(WriteOptions(), &batch);
 }
 
+uint32_t DBRaw::getPopularidad(uint32_t uID) {
+	// TODO: Implementar
+	return 0;
+}
+
+
 /*
 std::vector<uint32_t> DBRaw::busquedaProfresional(
 		const std::vector<string>* puestos, const std::vector<string>* skill,

@@ -268,6 +268,14 @@ class DBRaw {
 		bool sortPopularidad);
 
 	/**
+	 * Devuelve la popularidad del usuario
+	 * @param uID						User ID
+	 * @exception NonexistentUserID		El uID es inválido
+	 * @return							#recomendaciones
+	 */
+	uint32_t getPopularidad(uint32_t uID);
+
+	/**
 	 * Realiza una busqueda sobre solo los usuarios más populares
 	 * @param conteo					Cuantos de los más populares retornar
 	 * @return							Vector con todos los uIDs matcheantes

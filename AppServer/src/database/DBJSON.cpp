@@ -94,7 +94,15 @@ Json DBJSON::getDatos(uint32_t userID) {
 }
 
 Json DBJSON::getDatosBrief(uint32_t userID) {
-	Json data = Json::object {};
+	DatosUsuario datos = db->getDatos(userID);
+	int popularidad = db->getPopularidad(userID);
+	Foto thumb = db->getFotoThumbnail(userID);
+	Json data = Json::object {
+		{ "name", datos.nombre },
+		{ "popularidad", popularidad },
+		{ "city", datos.ciudad },
+		{ "thumb", thumb.toBase64String() },
+	};
 	return data;
 }
 

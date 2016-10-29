@@ -205,6 +205,24 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 
 }
 
+TEST_F(DBJsonTest, testBrief)
+{
+	string userName("Username");
+	registrarTest(userName, 1.0, 0.5);
+	Json loginJson = Json::object {
+				{ "username", userName },
+				{ "password", defaultBase64PassHash },
+	};
+	uint32_t uid = dbj->login(loginJson);
+
+	Json jBrief = dbj->getDatosBrief(uid);
+	EXPECT_STREQ(jBrief["name"].string_value().c_str(), "TNombre TApellido");
+	EXPECT_STREQ(jBrief["city"].string_value().c_str(), "Ciudad");
+	EXPECT_EQ(0, jBrief["popularidad"].int_value());
+	EXPECT_LT(0,jBrief["thumb"].string_value().length());
+
+}
+
 TEST(JsonTest, TestJsonChecker)
 {
 	Json json = Json::object {
