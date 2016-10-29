@@ -72,15 +72,19 @@ http_response PUT_Handler::handle_update_profile() {
 	try {
 		db_json->setDatos(userID, data);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID" << std::endl;
+		std::cout << "[Error] Non existent userID. Update Profile failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	} catch (NonexistentSkill &e) {
 		error = Json::object {{"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
-		std::cout << "[Error] Non existent skill" << std::endl;
+		std::cout << "[Error] Non existent skill. Update Profile failed." << std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	} catch (NonexistentPosition &e) {
 		error = Json::object {{"error_code", ERR_CODE_NONEXISTENT_JOB}, {"description", ERR_DESC_NONEXISTENT_JOB}};
-		std::cout << "Non existent position" << std::endl;
+		std::cout << "Non existent position. Update Profile failed." << std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
+	} catch (BadInputException &e) {
+		error = Json::object {{"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] \"" << e.what() << "\" not found. Update Profile failed." << std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 
@@ -123,6 +127,10 @@ http_response PUT_Handler::handle_update_resume() {
 	} catch (NonexistentUserID &e) {
 		std::cout << "[Error] UserID not found. Update summary failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
+	} catch (BadInputException &e) {
+		error = Json::object {{"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] \"resume\" not found. Update Summary failed." << std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 	return http_response("", STATUS_NO_CONTENT);
 }
@@ -167,6 +175,10 @@ http_response PUT_Handler::handle_update_photo() {
 		error = Json::object {{"error_code", ERR_CODE_PHOTO_TOO_BIG}, {"description", ERR_DESC_PHOTO_TOO_BIG}};
 		std::cout << "[Error] Photo too big. Update photo failed." << std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
+	} catch (BadInputException &e) {
+		error = Json::object {{"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] \"photo\" not found. Update photo failed." << std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 	return http_response("", STATUS_NO_CONTENT);
 }
@@ -209,6 +221,10 @@ http_response PUT_Handler::handle_recommend_user() {
 	} catch (NonexistentUserID &e) {
 		std::cout << "[Error] Non existent userID. Recommend user failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
+	} catch (BadInputException &e) {
+		error = Json::object {{"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] \"" << e.what() << "\" not found. Recommend user failed." << std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 	return http_response("", STATUS_NO_CONTENT);
 }

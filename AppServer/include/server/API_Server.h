@@ -116,4 +116,7 @@ static const std::string ERR_DESC_LOC_OUT_OF_RANGE  = "bad location";
 static const std::string ERR_DESC_BAD_PASSWORD_SIZE = "bad password size";
 static const std::string ERR_DESC_PHOTO_TOO_BIG     = "photo too big";
 
+//for INT_SERVER_ERR (500)
+static const std::string ERR_DESC_OPERATION_FAILED  = "operation failed";
+
 #endif  // APPSERVER_INCLUDE_SERVER_API_SERVER_H_
