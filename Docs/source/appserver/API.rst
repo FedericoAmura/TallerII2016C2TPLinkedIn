@@ -169,6 +169,7 @@ POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No aurotizado
 			| 404 - UserID inexistente
 			| 415 - Los datos no corresponden a un jpg
+                        | 422 - Foto demasiado grande
 ======================  ==========================
 
 Foto : Consulta thumbnail

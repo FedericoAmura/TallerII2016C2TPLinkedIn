@@ -48,7 +48,7 @@ http_response GET_Handler::handleRequest() {
 			break;
 		case _USERS_REQ_CONTACT:
 			// /users/<user_id1>/notif/<user_id2>
-			res = handle_get_special_request();
+			res = handle_get_particular_request();
 			break;
 		case _USERS_CONTACTS:
 			// /users/<user_id>/contacts
@@ -107,7 +107,7 @@ http_response GET_Handler::handleRequest() {
 			res = handle_get_skill();
 			break;
 		default:
-			std::cout << "ERROR >> Method Not Allowed" << std::endl;
+			std::cout << "[Error] Method Not Allowed" << std::endl;
 			return http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
 	}
@@ -127,47 +127,242 @@ http_response GET_Handler::handle_get_user_profile() {
 	try {
 		data = db_json->getDatos(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "Error: Non existent user. Query failed." << std::endl;
-		return http_response("", STATUS_BAD_REQUEST);
+		std::cout << "[Error] Non existent user. Query (Profile) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
 	}
 
 	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_resume() {
-	return http_response("{\"msg\":\"Summary\"}\n", STATUS_OK);
+	// /users/<user_id>/resume
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	Json data;
+	try {
+		data = db_json->getResumen(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent user. Query (Resume) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_photo() {
-	return http_response("{\"msg\":\"Photo\"}\n", STATUS_OK);
+	// /users/<user_id>/photo
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	Json data;
+	try {
+		data = db_json->getFoto(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent user. Query (Photo) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	} catch (LevelDBException &e) {
+		std::cout << "[Error] User without photo. Query (Photo) failed." << std::endl;
+		return http_response("", STATUS_NO_CONTENT);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_thumb() {
-	return http_response("{\"msg\":\"Thumb\"}\n", STATUS_OK);
+	// /users/<user_id>/thumb
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	Json data;
+	try {
+		data = db_json->getFotoThumbnail(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent user. Query (Thumbnail) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	} catch (LevelDBException &e) {
+		std::cout << "[Error] User without thumbail photo. Query (Thumbnail) failed." << std::endl;
+		return http_response("", STATUS_NO_CONTENT);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_brief() {
-	return http_response("{\"msg\":\"Bief\"}\n", STATUS_OK);
+	// /users/<user_id>/brief
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	Json data;
+	try {
+		data = db_json->getDatosBrief(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent user. Query (Brief) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_pending_contact_requests() {
-	return http_response("{\"msg\":\"Notif\"}\n", STATUS_OK);
+	// /users/<user_id>/notif
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Pending requests) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Pending requests) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Pending requests) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	try {
+		data = db_json->getPeticionesPendientes(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent user. Query (Pending requests) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_number_pending_requests() {
-	return http_response("{\"msg\":\"New Notif\"}\n", STATUS_OK);
+	// /users/<user_id>/notif/new
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Number Pending requests) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Number Pending requests) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Number Pending requests) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	try {
+		data = db_json->getNumPeticionesPendientes(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent user. Query (Number Pending requests) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
-http_response GET_Handler::handle_get_special_request() {
-	return http_response("{\"msg\":\"Notify Request\"}\n", STATUS_OK);
+http_response GET_Handler::handle_get_particular_request() {
+	// /users/<user_id1>/notif/<user_id2>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID1 = std::stoi(vec_uri[1]);
+	uint32_t userID2 = std::stoi(vec_uri[3]);
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Particular request) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Particular request) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	try {
+		data = db_json->getPeticion(userID1, userID2);
+	} catch (NonexistentRequest &e) {
+		std::cout << "[Error] Non existent request. Query (Particular request) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_contacts() {
-	return http_response("{\"msg\":\"Contacts\"}\n", STATUS_OK);
+	// /users/<user_id>/contacts
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	try {
+		data = db_json->getContactos(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Query (Contacts) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_are_they_connected() {
-	return http_response("{\"msg\":\"Contact Management\"}\n", STATUS_OK);
+	// /users/<user_id1>/contacts/<user_id2>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID1 = std::stoi(vec_uri[1]);
+	uint32_t userID2 = std::stoi(vec_uri[3]);
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	bool connected;
+	try {
+		connected = db_json->esContacto(userID1, userID2);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Query (Are They Connected?) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	if (!connected)
+		return http_response("", STATUS_NOT_FOUND);
+	return http_response("", STATUS_NO_CONTENT);
 }
 
 http_response GET_Handler::handle_get_popular() {

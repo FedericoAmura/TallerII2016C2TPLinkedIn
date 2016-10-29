@@ -14,7 +14,7 @@ user1_data["last_name"] = "perez"
 user1_data["birth"] =  "11/2/2014"
 user1_data["email"] = "mmmma@gmail.com"
 user1_data["username"] = "guidonegri"
-user1_data["password"] = base64.b64encode(hashlib.sha256("holaSoyFulano").hexdigest())
+user1_data["password"] = base64.b64encode(hashlib.sha256("holaSoyFulano").digest())
 user1_data["city"] = "ciudad_perdida"
 user1_data["longitude"] = 12.4
 user1_data["latitude"] = 3.4
@@ -24,7 +24,7 @@ user2_data["last_name"] = "perez"
 user2_data["birth"] =  "1/2/2012"
 user2_data["email"] = "rrrrra@gmail.com"
 user2_data["username"] = "pepepipo"
-user2_data["password"] = base64.b64encode(hashlib.sha256("holaSoyMengano").hexdigest())
+user2_data["password"] = base64.b64encode(hashlib.sha256("holaSoyMengano").digest())
 user2_data["city"] = "ciudad_perdida"
 user2_data["longitude"] = 10.4
 user2_data["latitude"] = 2.5
@@ -34,7 +34,7 @@ user3_data["last_name"] = "perez"
 user3_data["birth"] =  "1/2/2012"
 user3_data["email"] = "rrrrra@gmail.com"
 user3_data["username"] = "juanperez"
-user3_data["password"] = base64.b64encode(hashlib.sha256("holaSoyPerez").hexdigest())
+user3_data["password"] = base64.b64encode(hashlib.sha256("holaSoyPerez").digest())
 user3_data["city"] = "ciudad_perdida"
 user3_data["longitude"] = 10.4
 user3_data["latitude"] = 2.5
@@ -43,92 +43,105 @@ client1 = Client(user1_data)
 client2 = Client(user2_data)
 client3 = Client(user3_data)
 
-client1.signup()
-client2.signup()
-client3.signup()
-
-client1.login()
-client2.login()
-
-'''
-    def setUp(self):
-        res1 = client1.signup()
-        res2 = client2.signup()
-        self.assertEquals(201, res1.status_code)
-        self.assertEquals(201, res2.status_code)
-
-        res1 = client1.login()
-        res2 = client2.login()
-        self.assertEquals(200, res1.status_code)
-        self.assertEquals(200, res2.status_code)
-
-    def tearDown(self):
-        res1 = client1.logout()
-        res2 = client2.logout()
-        self.assertEquals(204, res1.status_code)
-        self.assertEquals(204, res2.status_code)
-'''
-
 class ClientTest(unittest.TestCase):
 
 ### POST
-#    def test_login(self):
-#        res1 = client1.login()
-#        res2 = client2.login()
-#        self.assertEquals(200, res1.status_code)
-#        self.assertEquals(200, res2.status_code)
+    def test_00_login_before_signup(self):
+        res = client1.login()
+        self.assertEquals(403, res.status_code)
+
+    def test_01_signup(self):
+        res1 = client1.signup()
+        res2 = client2.signup()
+        res3 = client3.signup()
+        self.assertEquals(201, res1.status_code)
+        self.assertEquals(201, res2.status_code)
+        self.assertEquals(201, res3.status_code)
 
     # hacer un signup con un username ya existente debería devolver 422
-    def test_signup_again(self):
+    def test_02_repeated_signup(self):
         res = client1.signup()
         self.assertEquals(422, res.status_code)
 
-    def test_accept_contact_request(self):
-        another_userID = client2.get_user_id()
-        res = client1.accept_contact_request(another_userID)
-        self.assertEquals(204, res.status_code)
+    def test_03_login(self):
+        res1 = client1.login()
+        res2 = client2.login()
+        res3 = client3.login()
+        self.assertEquals(200, res1.status_code)
+        self.assertEquals(200, res2.status_code)
+        self.assertEquals(200, res3.status_code)
 
-    def test_create_contact_request(self):
+    def test_04_accept_non_existent_contact_request(self):
+        another_userID = "9999999"
+        res = client1.accept_contact_request(another_userID)
+        self.assertEquals(204, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+
+    def test_05_create_contact_request_to_non_existent_user(self):
+        data = {}
+        data["targetID"] = "99999999"
+        data["message"] = "Hello!!!"
+        res = client1.create_contact_request(data)
+        self.assertEquals(201, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+
+    def test_06_create_contact_request_to_existent_user(self):
         data = {}
         data["targetID"] = client2.get_user_id()
         data["message"] = "Hello!!!"
         res = client1.create_contact_request(data)
         self.assertEquals(201, res.status_code)
 
-    def test_notify_message_seen(self):
-        data = {}
-        data["targetID"] = client2.get_user_id()
-        res = client1.notify_msg_seen(data)
+    def test_07_accept_existent_contact_request(self):
+        another_userID = client1.get_user_id()
+        res = client2.accept_contact_request(another_userID)
         self.assertEquals(204, res.status_code)
 
-    def test_send_message(self):
+    def test_08_send_message_to_non_existent_user(self):
+        data = {}
+        data["receiverID"] = "999999"
+        data["message"] = "blabla"
+        res = client1.send_msg(data)
+        self.assertEquals(201, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+
+    def test_09_send_message_to_existent_user(self):
         data = {}
         data["receiverID"] = client2.get_user_id()
         data["message"] = "blabla"
         res = client1.send_msg(data)
         self.assertEquals(201, res.status_code)
 
+    def test_10_notify_message_seen_to_non_existent_chat(self):
+        data = {}
+        data["targetID"] = "999999"
+        res = client1.notify_msg_seen(data)
+        self.assertEquals(204, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+
+    def test_11_notify_message_seen_to_existent_chat(self):
+        data = {}
+        data["targetID"] = client1.get_user_id()
+        res = client2.notify_msg_seen(data)
+        self.assertEquals(204, res.status_code)
+
 ### PUT
-    def test_update_profile(self):
+    def test_12_update_profile(self):
         data = {}
         data["name"] = "New Name"
         data["skills"] = ["skill1", "skill2"]
         res = client1.update_profile(data)
-        self.assertEquals(200, res.status_code)
+        self.assertEquals(204, res.status_code)
 
-    def test_update_resume(self):
+    def test_13_update_resume(self):
         data = {}
         data = {"resume" : "new resume"}
         res = client1.update_resume(data)
         self.assertEquals(204, res.status_code)
 
-    def test_update_photo(self):
+    def test_14_update_photo(self):
         data = {}
         data = {"photo": "asd12as"}
         res = client1.update_photo(data)
         self.assertEquals(204, res.status_code)
 
-    def test_recommend_user(self):
+    def test_15_recommend_user(self):
         receiverID = client2.get_user_id()
         data = {}
         data["recommended"] = client3.get_user_id()
@@ -198,7 +211,7 @@ class ClientTest(unittest.TestCase):
 
     def test_get_are_we_contacts(self):
         res = client1.get_are_we_contacts(client2.get_user_id())
-        self.assertEquals(200, res.status_code)
+        self.assertEquals(404, res.status_code)
 
     def test_get_number_new_messages(self):
         res = client1.get_number_new_messages()

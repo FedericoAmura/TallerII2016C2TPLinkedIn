@@ -27,7 +27,7 @@ http_response DELETE_Handler::handleRequest() {
 			res = handle_delete_contact();
 			break;
 		default:
-			std::cout << "ERROR >> Method Not Allowed" << std::endl;
+			std::cout << "[Error] Method Not Allowed" << std::endl;
 			return http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
 	}

@@ -77,7 +77,43 @@ static const int STATUS_NOT_FOUND 		= 404;
 static const int STATUS_MET_NOT_ALLOWED	= 405;
 static const int STATUS_NOT_ACCEPTABLE	= 406;
 static const int STATUS_CONFLICT		= 409;
-static const int STATUS_UNPROCCESABLE	= 422;
+static const int STATUS_UNPROCESSABLE	= 422;
 static const int STATUS_INT_SERVER_ERR	= 500;
+
+/* Error Codes */
+// for BAD REQUEST (400)
+static const int ERR_CODE_NONEXISTENT_CAT   = 1;    /* nonexistent category */
+static const int ERR_CODE_NONEXISTENT_SKILL = 2;    /* nonexistent skill */
+static const int ERR_CODE_NONEXISTENT_JOB   = 3;    /* nonexistent job position */
+static const int ERR_CODE_MALFORMED_LOC     = 4;    /* malformed location */
+static const int ERR_CODE_INVALID_DISTANCE  = 5;    /* invalid distance */
+static const int ERR_CODE_INVALID_POPSORT   = 6;    /* invalid popsort */
+
+// for UNPROCESSABLE (422)
+static const int ERR_CODE_INV_DATA_FORMAT   = 0;    /* invalid data format, i.e invalid json format */
+static const int ERR_CODE_USRNM_UNAVAILABLE = 1;    /* username unavailable */
+static const int ERR_CODE_INVALID_EMAIL     = 2;    /* invalid email */
+static const int ERR_CODE_MALFORMED_DATE    = 3;    /* malformed date */
+static const int ERR_CODE_LOC_OUT_OF_RANGE  = 4;    /* location out of range */
+static const int ERR_CODE_BAD_PASSWORD_SIZE = 5;    /* bad password size */
+static const int ERR_CODE_PHOTO_TOO_BIG     = 6;    /* photo too big */
+
+/* Error Descriptions */
+// for BAD REQUEST (400)
+static const std::string ERR_DESC_NONEXISTENT_CAT   = "nonexistent category";
+static const std::string ERR_DESC_NONEXISTENT_SKILL = "nonexistent skill";
+static const std::string ERR_DESC_NONEXISTENT_JOB   = "nonexistent job position";
+static const std::string ERR_DESC_MALFORMED_LOC     = "malformed location";
+static const std::string ERR_DESC_INVALID_DISTANCE  = "invalid distance";
+static const std::string ERR_DESC_INVALID_POPSORT   = "invalid popsort";
+
+// for UNPROCESSABLE (422)
+static const std::string ERR_DESC_INV_DATA_FORMAT   = "invalid data format";
+static const std::string ERR_DESC_USRNM_UNAVAILABLE = "username unavailable";
+static const std::string ERR_DESC_INVALID_EMAIL     = "invalid email";
+static const std::string ERR_DESC_MALFORMED_DATE    = "malformed date";
+static const std::string ERR_DESC_LOC_OUT_OF_RANGE  = "bad location";
+static const std::string ERR_DESC_BAD_PASSWORD_SIZE = "bad password size";
+static const std::string ERR_DESC_PHOTO_TOO_BIG     = "photo too big";
 
 #endif  // APPSERVER_INCLUDE_SERVER_API_SERVER_H_

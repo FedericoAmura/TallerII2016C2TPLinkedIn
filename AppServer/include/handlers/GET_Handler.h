@@ -91,7 +91,7 @@ private:
 	 * 			código de respuesta, sino devuelve una respuesta vacía y
 	 * 			el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handle_get_special_request();
+	http_response handle_get_particular_request();
 
 	/*
 	 * Contactos de un usuario
