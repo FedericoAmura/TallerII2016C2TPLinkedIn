@@ -1,6 +1,7 @@
 #include "../../include/database/DBJSON.h"
 #include "../../include/database/DatosUsuario.h"
 #include "../../include/base64/base64.h"
+#include "../../include/database/JsonChecker.h"
 
 DBJSON::DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db) :
 	sharedServerHandler(sharedServerHandler), db(db) {}
@@ -34,7 +35,8 @@ bool DBJSON::validar_token(const string &token) {
 }
 
 uint32_t DBJSON::registrarse(const Json &json) {
-	//TODO: Chequeo de existencia de campos
+	camposExisten(json, "first_name", "last_name", "email", "city",
+			"birth", "longitude", "latitude");
 	string nombre(json["first_name"].string_value());
 	nombre.append(" ");
 	nombre.append(json["last_name"].string_value());
@@ -48,16 +50,16 @@ uint32_t DBJSON::registrarse(const Json &json) {
 
 	string userName = json["username"].string_value();
 	string passHashStr = base64_decode(json["password"].string_value());
-	std::vector<char> passHash(passHashStr.begin(), passHashStr.end());
+	vector<char> passHash(passHashStr.begin(), passHashStr.end());
 	return db->registrarse(datos, userName, passHash);
 }
 
 
 uint32_t DBJSON::login(const Json &json) {
-	//TODO: Chequeo de existencia de campos
+	camposExisten(json, "username", "password");
 	string userName = json["username"].string_value();
 	string passHashStr = base64_decode(json["password"].string_value());
-	std::vector<char> passHash(passHashStr.begin(), passHashStr.end());
+	vector<char> passHash(passHashStr.begin(), passHashStr.end());
 	return db->login(userName, passHash);
 }
 
@@ -65,10 +67,26 @@ Json DBJSON::getDatos(uint32_t userID) {
 	DatosUsuario datos = db->getDatos(userID);
 	string resumen = db->getResumen(userID);
 	Foto foto = db->getFoto(userID);
+	uint16_t contacts = db->getNumContactos(userID);
+	vector<string> skillVector(db -> getSkills(userID));
+	Json::array skills(skillVector.begin(), skillVector.end());
+	vector<Puesto> puestosVector(db -> getPuestos(userID));
+	Json::array puestos;
+	for (Puesto p : puestosVector)
+	{
+		Json j = Json::object {
+			{ "name" , p.puesto},
+			{ "start", p.fechaInicio.toString()},
+			{ "end", p.fechaFin.toString() }
+		};
+		puestos.push_back(j);
+	}
 	Json data = Json::object {
 		{"name" , datos.nombre},
 		{"city" , datos.ciudad},
-		/* TODO según API, faltan skills, job_positions, contacts */
+		{"skills", skills},
+		{"job_positions", puestos},
+		{"contacts", contacts },
 		{"resume" , resumen},
 		{"photo" , foto.toBase64String()},
 	};
@@ -76,11 +94,50 @@ Json DBJSON::getDatos(uint32_t userID) {
 }
 
 Json DBJSON::getDatosBrief(uint32_t userID) {
-	Json data = Json::object {};
+	DatosUsuario datos = db->getDatos(userID);
+	int popularidad = db->getPopularidad(userID);
+	Foto thumb = db->getFotoThumbnail(userID);
+	Json data = Json::object {
+		{ "name", datos.nombre },
+		{ "popularidad", popularidad },
+		{ "city", datos.ciudad },
+		{ "thumb", thumb.toBase64String() },
+	};
 	return data;
 }
 
 void DBJSON::setDatos(uint32_t userID, const Json &json) {
+	camposExisten(json, "name", "skills", "job_positions", "city");
+	DatosUsuario datos = db->getDatos(userID);
+	datos.nombre = json["name"].string_value();
+	datos.ciudad = json["city"].string_value();
+	vector<string> skills;
+	for (Json j : json["skills"].array_items())
+	{
+		skills.push_back(j.string_value());
+	}
+	vector<Puesto> puestos;
+	for (Json j : json["job_positions"].array_items())	{
+		camposExisten(j, "name", "start", "end");
+		Puesto p(j["name"].string_value(),
+				Fecha(j["start"].string_value()),
+				Fecha(j["end"].string_value()));
+		puestos.push_back(p);
+	}
+	string resumen;
+	string *pResumen = NULL;
+	if (!json["resume"].is_null())
+	{
+		resumen = json["resume"].string_value();
+		pResumen = &resumen;
+	}
+	if (!json["photo"].is_null())
+	{
+		Foto photo(json["photo"].string_value());
+		db->setPerfil(userID, datos, skills, puestos, pResumen, &photo);
+	}
+	else
+		db->setPerfil(userID, datos, skills, puestos, pResumen, NULL);
 }
 
 Json DBJSON::getResumen(uint32_t userID) {
@@ -90,6 +147,7 @@ Json DBJSON::getResumen(uint32_t userID) {
 }
 
 void DBJSON::setResumen(uint32_t userID, const Json &json) {
+	camposExisten(json, "resume");
 	string resumen(json["resume"].string_value());
 	db->setResumen(userID, resumen);
 }
@@ -107,12 +165,13 @@ Json DBJSON::getFotoThumbnail(uint32_t userID) {
 }
 
 void DBJSON::setFoto(uint32_t userID, const Json &json) {
+	camposExisten(json, "photo");
 	Foto foto(json["photo"].string_value());
 	db->setFoto(userID, foto);
 }
 
-Json DBJSON::busqueda_profresional(const std::vector<string>
-	*puestos, const std::vector<string> *skill, const std::vector<string>
+Json DBJSON::busqueda_profresional(const vector<string>
+	*puestos, const vector<string> *skill, const vector<string>
 	*categorias, Geolocacion *geolocacion, float maxDist,
 	bool sortPopularidad) {
 
@@ -189,3 +248,4 @@ void DBJSON::marcarChatLeido(const Json &json) {
 
 void DBJSON::enviarMensaje(const Json &json) {
 }
+

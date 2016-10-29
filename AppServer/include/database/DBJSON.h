@@ -8,6 +8,7 @@
 
 using json11::Json;
 using std::string;
+using std::vector;
 
 /**
  * Wrapper de la base de datos que toma jsons y/o parametros y devuelve jsons
@@ -50,6 +51,7 @@ class DBJSON {
 	 * @exception BadGeolocation		Latitud/longitud fuera de rango
 	 * @exception MalformedDate			Fecha malformada
 	 * @exception BadPasswordSize		La password provista no es un hash de 32 bytes
+	 * @exception BadInputException		Falta algun campo del JSON
 	 * @return							El uID (user ID) del nuevo usuario creado
 	 */
 	uint32_t registrarse(const Json &json);
@@ -60,6 +62,7 @@ class DBJSON {
 	 * @exception NonexistentUsername	Datos de login incorrectos por username inexistente
 	 * @exception BadPassword			Datos de login incorrectos por password incorrecto
 	 * @exception BadPasswordSize		La password provista no es un hash de 32 bytes
+	 * @exception BadInputException		Falta algun campo del JSON
 	 * @return							Ver documentacion API: "Login"
 	 */
 	uint32_t login(const Json &json);
@@ -103,6 +106,7 @@ class DBJSON {
 	 * Actualiza el resumen por uno nuevo
 	 * @param userID					User ID
 	 * @exception NonexistentUserID		El uID es inválido
+	 * @exception BadInputException		Falta algun campo del JSON
 	 * @param json						Ver documentacion API: "Resumen: Actualizar"
 	 */
 	void setResumen(uint32_t userID, const Json &json);
@@ -129,6 +133,7 @@ class DBJSON {
 	 * @param json						Ver documentacion API: "Foto: Actualizar"
 	 * @exception NonexistentUserID		El uID es inválido
 	 * @exception TooBigException		Foto de más de 4 MBs
+	 * @exception BadInputException		Falta algun campo del JSON
 	 */
 	void setFoto(uint32_t userID, const Json &json);
 
@@ -148,8 +153,8 @@ class DBJSON {
 	 * @exception NonexistentCategory	Alguna categoria es invalida
 	 * @exception BadInputException		Distancia máxima negativa
 	 */
-	Json busqueda_profresional(const std::vector<string>
-		*puestos, const std::vector<string> *skill, const std::vector<string>
+	Json busqueda_profresional(const vector<string>
+		*puestos, const vector<string> *skill, const vector<string>
 		*categorias, Geolocacion *geolocacion, float maxDist,
 		bool sortPopularidad);
 
@@ -206,6 +211,7 @@ class DBJSON {
 	 * Crea una peticion de contacto (sobreescribe si ya existe)
 	 * @param json						Ver documentacion API: "Crear petición (...)"
 	 * @exception NonexistentUserID		Algun user ID no es valido
+	 * @exception BadInputException		Falta algun campo del JSON
 	 */
 	void crearPeticion(const Json &json);
 
@@ -236,8 +242,9 @@ class DBJSON {
 
 	/**
 	 * Recomienda o desrecomienda usuarios
-	 * @param json				Ver documentación API: "Recomendar a un usuario"
+	 * @param json						Ver documentación API: "Recomendar a un usuario"
      * @exception NonexistentUserID		Alguno de los uID es inválido
+     * @exception BadInputException		Falta algun campo del JSON
 	 */
 	void actualizarRecomendacion(const Json &json);
 
@@ -273,6 +280,7 @@ class DBJSON {
 	 * Marca un chat como leido
 	 * @param json						Ver documentación API: "Marcar mensajes como leidos"
 	 * @exception NonexistentChat		No existe el chat especificado
+	 * @exception BadInputException		Falta algun campo del JSON
 	 */
 	void marcarChatLeido(const Json &json);
 
@@ -280,6 +288,7 @@ class DBJSON {
 	 * Envia un mensaje entre usuarios
 	 * @param json						Ver documentación API: "Enviar mensaje"
 	 * @exception NonexistentUserID		El uID destinatario es inválido
+	 * @exception BadInputException		Falta algun campo del JSON
 	 */
 	void enviarMensaje(const Json &json);
 
@@ -342,7 +351,6 @@ class DBJSON {
 	 * @return							Ver documentación API: "Consultar skill particular"
 	 */
 	Json getSkill(const string &skill);
-
 };
 
 #endif  /* APPSERVER_INCLUDE_DATABASE_DBJSON_H_ */

@@ -78,9 +78,6 @@ DBRaw::~DBRaw() {
 	delete db;
 }
 
-
-
-
 uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		const std::vector<char> &passHash)
 {
@@ -301,14 +298,23 @@ Foto DBRaw::getFotoThumbnail(uint32_t uID) {
 }
 
 void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
+		const vector<string> &skills, const vector<Puesto> &puestos,
 			string *resumen, Foto *foto)
 {
 	WriteBatch batch;
 	setDatos(uID, datos, &batch, true);
+	setSkills(uID, skills, &batch, false);
+	setPuestos(uID, puestos, &batch, false);
 	if(resumen) setResumen(uID, *resumen, &batch, false);
 	if(foto) setFoto(uID, *foto, &batch, false);
 	db->Write(WriteOptions(), &batch);
 }
+
+uint32_t DBRaw::getPopularidad(uint32_t uID) {
+	// TODO: Implementar
+	return 0;
+}
+
 
 /*
 std::vector<uint32_t> DBRaw::busquedaProfresional(
@@ -359,7 +365,7 @@ std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
 }*/
 
-uint DBRaw::getNumContactos(uint32_t uID) {
+uint16_t DBRaw::getNumContactos(uint32_t uID) {
 	return 0; //TODO: Implementar
 }
 
@@ -435,7 +441,8 @@ void DBRaw::incrementarContador(KeyCode keyCode, const string &tipo, WriteBatch*
 	}
 }
 
-template<class TException> void DBRaw::verificarContador(KeyCode keyCode, const string &tipo, uint32_t ID) {
+template<class TException> void DBRaw::verificarContador(KeyCode keyCode,
+		const string &tipo, uint32_t ID) {
 	if (ID >= contadorActual(keyCode, tipo)) throw TException(std::to_string(ID));
 	return;
 }

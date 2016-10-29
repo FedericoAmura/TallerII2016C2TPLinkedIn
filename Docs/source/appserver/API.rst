@@ -149,7 +149,7 @@ PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID inexistente
 			| 200 - OK + Siguiente JSON:
 			| {
-			| “foto” = “ab03d7f4c80239b8…”
+			| “photo” = “ab03d7f4c80239b8…”
 			| }
 ======================  ==========================
 
@@ -163,7 +163,7 @@ URL                  	| \http://<appserver>/users/<userID>/photo
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
-			| “foto” = “ab03d7f4c80239b8…”
+			| “photo” = “ab03d7f4c80239b8…”
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No aurotizado
