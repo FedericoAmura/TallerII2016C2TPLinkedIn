@@ -46,17 +46,17 @@ http_response PUT_Handler::handle_update_profile() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Update profile failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Update profile failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Update profile failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	Json data;
@@ -92,17 +92,17 @@ http_response PUT_Handler::handle_update_resume() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Update summary failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Update summary failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Update summary failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	Json data;
@@ -131,17 +131,17 @@ http_response PUT_Handler::handle_update_photo() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Update Photo failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Update photo failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Update photo failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	Json data;
@@ -175,17 +175,17 @@ http_response PUT_Handler::handle_recommend_user() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Recommend user failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Recommend user failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Recommend user failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	/* TODO validar que userID1 == recommender ??? */

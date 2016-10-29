@@ -84,11 +84,11 @@ TEST_F(DBJsonTest, testGetSetResumen)
 	uint32_t uid = dbj->login(loginJson);
 
 	Json resumenJson = Json::object {
-				{ "resumen", "Test resumen." }
+				{ "resume", "Test resumen." }
 	};
 	dbj->setResumen(uid, resumenJson);
 	Json result(dbj->getResumen(uid));
-	EXPECT_STREQ(result["resumen"].string_value().c_str(), "Test resumen.");
+	EXPECT_STREQ(result["resume"].string_value().c_str(), "Test resumen.");
 }
 
 TEST_F(DBJsonTest, testGetSetFoto)
@@ -102,12 +102,12 @@ TEST_F(DBJsonTest, testGetSetFoto)
 	uint32_t uid = dbj->login(loginJson);
 
 	Json fotoJson = Json::object {
-				{ "foto", tinyJPGBase64 }
+				{ "photo", tinyJPGBase64 }
 	};
 	dbj->setFoto(uid, fotoJson);
 	Json resultFoto(dbj->getFoto(uid));
 	Json resultThumb(dbj->getFotoThumbnail(uid));
-	EXPECT_STREQ(tinyJPGBase64.c_str(), resultFoto["foto"].string_value().c_str());
+	EXPECT_STREQ(tinyJPGBase64.c_str(), resultFoto["photo"].string_value().c_str());
 	EXPECT_GT(resultThumb["thumb"].string_value().length(), 1);
 }
 
@@ -136,12 +136,12 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 				{ "end" , "11/3/1992"}
 				} } },
 			{ "city" , "Una ciudad" },
-			{ "resumen" , "Test Resumen" },
-			{ "foto" , tinyJPGBase64 },
+			{ "resume" , "Test Resumen" },
+			{ "photo" , tinyJPGBase64 },
 		};
 	dbj->setDatos(uid, datosJson);
 	Json result(dbj->getDatos(uid));
 
-	EXPECT_STREQ(result["resumen"].string_value().c_str(), "Test resumen.");
-	EXPECT_STREQ(tinyJPGBase64.c_str(), result["foto"].string_value().c_str());
+	EXPECT_STREQ(result["resume"].string_value().c_str(), "Test resumen.");
+	EXPECT_STREQ(tinyJPGBase64.c_str(), result["photo"].string_value().c_str());
 }

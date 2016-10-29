@@ -58,6 +58,8 @@ public:
 
 DBRaw::DBRaw(const string& rutaArchivo, std::ostream *logStream)
 	: logStream(logStream) {
+	/*TODO es temporal el siguiente Destroy */
+	leveldb::DestroyDB(rutaArchivo, leveldb::Options());
 	dbLogAppender = new log4cpp::OstreamAppender("dbAppender", logStream);
 	dbLogAppender->setLayout(new log4cpp::BasicLayout());
 	dbLog = &log4cpp::Category::getInstance(string("dbLog"));

@@ -119,7 +119,19 @@ http_response GET_Handler::handle_get_search_for_users() {
 }
 
 http_response GET_Handler::handle_get_user_profile() {
-	return http_response("{\"msg\":\"Profile\"}\n", STATUS_OK);
+	// /users/<user_id>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	Json data;
+	try {
+		data = db_json->getDatos(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "Error: Non existent user. Query failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
+	}
+
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_resume() {

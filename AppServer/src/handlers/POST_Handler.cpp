@@ -68,10 +68,10 @@ http_response POST_Handler::handle_login() {
 		return http_response("", STATUS_FORBIDDEN);
 	} catch (BadPassword &e) {
 		std::cout << "Error: User unauthorized. Bad Password. LogIn failed" << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
-	std::cout << "Info: LogIn OK " << std::endl;
+	std::cout << "Info: LogIn OK" << " userID: " << user_id << std::endl;
 	std::string userID = std::to_string(user_id);
 	Json resp = Json::object { {"userID", userID},
  							   {"token" , token} };
@@ -104,7 +104,7 @@ http_response POST_Handler::handle_signup() {
 		return http_response("", STATUS_UNPROCCESABLE);
 	}
 
-	std::cout << "Info: SignUp OK" << std::endl;
+	std::cout << "Info: SignUp OK" << " userID: " << user_id <<std::endl;
 	std::string userID = std::to_string(user_id);
 	Json resp = Json::object { {"userID", userID} }; /* TODO es necesario??? */
 	return http_response(resp.dump(), STATUS_CREATED);
@@ -119,17 +119,17 @@ http_response POST_Handler::handle_accept_contact_request() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Accept contact request failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Accept contact request failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Accept contact request failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	Json data;
@@ -159,17 +159,17 @@ http_response POST_Handler::handle_create_contact_request() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Create contact request failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Create contact request failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Create contact request failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	Json data;
@@ -197,17 +197,17 @@ http_response POST_Handler::handle_notify_message_seen() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Notify Message Seen failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Notify Message Seen failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Notify Message Seen failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	Json data;
@@ -235,17 +235,17 @@ http_response POST_Handler::handle_send_message() {
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
 		std::cout << "Error: Token not found. User unauthorized. Send Message failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
 		std::cout << "Error: Invalid token. Non existent token. Send Message failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
 		std::cout << "Error: Invalid token. Token has expired. Send Message failed." << std::endl;
-		return http_response("", STATUS_UNAUTHORIZED);
+		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	Json data;

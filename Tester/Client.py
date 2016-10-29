@@ -60,13 +60,19 @@ class Client:
         res = self.makeRequest_POST(url, "", headers)
         if (res.status_code == 200):
             data = json.loads(res.text)
-            self.userID = data["userID"]
+            print "[login] userID recibido: ", data["userID"]
+            print "[login] token recibido: ", data["token"]
             self.token = data["token"]
         return res
 
     def signup(self):
         url = self.url_base + "/signup"
-        return self.makeRequest_POST(url, self.data, {})
+        res = self.makeRequest_POST(url, self.data, {})
+        if (res.status_code == 201):
+            data = json.loads(res.text)
+            print "[signup] userID recibido: ", data["userID"]
+            self.userID = data["userID"]
+        return res
 
     def accept_contact_request(self, another_userID):
         url = self.url_base + "/users/" + self.userID + "/notif/" + another_userID

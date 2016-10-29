@@ -19,13 +19,6 @@ string DBJSON::generarToken(const Json &json) {
 	return token_hash;
 }
 
-/**
- * Generar token
- * @param json                      Información de usuario
- * @exception NonexistentToken      El token no existe
- * @exception TokenHasExpired       El token ha expirado
- * @return                          Un token de sesión
- */
 bool DBJSON::validar_token(const string &token) {
 	double EXPIRATION_TIME_SEC = 86400; // 86400 sec == 1 día
 	if (tokens.count(token) > 0) {
@@ -72,7 +65,13 @@ Json DBJSON::getDatos(uint32_t userID) {
 	DatosUsuario datos = db->getDatos(userID);
 	string resumen = db->getResumen(userID);
 	Foto foto = db->getFoto(userID);
-	Json data = Json::object {};
+	Json data = Json::object {
+		{"name" , datos.nombre},
+		{"city" , datos.ciudad},
+		/* TODO según API, faltan skills, job_positions, contacts */
+		{"resume" , resumen},
+		{"photo" , foto.toBase64String()},
+	};
 	return data;
 }
 
@@ -86,18 +85,18 @@ void DBJSON::setDatos(uint32_t userID, const Json &json) {
 
 Json DBJSON::getResumen(uint32_t userID) {
 	string resumen(db->getResumen(userID));
-	Json data = Json::object { {"resumen", resumen} };
+	Json data = Json::object { {"resume", resumen} };
 	return data;
 }
 
 void DBJSON::setResumen(uint32_t userID, const Json &json) {
-	string resumen(json["resumen"].string_value());
+	string resumen(json["resume"].string_value());
 	db->setResumen(userID, resumen);
 }
 
 Json DBJSON::getFoto(uint32_t userID) {
 	string foto(db->getFoto(userID).toBase64String());
-	Json data = Json::object { {"foto", foto} };
+	Json data = Json::object { {"photo", foto} };
 	return data;
 }
 
@@ -108,7 +107,7 @@ Json DBJSON::getFotoThumbnail(uint32_t userID) {
 }
 
 void DBJSON::setFoto(uint32_t userID, const Json &json) {
-	Foto foto(json["foto"].string_value());
+	Foto foto(json["photo"].string_value());
 	db->setFoto(userID, foto);
 }
 
