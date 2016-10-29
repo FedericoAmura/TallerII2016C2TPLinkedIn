@@ -3,6 +3,8 @@
 
 #include "DBRaw.h"
 #include "../include/json11/json11.hpp"
+#include "../common/Utils.h"
+#include <map>
 
 using json11::Json;
 using std::string;
@@ -17,10 +19,28 @@ class DBJSON {
  private:
 	DBRaw* db;
 	SharedServerHandler* sharedServerHandler;
+    /* temporal */
+    std::map<string,string> tokens;
 
  public:
 	DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db);
 	virtual ~DBJSON();
+
+    /**
+     * Generar token
+     * @param json                      Información de usuario
+     * @return                          Un token de sesión
+     */
+    string generarToken(const Json &json);
+
+    /**
+     * Validar Token
+     * @param json                      Información de usuario
+     * @exception NonexistentToken      El token no existe
+     * @exception TokenHasExpired       El token ha expirado
+     * @return                          true si el token el válido
+     */
+    bool validar_token(const string &token);
 
 	/**
 	 * Registrar un nuevo usuario

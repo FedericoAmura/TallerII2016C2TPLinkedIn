@@ -16,95 +16,95 @@ http_response GET_Handler::handleRequest() {
 	switch (uri){
 		case _USERS:
 			// /users/?category=...&skill=...
-			res = handleUsers();
+			res = handle_get_search_for_users();
 			break;
 		case _USER_PROFILE:
 			// /users/<user_id>
-			res = handleUserProfile();
+			res = handle_get_user_profile();
 			break;
 		case _USER_SUMMARY:
 			// /users/<user_id>/summary
-			res = handleUserSummary();
+			res = handle_get_user_resume();
 			break;
 		case _USER_PHOTO:
 			// /users/<user_id>/photo
-			res = handleUserPhoto();
+			res = handle_get_user_photo();
 			break;
 		case _USER_THUMB:
 			// /users/<user_id>/thumb
-			res = handleUserThumb();
+			res = handle_get_user_thumb();
 			break;
 		case _USER_BRIEF:
 			// /users/<user_id>/brief
-			res = handleUserBrief();
+			res = handle_get_user_brief();
 			break;
 		case _USERS_NOTIF:
 			// /users/<user_id>/notif
-			res = handleUsersNotif();
+			res = handle_get_pending_contact_requests();
 			break;
 		case _USERS_NEW_NOTIF:
 			// /users/<user_id>/notif/new
-			res = handleUsersNewNotif();
+			res = handle_get_number_pending_requests();
 			break;
 		case _USERS_REQ_CONTACT:
 			// /users/<user_id1>/notif/<user_id2>
-			res = handleUsersNotifyRequest();
+			res = handle_get_special_request();
 			break;
 		case _USERS_CONTACTS:
 			// /users/<user_id>/contacts
-			res = handleUsersContacts();
+			res = handle_get_user_contacts();
 			break;
 		case _USERS_ADM_CONTACTS:
 			// /users/<user_id1>/contacts/<user_id2>
-			res = handleUsersContactManagement();
+			res = handle_get_are_they_connected();
 			break;
 		case _POPULAR:
 			// /users/popular
-			res = handlePopular();
+			res = handle_get_popular();
 			break;
 		case _POPULAR_RECOMMEND:
 			// /users/popular/<user_id1>/<user_id2>
-			res = handlePopularRecommend();
+			res = handle_get_user_recommendations();
 			break;
 		case _POPULAR_POS:
 			// /users/popular/position/<position>
-			res = handlePopularByPosition();
+			res = handle_get_popular_by_position();
 			break;
 		case _POPULAR_SKILL:
 			// /users/popular/skill/<skill>
-			res = handlePopularBySkill();
+			res = handle_get_popular_by_skill();
 			break;
 		case _CHAT_NEW:
 			// /chat/<user_id>/new
-			res = handleChatNew();
+			res = handle_get_number_new_messages();
 			break;
 		case _CHAT_LAST_MSG:
 			// /chat/<user_id>/<user_id2>/last
-			res = handleChatLastMsg();
+			res = handle_get_id_last_message();
 			break;
 		case _CHAT_INC_MSG:
 			// /chat/<user_id1>/<user_id2>/?ini=a&fin=b
-			res = handleChatIncMsg();
+			res = handle_get_including_messages();
 			break;
 		case _CATEGORIES:
 			// /categories
-			res = handleCategories();
+			res = handle_get_categories();
 			break;
 		case _JOB_POS_BY_CAT:
 			// /job_positions/caterories/<category>
-			res = handleJobPositionsByCategory();
+			res = handle_get_jobpositions_by_category();
 			break;
 		case _JOB_POSITION:
 			// /job_positions/<job_position>
-			res = handleJobPosition();
+			res = handle_get_jobposition();
 			break;
 		case _SKILLS_BY_CAT:
 			// /skills/categories/<category>
-			res = handleSkillsByCategory();
+			res = handle_get_skills_by_category();
 			break;
 		case _SKILL:
 			// /skills/<skill>
-			res = handleSkill();
+			res = handle_get_skill();
 			break;
 		default:
 			std::cout << "ERROR >> Method Not Allowed" << std::endl;
@@ -114,95 +114,107 @@ http_response GET_Handler::handleRequest() {
 	return res;
 }
 
-http_response GET_Handler::handleUsers() {
+http_response GET_Handler::handle_get_search_for_users() {
 	return http_response("{\"msg\":\"Users\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUserProfile() {
-	return http_response("{\"msg\":\"Profile\"}\n", STATUS_OK);
+http_response GET_Handler::handle_get_user_profile() {
+	// /users/<user_id>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	Json data;
+	try {
+		data = db_json->getDatos(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "Error: Non existent user. Query failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
+	}
+
+	return http_response(data.dump(), STATUS_OK);
 }
 
-http_response GET_Handler::handleUserSummary() {
+http_response GET_Handler::handle_get_user_resume() {
 	return http_response("{\"msg\":\"Summary\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUserPhoto() {
+http_response GET_Handler::handle_get_user_photo() {
 	return http_response("{\"msg\":\"Photo\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUserThumb() {
+http_response GET_Handler::handle_get_user_thumb() {
 	return http_response("{\"msg\":\"Thumb\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUserBrief() {
+http_response GET_Handler::handle_get_user_brief() {
 	return http_response("{\"msg\":\"Bief\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUsersNotif() {
+http_response GET_Handler::handle_get_pending_contact_requests() {
 	return http_response("{\"msg\":\"Notif\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUsersNewNotif() {
+http_response GET_Handler::handle_get_number_pending_requests() {
 	return http_response("{\"msg\":\"New Notif\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUsersNotifyRequest() {
+http_response GET_Handler::handle_get_special_request() {
 	return http_response("{\"msg\":\"Notify Request\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUsersContacts() {
+http_response GET_Handler::handle_get_user_contacts() {
 	return http_response("{\"msg\":\"Contacts\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleUsersContactManagement() {
+http_response GET_Handler::handle_get_are_they_connected() {
 	return http_response("{\"msg\":\"Contact Management\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handlePopular() {
+http_response GET_Handler::handle_get_popular() {
 	return http_response("{\"msg\":\"{set Popular}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handlePopularRecommend() {
+http_response GET_Handler::handle_get_user_recommendations() {
 	return http_response("{\"msg\":\"{set Recommended Popular}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handlePopularByPosition() {
+http_response GET_Handler::handle_get_popular_by_position() {
 	return http_response("{\"msg\":\"{Popular by position}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handlePopularBySkill() {
+http_response GET_Handler::handle_get_popular_by_skill() {
 	return http_response("{\"msg\":\"{Popular by Skill}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleChatNew() {
+http_response GET_Handler::handle_get_number_new_messages() {
 	return http_response("{\"chat\":\"{new chat}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleChatLastMsg() {
+http_response GET_Handler::handle_get_id_last_message() {
 	return http_response("{\"chat\":\"{last msg}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleChatIncMsg() {
+http_response GET_Handler::handle_get_including_messages() {
 	return http_response("{\"chat\":\"{including msg}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleCategories() {
+http_response GET_Handler::handle_get_categories() {
 	return http_response("{\"categories\":\"{categories}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleJobPositionsByCategory() {
+http_response GET_Handler::handle_get_jobpositions_by_category() {
 	return http_response("{\"job_positions\":\"{job positions by category}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleJobPosition() {
+http_response GET_Handler::handle_get_jobposition() {
 	return http_response("{\"job_position\":\"{job position}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleSkillsByCategory() {
+http_response GET_Handler::handle_get_skills_by_category() {
 	return http_response("{\"skills\":\"{skills by category}\"}\n", STATUS_OK);
 }
 
-http_response GET_Handler::handleSkill() {
+http_response GET_Handler::handle_get_skill() {
 	return http_response("{\"skill\":\"{skill}\"}\n", STATUS_OK);
 }
 

@@ -16,15 +16,15 @@ http_response DELETE_Handler::handleRequest() {
 	switch (uri){
 		case _LOGIN:
 			// /login
-			res = handleCloseSession();
+			res = handle_logout();
 			break;
 		case _USERS_REQ_CONTACT:
 			// /users/<user_id2>/notif/<user_id2>
-			res = handleRejectContactRequest();
+			res = handle_reject_contact_request();
 			break;
 		case _USERS_ADM_CONTACTS:
 			// /users/<user_id1>/contacts/<user_id>
-			res = handleDeleteContact();
+			res = handle_delete_contact();
 			break;
 		default:
 			std::cout << "ERROR >> Method Not Allowed" << std::endl;
@@ -34,18 +34,17 @@ http_response DELETE_Handler::handleRequest() {
 	return res;
 }
 
-http_response DELETE_Handler::handleCloseSession() {
+http_response DELETE_Handler::handle_logout() {
 	return http_response("", STATUS_NO_CONTENT);
 }
 
-http_response DELETE_Handler::handleRejectContactRequest() {
+http_response DELETE_Handler::handle_reject_contact_request() {
 	return http_response("", STATUS_NO_CONTENT);
 }
 
-http_response DELETE_Handler::handleDeleteContact() {
+http_response DELETE_Handler::handle_delete_contact() {
 	return http_response("", STATUS_NO_CONTENT);
 }
 
 DELETE_Handler::~DELETE_Handler() {
 }
-

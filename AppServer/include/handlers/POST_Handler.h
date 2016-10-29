@@ -17,38 +17,38 @@ private:
 	 * @return	en caso de que los datos administrados sean correctos, se devolverá
 	 * 			un token de sesión, sino se devolverá un código de error en el http_response
 	 * */
-	http_response handleLogIn();
+	http_response handle_login();
 
 	/*
 	 * Registrarse
 	 * @return	en caso de que los datos administrados sean correctos, se devolverá
 	 * 			un token de sesión, sino se devolverá un código de error en el http_response
 	 * */
-	http_response handleSignUp();
+	http_response handle_signup();
 
 	/*
 	 * Aceptar una solicitud de contacto
 	 * @return
 	 * */
-	http_response handleAcceptContactRequest();
+	http_response handle_accept_contact_request();
 
 	/*
 	 * Solicitud para agregar un contacto
 	 * @return
 	 * */
-	http_response handleContactRequest();
+	http_response handle_create_contact_request();
 
 	/*
 	 * Notificar que el mensaje fue visto
 	 * @return
 	 * */
-	http_response handleChatNotifyMsgSeen();
+	http_response handle_notify_message_seen();
 
 	/*
 	 * Enviar un mensaje a un chat
 	 * @return
 	 * */
-	http_response handleChatSendMsg();
+	http_response handle_send_message();
 
 public:
 	/*

@@ -8,6 +8,30 @@ DBJSON::DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db) :
 
 DBJSON::~DBJSON() {
 	delete db;
+	tokens.clear();
+}
+
+string DBJSON::generarToken(const Json &json) {
+	string username = json["username"].string_value();
+	string current_timestamp = get_current_timestamp();
+	string to_hash = username + "|" + current_timestamp;
+	string token_hash = base64_encode((const unsigned char*)to_hash.c_str(), to_hash.length());
+	tokens[token_hash] = current_timestamp;
+	return token_hash;
+}
+
+bool DBJSON::validar_token(const string &token) {
+	double EXPIRATION_TIME_SEC = 86400; // 86400 sec == 1 día
+	if (tokens.count(token) > 0) {
+		string timestamp = tokens[token];
+		double diff = time_difference_seconds(timestamp);
+		if (diff > EXPIRATION_TIME_SEC) {
+			tokens.erase(token);
+			throw TokenHasExpired("Token ha expirado");
+		} else
+			return true;
+	} else
+		throw NonexistentToken("Token inexistente");
 }
 
 uint32_t DBJSON::registrarse(const Json &json) {
@@ -43,7 +67,13 @@ Json DBJSON::getDatos(uint32_t userID) {
 	DatosUsuario datos = db->getDatos(userID);
 	string resumen = db->getResumen(userID);
 	Foto foto = db->getFoto(userID);
-	Json data = Json::object {};
+	Json data = Json::object {
+		{"name" , datos.nombre},
+		{"city" , datos.ciudad},
+		/* TODO según API, faltan skills, job_positions, contacts */
+		{"resume" , resumen},
+		{"photo" , foto.toBase64String()},
+	};
 	return data;
 }
 
@@ -57,18 +87,18 @@ void DBJSON::setDatos(uint32_t userID, const Json &json) {
 
 Json DBJSON::getResumen(uint32_t userID) {
 	string resumen(db->getResumen(userID));
-	Json data = Json::object { {"resumen", resumen} };
+	Json data = Json::object { {"resume", resumen} };
 	return data;
 }
 
 void DBJSON::setResumen(uint32_t userID, const Json &json) {
-	string resumen(json["resumen"].string_value());
+	string resumen(json["resume"].string_value());
 	db->setResumen(userID, resumen);
 }
 
 Json DBJSON::getFoto(uint32_t userID) {
 	string foto(db->getFoto(userID).toBase64String());
-	Json data = Json::object { {"foto", foto} };
+	Json data = Json::object { {"photo", foto} };
 	return data;
 }
 
@@ -79,9 +109,8 @@ Json DBJSON::getFotoThumbnail(uint32_t userID) {
 }
 
 void DBJSON::setFoto(uint32_t userID, const Json &json) {
-	camposExisten(json, "foto");
-	Foto foto(json["foto"].string_value());
-	db->setFoto(userID, foto);
+	camposExisten(json, "photo");
+	Foto foto(json["photo"].string_value());
 }
 
 Json DBJSON::busqueda_profresional(const std::vector<string>

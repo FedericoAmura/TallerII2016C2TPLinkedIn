@@ -16,19 +16,19 @@ private:
 	 * Cerrar sesión
 	 * @return
 	 * */
-	http_response handleCloseSession();
+	http_response handle_logout();
 
 	/*
 	 * Rechazar solicitud de contacto
 	 * @return
 	 * */
-	http_response handleRejectContactRequest();
+	http_response handle_reject_contact_request();
 
 	/*
 	 * Eliminar contacto
 	 * @return
 	 * */
-	http_response handleDeleteContact();
+	http_response handle_delete_contact();
 
 public:
 	/*

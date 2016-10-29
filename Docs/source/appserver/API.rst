@@ -80,7 +80,7 @@ Perfil : Consulta (con foto y resumen)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<UserID>
+URL                  	| \http://<appserver>/users/<userID>
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
@@ -99,9 +99,9 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			|      “end” :  “<DD/MM/YYYY>”
 			|      }],
 			|  “city” : “<ciudad>”,
- 			|  “Contactos” : <numero>,
-  			|  “resumen” : “Bla Bla Bla.“,
-  			|  “foto” = “ab03d7f4c80239b8…”
+ 			|  “contacts” : <numero>,
+  			|  “resume” : “Bla Bla Bla.“,
+  			|  “photo” = “ab03d7f4c80239b8…”
 			| }
 ======================  ==========================
 
@@ -109,7 +109,7 @@ Perfil : Actualizar (con/sin foto y resumen)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<UserID>
+URL                  	| \http://<appserver>/users/<userID>
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| 404 - UserID Inexistente
@@ -127,8 +127,8 @@ PARAMETROS           	| 404 - UserID Inexistente
 			|      “end” :  “<DD/MM/YYYY>”
 			|      }],
 			|  “city” : “<ciudad>”,
- 			|  “resumen” : “Bla Bla Bla.“,	(Campo opcional)
-			|  “foto” = “ab03d7f4c80239b8…”	(Campo opcional)
+ 			|  “resume” : “Bla Bla Bla.“,	(Campo opcional)
+			|  “photo” = “ab03d7f4c80239b8…”	(Campo opcional)
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No autorizado
@@ -142,14 +142,14 @@ Foto : Consulta
 Los datos binarios vienen como texto plano en base64.
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/photo
+URL                  	| \http://<appserver>/users/<userID>/photo
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID inexistente
 			| 200 - OK + Siguiente JSON:
 			| {
-			| “foto” = “ab03d7f4c80239b8…”
+			| “photo” = “ab03d7f4c80239b8…”
 			| }
 ======================  ==========================
 
@@ -159,11 +159,11 @@ Foto : Actualizar
 Los datos binarios vienen como texto plano en base64.
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/photo
+URL                  	| \http://<appserver>/users/<userID>/photo
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
-			| “foto” = “ab03d7f4c80239b8…”
+			| “photo” = “ab03d7f4c80239b8…”
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
 			| 401 - No aurotizado
@@ -179,7 +179,7 @@ Este recurso se autogenera a partir de la foto que envie el usuario.
 Los datos binarios vienen como texto plano en base64.
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/thumb
+URL                  	| \http://<appserver>/users/<userID>/thumb
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
@@ -196,7 +196,7 @@ Datos breves : Consulta
 Util para, por ejemplo, mostrar listas de usuarios.
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/brief
+URL                  	| \http://<appserver>/users/<userID>/brief
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
@@ -270,7 +270,7 @@ Consultar peticiones pendientes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/notif
+URL                  	| \http://<appserver>/users/<userID>/notif
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
@@ -286,7 +286,7 @@ Consultar número de peticiones pendientes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/notif/new
+URL                  	| \http://<appserver>/users/<userID>/notif/new
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
@@ -302,7 +302,7 @@ Consultar una petición particular
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/notif/<user_id_contacto>
+URL                  	| \http://<appserver>/users/<userID>/notif/<targetUserID>
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
@@ -310,7 +310,7 @@ POSIBLES RESPUESTAS	| 404 - La peticion no existe
 			| 401 - No autorizado
 			| 200 - OK + Siguiente JSON:
 			| {
-			|  “senderID” : <senderUserID>,
+			|  “userID” : <userID>,
 			|  “targetID” : <targetUserID>,
 			|  “message” : “Bla bla bla”
 			| }
@@ -320,7 +320,7 @@ Aceptar una petición
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/notif/<user_id_contacto>
+URL                  	| \http://<appserver>/users/<userID>/notif/<targetUserID>
 AUTH                 	| Si
 VERB                 	| POST
 PARAMETROS           	|
@@ -333,7 +333,7 @@ Declinar una petición
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/notif/<user_id_contacto>
+URL                  	| \http://<appserver>/users/<userID>/notif/<targetUserID>
 AUTH                 	| Si
 VERB                 	| DELETE
 PARAMETROS           	|
@@ -346,7 +346,7 @@ Consultar contactos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/<user_id>/contacts
+URL                  	| \http://<appserver>/users/<userID>/contacts
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
@@ -368,7 +368,7 @@ URL                  	| \http://<appserver>/users/<userID>/contacts
 AUTH                 	| Si
 VERB                 	| POST
 PARAMETROS           	| {
-			|  “senderID” : <userID>,
+			|  “userID” : <userID>,
 			|  “targetID” : <targetUserID>,
 			|  “message” : “Bla bla bla”
 			| }
@@ -428,12 +428,13 @@ Recomendar a un usuario
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/popular/<userID1>/<userID2>
+URL                  	| \http://<appserver>/users/popular/<senderID>/<receiverID>
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
-			|  “recommender” : <userID1>
-			|  “recommended” : <userID2>
+			|  “recommender” : <senderID>
+			|  “recommended” : <recommendedID>
+                        |  “receiver” : <receiverID>
 			|  “recommends” : true/false
 			| }
 POSIBLES RESPUESTAS	| 404 - Alguno de los usuarios no existe
@@ -503,12 +504,10 @@ POSIBLES RESPUESTAS	| 404 - No existe el userID
 			| 200 - OK + Siguiente JSON
 			| {
 			| “new” : [{
-			|  “senderUID” : <senderUID>,
-			|  “targetUID” : <userID>,
-			|  “count” : 5}.{
-			|  “senderUID” : <senderUID>,
-			|  “targetUID” : <userID>,
-			|  “count” : 2} ….  ]
+			|  “senderID” : <senderID>,
+			|  “count” : 5}, {
+			|  “senderID” : <senderUID>,
+			|  “count” : 2}, ….  ]
 			| }
 ======================  ==========================
 
@@ -518,12 +517,12 @@ Marcar mensajes como leidos
 Marca todos los de una conversación como leidos.
 
 ======================  ==========================
-URL                  	| \http://<appserver>/chat/<user_id1>/new
+URL                  	| \http://<appserver>/chat/<userID>/new
 AUTH                 	| Si
 VERB                 	| POST
 PARAMETROS           	| {
-			|  “userUID” : <userID>,
-			|  “targetUID” : <targetUID>
+			|  “userID” : <userID>,
+			|  “targetID” : <targetID>
 			| }
 POSIBLES RESPUESTAS	| 404 - No existe el chat
 			| 401 - No autorizado
@@ -534,12 +533,12 @@ Enviar mensaje
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/chat/<user_id1>/<user_id2>
+URL                  	| \http://<appserver>/chat/<userID>/<targetID>
 AUTH                 	| Si
 VERB                 	| POST
 PARAMETROS           	| {
-			|  “senderUID” : <userID>,
-			|  “targetUID” : <targetUID>,
+			|  “senderID” : <userID>,
+			|  “receiverID” : <targetID>,
 			|  “message” : “Bla bla bla”
 			| }
 POSIBLES RESPUESTAS	| 404 - Usuario invalido
@@ -551,7 +550,7 @@ Consultar número de último mensaje
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/chat/<user_id1>/<user_id2>/last
+URL                  	| \http://<appserver>/chat/<userID>/<targetID>/last
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
@@ -567,7 +566,7 @@ Consultar mensajes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/chat/<user_id1>/<user_id2>/?ini=a&fin=b
+URL                  	| \http://<appserver>/chat/<userID>/<targetID>/?ini=a&fin=b
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
@@ -577,13 +576,13 @@ POSIBLES RESPUESTAS	| 401 - No autorizado
 			| {
 			| “messages” : [
 			|  {
-			|  “senderUID” : <userID>,
-			|  “targetUID” : <targetUID>,
+			|  “senderID” : <userID>,
+			|  “receiverID” : <targetID>,
 			|  “message” : “Bla bla bla”,
 			|  “msgID” : 43
 			|  },{
-			|  “senderUID” : <userID>,
-			|  “targetUID” : <targetUID>,
+			|  “senderID” : <userID>,
+			|  “receiverID” : <targetID>,
 			|  “message” : “Bla bla bla”,
 			|  “msgID” : 44
 			|  },... ]

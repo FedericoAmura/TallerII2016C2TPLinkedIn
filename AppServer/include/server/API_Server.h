@@ -24,7 +24,7 @@ static const std::string LOGIN_URI				= "/login";
 static const std::string SIGNUP_URI				= "/signup";
 static const std::string USERS_URI				= "/users/";		// ej: /users/?cat=er&job=sas; (PARA BUSQUEDAS)
 static const std::string USER_PROFILE_URI		= "/users/" + USER_ID;
-static const std::string USER_SUMMARY_URI		= "/users/" + USER_ID + "/summary";
+static const std::string USER_SUMMARY_URI		= "/users/" + USER_ID + "/resume";
 static const std::string USER_PHOTO_URI			= "/users/" + USER_ID + "/photo";
 static const std::string USER_THUMB_URI			= "/users/" + USER_ID + "/thumb";
 static const std::string USER_BRIEF_URI			= "/users/" + USER_ID + "/brief";
