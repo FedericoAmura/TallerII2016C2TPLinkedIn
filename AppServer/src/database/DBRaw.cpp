@@ -84,7 +84,7 @@ DBRaw::~DBRaw() {
 uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		const std::vector<char> &passHash)
 {
-	if (passHash.size() != 32) throw BadPasswordSize("La password debe ser de 32 bytes.");
+	if (passHash.size() != 32) throw BadPasswordSize("La password debe ser de 32 bytes. Tu passHash tiene " + std::to_string(passHash.size()) + " bytes");
 	//TODO: Lock para evitar errores RAW con el ID
 	vector<char> logKey(sizeof(LOG)+userName.length());
 	logKey[0] = LOG;

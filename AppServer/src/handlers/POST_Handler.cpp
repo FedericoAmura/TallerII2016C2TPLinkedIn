@@ -102,6 +102,9 @@ http_response POST_Handler::handle_signup() {
 	} catch (MalformedDate &e) {
 		std::cout << "Error: Malformed Date. Sing Up failed." << std::endl;
 		return http_response("", STATUS_UNPROCCESABLE);
+	} catch (BadPasswordSize &e) {
+		std::cout << "Error: Password must be 32 bytes. Sing Up failed. " << e.what()<< std::endl;
+		return http_response("", STATUS_UNPROCCESABLE);
 	}
 
 	std::cout << "Info: SignUp OK" << " userID: " << user_id <<std::endl;
