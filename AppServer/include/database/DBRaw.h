@@ -14,6 +14,7 @@
 #include "Puesto.h"
 
 using std::string;
+using std::vector;
 
 // Foto por defecto
 static const char* defaultFotoPath = "default.jpg";
@@ -104,7 +105,7 @@ class DBRaw {
 	 * @return							El uID (user ID) del nuevo usuario creado
 	 */
 	uint32_t registrarse(const DatosUsuario &datos, const string &userName,
-			const std::vector<char> &passHash);
+			const vector<char> &passHash);
 
 	/**
 	 * Agrega una nueva foto al usuario de la uID pedida
@@ -181,12 +182,18 @@ class DBRaw {
 	 * Setea datos, foto, y resumen juntos
 	 * @param uID						User ID
 	 * @param datos						Datos
+	 * @param skills					Vector de nombres de skills
+	 * @param puestos					Vector de puestos
 	 * @param resumen					Resumen, o null
 	 * @param foto						Foto, o null
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @exception BadInputException		La foto, si fue mandada, no es un jpg
+	 * @exception NonexistentSkill		Alguno de los skills no existe en el shared
+	 * @exception BadInputException		La foto no es un jpg
+	 * @exception NonexistentPosition	Alguno de los puestos no existe en el shared
 	 */
 	void setPerfil(uint32_t uID, const DatosUsuario &datos,
+			const vector<string> &skills, const vector<Puesto> &puestos,
 			string *resumen = NULL, Foto *foto = NULL);
 
 	/**
@@ -198,7 +205,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @exception NonexistentSkill		Alguno de los skills no existe en el shared
 	 */
-	void setSkills(uint32_t uID, std::vector<string> skills,
+	void setSkills(uint32_t uID, vector<string> skills,
 			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
@@ -207,7 +214,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @return							Vector de nombres de skill
 	 */
-	std::vector<string> getSkills(uint32_t uID);
+	vector<string> getSkills(uint32_t uID);
 
 	/**
 	 * @param uID						User ID
@@ -217,7 +224,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		El uID es inválido
 	 * @exception NonexistentPosition	Alguno de los puestos no existe en el shared
 	 */
-	void setPuestos(uint32_t uID, std::vector<Puesto> puestos,
+	void setPuestos(uint32_t uID, vector<Puesto> puestos,
 			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
@@ -226,7 +233,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @return							Vector de puestos
 	 */
-	std::vector<Puesto> getPuestos(uint32_t uID);
+	vector<Puesto> getPuestos(uint32_t uID);
 
 	/**
 	 *  Hace login y devuelve un uid válido si la info es correcta
@@ -237,7 +244,7 @@ class DBRaw {
 	 * @exception NonexistentUsername	Datos de login incorrectos por username inexistente
 	 * @exception BadPassword			Datos de login incorrectos por password incorrecto
 	 */
-	uint32_t login(const string &userName, const std::vector<char> &passHash);
+	uint32_t login(const string &userName, const vector<char> &passHash);
 
 	/**
 	 * Realiza una búsqueda sobre los usuarios con los parametros dados.
@@ -255,8 +262,8 @@ class DBRaw {
 	 * @exception NonexistentCategory	Categoria invalida
 	 * @exception BadInputException		Distancia máxima negativa
 	 */
-	std::vector<uint32_t> busquedaProfresional(const std::vector<string>
-		*puestos, const std::vector<string> *skill, const std::vector<string>
+	vector<uint32_t> busquedaProfresional(const vector<string>
+		*puestos, const vector<string> *skill, const vector<string>
 		*categorias, Geolocacion *geolocacion, float maxDist,
 		bool sortPopularidad);
 
@@ -265,7 +272,7 @@ class DBRaw {
 	 * @param conteo					Cuantos de los más populares retornar
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	std::vector<uint32_t> busquedaPopular (uint conteo = 10);
+	vector<uint32_t> busquedaPopular (uint conteo = 10);
 
 	/**
 	 * Realiza una busqueda sobre solo los usuarios más populares, que posean un skill
@@ -273,14 +280,14 @@ class DBRaw {
 	 * @param skill						Nombre del skill
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	std::vector<uint32_t> busquedaPopularSkill (const string &skill, uint conteo = 10);
+	vector<uint32_t> busquedaPopularSkill (const string &skill, uint conteo = 10);
 
 	/**
 	 * Realiza una busqueda sobre solo los usuarios más populares, que posean un puesto
 	 * @param conteo					Cuantos de los más populares retornar
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	std::vector<uint32_t> busquedaPopularPuesto (const string &puesto, uint conteo = 10);
+	vector<uint32_t> busquedaPopularPuesto (const string &puesto, uint conteo = 10);
 
 	/**
 	 * Envia un pedido de contacto
@@ -297,7 +304,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		El uID parametro es inválido
 	 * @return							Vector de IDs
 	 */
-	std::vector<uint32_t> getSolicitudes(uint32_t uIDConsultador);
+	vector<uint32_t> getSolicitudes(uint32_t uIDConsultador);
 
 	/**
 	 * Devuelve el mensaje de una solicitud particular
@@ -338,7 +345,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		UserID inválido
 	 * @return							Vector de user IDs
 	 */
-	std::vector<uint32_t> getContactos(uint32_t uID);
+	vector<uint32_t> getContactos(uint32_t uID);
 
 	/**
 	 * Devuelve el numero de contactos del usuario
@@ -346,7 +353,7 @@ class DBRaw {
 	 * @return							Número de contactos
 	 * @exception NonexistentUserID		UserID inválido
 	 */
-	uint getNumContactos(uint32_t uID);
+	uint16_t getNumContactos(uint32_t uID);
 
 	/**
 	 * Devuelve el numero del ultimo mensaje en una conversacion
@@ -368,7 +375,7 @@ class DBRaw {
 	 * @param numPrimMensaje	#Primer mensaje
 	 * @return					Vector de tuplas<uIDsender,mensaje>
 	 */
-	std::vector<std::pair<uint32_t,string> > getMensajes(uint32_t uID1,
+	vector<std::pair<uint32_t,string> > getMensajes(uint32_t uID1,
 			uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje);
 };
 

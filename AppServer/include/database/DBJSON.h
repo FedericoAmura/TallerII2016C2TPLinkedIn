@@ -8,6 +8,7 @@
 
 using json11::Json;
 using std::string;
+using std::vector;
 
 /**
  * Wrapper de la base de datos que toma jsons y/o parametros y devuelve jsons
@@ -152,8 +153,8 @@ class DBJSON {
 	 * @exception NonexistentCategory	Alguna categoria es invalida
 	 * @exception BadInputException		Distancia máxima negativa
 	 */
-	Json busqueda_profresional(const std::vector<string>
-		*puestos, const std::vector<string> *skill, const std::vector<string>
+	Json busqueda_profresional(const vector<string>
+		*puestos, const vector<string> *skill, const vector<string>
 		*categorias, Geolocacion *geolocacion, float maxDist,
 		bool sortPopularidad);
 

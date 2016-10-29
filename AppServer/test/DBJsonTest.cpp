@@ -126,7 +126,7 @@ TEST_F(DBJsonTest, testGetSetFoto)
 	Json resultFoto(dbj->getFoto(uid));
 	Json resultThumb(dbj->getFotoThumbnail(uid));
 	EXPECT_STREQ(tinyJPGBase64.c_str(), resultFoto["photo"].string_value().c_str());
-	EXPECT_GT(resultThumb["thumb"].string_value().length(), 1);
+	EXPECT_GT(resultThumb["thumb"].string_value().length(), 0);
 }
 
 TEST_F(DBJsonTest, testGetSetPerfil)
@@ -138,30 +138,71 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 				{ "password", defaultBase64PassHash },
 	};
 	uint32_t uid = dbj->login(loginJson);
-	EXPECT_TRUE(true);
 
-	Json datosJson = Json::object {
+	// Prueba can escases de datos
+	Json datosJson1 = Json::object {
+				{ "name" , "Nombre Test" },
+				{ "skills", Json::array { } },
+				{"job_positions",  Json::array { } },
+				{ "city" , "Una ciudad" },
+			};
+	dbj->setDatos(uid, datosJson1);
+	Json result1(dbj->getDatos(uid));
+
+	EXPECT_STREQ(result1["resume"].string_value().c_str(), "");
+	EXPECT_LT(tinyJPGBase64.length(), result1["photo"].string_value().length());
+	EXPECT_EQ(0, result1["contacts"].int_value());
+	EXPECT_TRUE(result1["skills"].array_items().empty());
+	EXPECT_TRUE(result1["puestos"].array_items().empty());
+
+	// Prueba con abundancia de datos
+	Json datosJson2 = Json::object {
 			{ "name" , "Nombre Test" },
 			{ "skills", Json::array { "Skill1", "Skill2" } },
 			{"job_positions",  Json::array { Json::object {
-				{ "name", "<positionname1>"},
-				{ "start" , "4/11/1994"},
-				{ "end" , "current"}
+				{ "name", "Puesto1"},
+				{ "start", "4/11/1994"},
+				{ "end", "current"}
 				},
 				Json::object {
-				{ "name", "<positionname2>"},
+				{ "name", "Puesto2"},
 				{ "start", "4/2/1990"},
 				{ "end" , "11/3/1992"}
 				} } },
 			{ "city" , "Una ciudad" },
-			{ "resume" , "Test Resumen" },
+			{ "resume" , "Test resumen" },
 			{ "photo" , tinyJPGBase64 },
 		};
-	dbj->setDatos(uid, datosJson);
-	Json result(dbj->getDatos(uid));
+	dbj->setDatos(uid, datosJson2);
+	Json result2(dbj->getDatos(uid));
 
-	EXPECT_STREQ(result["resume"].string_value().c_str(), "Test resumen.");
-	EXPECT_STREQ(tinyJPGBase64.c_str(), result["photo"].string_value().c_str());
+	EXPECT_STREQ(result2["resume"].string_value().c_str(), "Test resumen");
+	EXPECT_STREQ(tinyJPGBase64.c_str(), result2["photo"].string_value().c_str());
+	EXPECT_EQ(0, result2["contacts"].int_value());
+	// Skills
+	char const * skillArray[] = { "Skill1", "Skill2" };
+	int contador = 0;
+	for (Json j : result2["skills"].array_items()) {
+		EXPECT_STREQ(j.string_value().c_str(), skillArray[contador++]);
+	}
+	// Puestos
+	vector<Puesto> vectorPuesto;
+	Fecha fecha1(string("4/11/1994"));
+	Fecha fecha2(string("current"));
+	vectorPuesto.push_back(Puesto("Puesto1", fecha1, fecha2));
+	Fecha fecha3(string("4/2/1990"));
+	Fecha fecha4(string("11/3/1992"));
+	vectorPuesto.push_back(Puesto("Puesto2", fecha3, fecha4));
+	contador = 0;
+	for (Json j : result2["job_positions"].array_items()){
+		EXPECT_STREQ(j["name"].string_value().c_str(),
+				vectorPuesto[contador].puesto.c_str());
+		EXPECT_STREQ(j["start"].string_value().c_str(),
+				vectorPuesto[contador].fechaInicio.toString().c_str());
+		EXPECT_STREQ(j["end"].string_value().c_str(),
+				vectorPuesto[contador++].fechaFin.toString().c_str());
+	}
+
 }
 
 TEST(JsonTest, TestJsonChecker)

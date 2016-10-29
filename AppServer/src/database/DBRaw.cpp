@@ -298,10 +298,13 @@ Foto DBRaw::getFotoThumbnail(uint32_t uID) {
 }
 
 void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
+		const vector<string> &skills, const vector<Puesto> &puestos,
 			string *resumen, Foto *foto)
 {
 	WriteBatch batch;
 	setDatos(uID, datos, &batch, true);
+	setSkills(uID, skills, &batch, false);
+	setPuestos(uID, puestos, &batch, false);
 	if(resumen) setResumen(uID, *resumen, &batch, false);
 	if(foto) setFoto(uID, *foto, &batch, false);
 	db->Write(WriteOptions(), &batch);
@@ -356,7 +359,7 @@ std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
 }*/
 
-uint DBRaw::getNumContactos(uint32_t uID) {
+uint16_t DBRaw::getNumContactos(uint32_t uID) {
 	return 0; //TODO: Implementar
 }
 
