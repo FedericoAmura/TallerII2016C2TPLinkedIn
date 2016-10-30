@@ -88,7 +88,7 @@ http_response PUT_Handler::handle_update_profile() {
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response PUT_Handler::handle_update_resume() {
@@ -132,7 +132,7 @@ http_response PUT_Handler::handle_update_resume() {
 		std::cout << "[Error] \"resume\" not found. Update Summary failed." << std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response PUT_Handler::handle_update_photo() {
@@ -180,7 +180,7 @@ http_response PUT_Handler::handle_update_photo() {
 		std::cout << "[Error] \"photo\" not found. Update photo failed." << std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response PUT_Handler::handle_recommend_user() {
@@ -226,7 +226,7 @@ http_response PUT_Handler::handle_recommend_user() {
 		std::cout << "[Error] \"" << e.what() << "\" not found. Recommend user failed." << std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 PUT_Handler::~PUT_Handler() {

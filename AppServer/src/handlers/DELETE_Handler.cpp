@@ -35,15 +35,15 @@ http_response DELETE_Handler::handleRequest() {
 }
 
 http_response DELETE_Handler::handle_logout() {
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response DELETE_Handler::handle_reject_contact_request() {
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response DELETE_Handler::handle_delete_contact() {
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 DELETE_Handler::~DELETE_Handler() {

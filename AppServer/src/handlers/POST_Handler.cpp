@@ -114,7 +114,7 @@ http_response POST_Handler::handle_signup() {
 	}
 
 	std::cout << "Info: SignUp OK" << " userID: " << user_id <<std::endl;
-	return http_response("", STATUS_CREATED);
+	return http_response("{}", STATUS_CREATED);
 }
 
 http_response POST_Handler::handle_accept_contact_request() {
@@ -156,7 +156,7 @@ http_response POST_Handler::handle_accept_contact_request() {
 		std::cout << "[Error] Non existent request. Accept contact request failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	}
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response POST_Handler::handle_create_contact_request() {
@@ -195,7 +195,7 @@ http_response POST_Handler::handle_create_contact_request() {
 		std::cout << "[Error] Non existent userID. Create contact request failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	}
-	return http_response("", STATUS_CREATED);
+	return http_response("{}", STATUS_CREATED);
 }
 
 http_response POST_Handler::handle_notify_message_seen() {
@@ -234,7 +234,7 @@ http_response POST_Handler::handle_notify_message_seen() {
 		std::cout << "[Error] Non existent chat. Notify Message Seen failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	}
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response POST_Handler::handle_send_message() {
@@ -273,7 +273,7 @@ http_response POST_Handler::handle_send_message() {
 		std::cout << "[Error] Non existent userID. Send Message failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	}
-	return http_response("", STATUS_CREATED);
+	return http_response("{}", STATUS_CREATED);
 }
 
 POST_Handler::~POST_Handler() {
