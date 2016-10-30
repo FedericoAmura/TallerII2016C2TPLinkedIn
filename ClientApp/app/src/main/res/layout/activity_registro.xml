@@ -258,7 +258,7 @@
             >
 
             <EditText
-                android:id="@+id/campo_password_login"
+                android:id="@+id/campo_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"

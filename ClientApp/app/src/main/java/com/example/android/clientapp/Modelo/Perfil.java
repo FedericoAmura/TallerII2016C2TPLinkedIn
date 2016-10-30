@@ -39,12 +39,11 @@ public class Perfil {
     public void cargarDesdeJSON(JSONObject object){
         try {
             Log.d(DEBUG_TAG, "Cargando datos del Perfil desde Json");
-            nombre = object.getString("first_name");
-            //apellido = object.getString("last_name");
-            fecha_nacimiento = object.getString("birth");
-            correo = object.getString("email");
-            cant_contactos = object.getString("relaciones");
-            cant_recomendaciones = object.getString("fav");
+            nombre = object.getString("name");
+            //fecha_nacimiento = object.getString("birth");
+            //correo = object.getString("email");
+            //cant_contactos = object.getString("relaciones");
+            //cant_recomendaciones = object.getString("fav");
 
 
 
@@ -52,10 +51,6 @@ public class Perfil {
             e.printStackTrace();
         }
     }
-
-
-
-
 
 
     public String getNombre(){
