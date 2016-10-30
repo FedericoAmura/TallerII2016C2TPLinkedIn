@@ -2,7 +2,7 @@
 #define APPSERVER_INCLUDE_DATABASE_DBRAW_H_
 
 #include "../leveldb/db.h"
-#include "../../include/leveldb/write_batch.h"
+#include "../leveldb/write_batch.h"
 #include "../log4cpp/Appender.hh"
 #include "../log4cpp/Category.hh"
 #include "../handlers/SharedServerHandler.h"

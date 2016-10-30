@@ -332,3 +332,18 @@ TEST(PuestoTest, DatosFromByteArray)
 	EXPECT_STREQ(puesto.fechaInicio.toString().c_str(), "21/12/2012");
 	EXPECT_STREQ(puesto.fechaFin.toString().c_str(), "current");
 }
+
+#include "../include/database/JpegWrapper.h"
+TEST(JpegTest, TestResize)
+{
+	EXPECT_TRUE(true);; // TODO: Implementar
+	/*std::ifstream fotoFile("default.jpg");
+	string content = string(std::istreambuf_iterator<char>(fotoFile),
+			std::istreambuf_iterator<char>());
+	std::vector<char> bytes(tinyJPG.size());
+	std::copy(content.begin(), content.end(), bytes.begin());
+
+	FotoData rgbResult = descomprimir(bytes);
+	for (char c : rgbResult.data)
+		std::cout << std::hex << c << " ";*/
+}

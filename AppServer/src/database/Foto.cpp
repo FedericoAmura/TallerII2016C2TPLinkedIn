@@ -5,7 +5,6 @@ Foto::Foto(const std::string& datosBase64) : data() {
 	// TODO: Verificar que sea un jpg, strip metadata
 	std::string byteArray = base64_decode(datosBase64);
 	data.insert(data.end(), byteArray.data(), byteArray.data()+byteArray.length());
-	//std::copy(byteArray.begin(), byteArray.end(), data.begin());
 }
 
 Foto::Foto(const char* datosBinarios, size_t length) : data(length) {

@@ -100,6 +100,7 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			|      }],
 			|  “city” : “<ciudad>”,
  			|  “contacts” : <numero>,
+			|  “popularidad“ : <numero>,
   			|  “resume” : “Bla Bla Bla.“,
   			|  “photo” = “ab03d7f4c80239b8…”
 			| }

@@ -68,6 +68,7 @@ Json DBJSON::getDatos(uint32_t userID) {
 	string resumen = db->getResumen(userID);
 	Foto foto = db->getFoto(userID);
 	uint16_t contacts = db->getNumContactos(userID);
+	int popularidad = db->getPopularidad(userID);
 	vector<string> skillVector(db -> getSkills(userID));
 	Json::array skills(skillVector.begin(), skillVector.end());
 	vector<Puesto> puestosVector(db -> getPuestos(userID));
@@ -87,6 +88,7 @@ Json DBJSON::getDatos(uint32_t userID) {
 		{"skills", skills},
 		{"job_positions", puestos},
 		{"contacts", contacts },
+		{"popularidad", popularidad},
 		{"resume" , resumen},
 		{"photo" , foto.toBase64String()},
 	};

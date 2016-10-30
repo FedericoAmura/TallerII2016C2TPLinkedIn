@@ -9,3 +9,5 @@ UnitTest
 /coverage
 /.project
 /.cproject
+include/jpeg/jconfig.h
+

@@ -152,6 +152,7 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 	EXPECT_STREQ(result1["resume"].string_value().c_str(), "");
 	EXPECT_LT(tinyJPGBase64.length(), result1["photo"].string_value().length());
 	EXPECT_EQ(0, result1["contacts"].int_value());
+	EXPECT_EQ(0, result1["popularidad"].int_value());
 	EXPECT_TRUE(result1["skills"].array_items().empty());
 	EXPECT_TRUE(result1["puestos"].array_items().empty());
 
@@ -179,6 +180,7 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 	EXPECT_STREQ(result2["resume"].string_value().c_str(), "Test resumen");
 	EXPECT_STREQ(tinyJPGBase64.c_str(), result2["photo"].string_value().c_str());
 	EXPECT_EQ(0, result2["contacts"].int_value());
+	EXPECT_EQ(0, result1["popularidad"].int_value());
 	// Skills
 	char const * skillArray[] = { "Skill1", "Skill2" };
 	int contador = 0;

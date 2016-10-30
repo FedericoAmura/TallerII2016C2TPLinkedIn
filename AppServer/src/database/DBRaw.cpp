@@ -1,5 +1,6 @@
 #include "../../include/database/DBRaw.h"
 #include "../../include/database/DBExceptions.h"
+#include "../../include/database/DBConstants.h"
 #include "../../include/log4cpp/OstreamAppender.hh"
 #include "../../include/log4cpp/BasicLayout.hh"
 #include <fstream>
@@ -266,6 +267,8 @@ void DBRaw::setFoto(uint32_t uID, const Foto &foto,
 	IDKey keyFoto(FOTO, datos.fotoID);
 	IDKey keyThumb(FOTO_THUMB, datos.fotoID);
 	vector<char> bytesFoto(foto.toBytes());
+	if (bytesFoto.size() > DBConstMaxJPGBytes)
+		throw TooBigException("JPEG > 4 MB");
 	vector<char> bytesThumb(foto.resize().toBytes());
 	Slice fotoData(bytesFoto.data(), bytesFoto.size());
 	Slice thumbData(bytesThumb.data(), bytesThumb.size());
@@ -332,7 +335,7 @@ std::vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill,
 
 std::vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto,
 		uint conteo) {
-}
+}*
 
 void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
 		const string& mensaje) {

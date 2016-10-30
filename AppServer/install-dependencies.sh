@@ -74,7 +74,7 @@ then
 fi
 
 #libjpeg
-if [ ! -r ./lib/libjpeg.a ]
+if [ ! -r ./lib/libjpeg.a ]  || [ ! -r ./include/jpeg/jconfig.h ]
 then
 	if [ ! -d ./srcjpeg ]; then mkdir srcjpeg; fi
 	cd srcjpeg 
@@ -84,6 +84,7 @@ then
 	./configure
 	make
 	mv .libs/libjpeg.a ../../lib/libjpeg.a
+	mv jconfig.h ../../include/jpeg/jconfig.h
 	cd ../..
 	rm -f -r ./srcjpeg
 fi
