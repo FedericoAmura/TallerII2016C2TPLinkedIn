@@ -167,7 +167,7 @@ class Client:
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)
 
-    def get_particuliar_request(self, another_userID):
+    def get_particular_request(self, another_userID):
         url = self.url_base + "/users/" + self.userID + "/notif/" + another_userID
         headers = self.getAuthHeaderToken()
         return self.makeRequest_GET(url, "", headers)

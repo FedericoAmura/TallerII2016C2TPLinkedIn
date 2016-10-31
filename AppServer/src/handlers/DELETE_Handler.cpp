@@ -117,6 +117,9 @@ http_response DELETE_Handler::handle_delete_contact() {
 	} catch (NonexistentContact &e) {
 		std::cout << "[Error] Nonexistent Contact. Delete contact failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Nonexistent userID. Delete contact failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
 	}
 
 	return http_response("{}", STATUS_NO_CONTENT);

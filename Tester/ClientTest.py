@@ -55,7 +55,7 @@ class ClientTest(unittest.TestCase):
         res = client1.login()
         self.assertEquals(403, res.status_code)
 
-    def test_01_signup(self):
+    def test_010_signup(self):
         res1 = client1.signup()
         res2 = client2.signup()
         res3 = client3.signup()
@@ -87,14 +87,14 @@ class ClientTest(unittest.TestCase):
     def test_04_accept_non_existent_contact_request(self):
         another_userID = "9999999"
         res = client1.accept_contact_request(another_userID)
-        self.assertEquals(204, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+        self.assertEquals(404, res.status_code)
 
     def test_05_create_contact_request_to_non_existent_user(self):
         data = {}
         data["targetID"] = "99999999"
         data["message"] = "Hello!!!"
         res = client1.create_contact_request(data)
-        self.assertEquals(201, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+        self.assertEquals(404, res.status_code)
 
     def test_06_create_contact_request_to_existent_user(self):
         data = {}
@@ -178,9 +178,9 @@ class ClientTest(unittest.TestCase):
         res = client1.reject_contact_request(client2.get_user_id())
         self.assertEquals(204, res.status_code)
 
-    def test_delete_contact(self):
-        res = client1.delete_contact(client2.get_user_id())
-        self.assertEquals(204, res.status_code)
+    def test_delete_nonexistent_contact(self):
+        res = client1.delete_contact("99999")
+        self.assertEquals(404, res.status_code)
 
 ### GET
     def test_search_for_users(self):
@@ -225,8 +225,8 @@ class ClientTest(unittest.TestCase):
         res = client1.get_number_pending_requests()
         self.assertEquals(200, res.status_code)
 
-    def test_get_particuliar_request(self):
-        res = client1.get_particuliar_request(client2.get_user_id())
+    def test_get_particular_request(self):
+        res = client1.get_particular_request(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
     def test_get_contacts(self):

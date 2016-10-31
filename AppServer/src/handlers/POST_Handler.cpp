@@ -122,7 +122,7 @@ http_response POST_Handler::handle_signup() {
 }
 
 http_response POST_Handler::handle_accept_contact_request() {
-	/* uri = /users/<userID>/contacts/<other_userID> */
+	/* uri = /users/<userID>/notif/<other_userID> */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	uint32_t userID1 = std::stoi(vec_uri[1]);
 	uint32_t userID2 = std::stoi(vec_uri[3]);
@@ -156,6 +156,9 @@ http_response POST_Handler::handle_accept_contact_request() {
 		db_json->aceptarPeticion(userID1, userID2);
 	} catch (NonexistentRequest &e) {
 		std::cout << "[Error] Non existent request. Accept contact request failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Accept contact request failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response("{}", STATUS_NO_CONTENT);
