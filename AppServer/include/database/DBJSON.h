@@ -36,7 +36,7 @@ class DBJSON {
 
     /**
      * Validar Token
-     * @param json                      Información de usuario
+     * @param token                     Token de sesión
      * @exception NonexistentToken      El token no existe
      * @exception TokenHasExpired       El token ha expirado
      * @return                          true si el token el válido
@@ -66,6 +66,13 @@ class DBJSON {
 	 * @return							Ver documentacion API: "Login"
 	 */
 	uint32_t login(const Json &json);
+
+    /**
+     * Cierra sesión y deshabilita el token de sesión hasta volver a iniciar sesión
+     * @param     token                 Token de sesión
+     * @return                          void
+     */
+    void logout(const string &token);
 
 	/**
 	 * Devuelve los datos de perfil, con foto y resumen

@@ -35,8 +35,8 @@ bool DBJSON::validar_token(const string &token) {
 }
 
 uint32_t DBJSON::registrarse(const Json &json) {
-	camposExisten(json, "first_name", "last_name", "email", "city",
-			"birth", "longitude", "latitude");
+	camposExisten(json, "first_name", "last_name", "email", "city", "username",
+			"password", "birth", "longitude", "latitude");
 	string nombre(json["first_name"].string_value());
 	nombre.append(" ");
 	nombre.append(json["last_name"].string_value());
@@ -61,6 +61,11 @@ uint32_t DBJSON::login(const Json &json) {
 	string passHashStr = base64_decode(json["password"].string_value());
 	vector<char> passHash(passHashStr.begin(), passHashStr.end());
 	return db->login(userName, passHash);
+}
+
+void DBJSON::logout(const string &token) {
+	if (tokens.count(token) > 0)
+		tokens.erase(token);
 }
 
 Json DBJSON::getDatos(uint32_t userID) {
@@ -250,4 +255,3 @@ void DBJSON::marcarChatLeido(const Json &json) {
 
 void DBJSON::enviarMensaje(const Json &json) {
 }
-
