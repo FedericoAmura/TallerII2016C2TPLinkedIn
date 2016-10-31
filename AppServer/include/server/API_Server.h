@@ -10,8 +10,6 @@
 
 #include <string>
 
-static const std::string SHARED_SERVER_URL	= "http://jobifyg2.herokuapp.com"; //"http://127.0.0.1:5000"
-
 static const std::string APP_SERVER_URL		= "http://127.0.0.1";
 #define DEFAULT_PORT	"8888"
 
