@@ -63,6 +63,11 @@ uint32_t DBJSON::login(const Json &json) {
 	return db->login(userName, passHash);
 }
 
+void DBJSON::logout(const string &token) {
+	if (tokens.count(token) > 0)
+		tokens.erase(token);
+}
+
 Json DBJSON::getDatos(uint32_t userID) {
 	DatosUsuario datos = db->getDatos(userID);
 	string resumen = db->getResumen(userID);

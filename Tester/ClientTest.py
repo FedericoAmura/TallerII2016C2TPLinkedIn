@@ -77,6 +77,9 @@ class ClientTest(unittest.TestCase):
         res1 = client1.login()
         res2 = client2.login()
         res3 = client3.login()
+        data = json.loads(res1.text)
+        self.assertTrue('token' in data)
+        self.assertTrue('userID' in data)
         self.assertEquals(200, res1.status_code)
         self.assertEquals(200, res2.status_code)
         self.assertEquals(200, res3.status_code)
@@ -168,6 +171,8 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
         res = client3.logout()
         self.assertEquals(204, res.status_code)
+        res = client3.get_contacts()
+        self.assertEquals(403, res.status_code)
 
     def test_reject_contact_request(self):
         res = client1.reject_contact_request(client2.get_user_id())
@@ -187,14 +192,21 @@ class ClientTest(unittest.TestCase):
 
     def test_get_profile_from_user(self):
         res = client1.get_profile_from(client2.get_user_id())
+        data = json.loads(res.text)
+        self.assertTrue('name' in data)
+        self.assertTrue('city' in data)
         self.assertEquals(200, res.status_code)
 
     def test_get_resume_from_user(self):
         res = client1.get_resume_from(client2.get_user_id())
+        data = json.loads(res.text)
+        self.assertTrue('resume' in data)
         self.assertEquals(200, res.status_code)
 
     def test_get_photo_from_user(self):
         res = client1.get_photo_from(client2.get_user_id())
+        data = json.loads(res.text)
+        self.assertTrue('photo' in data)
         self.assertEquals(200, res.status_code)
 
     def test_get_thumbnail_from_user(self):

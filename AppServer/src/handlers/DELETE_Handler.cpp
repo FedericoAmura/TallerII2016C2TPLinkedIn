@@ -35,6 +35,26 @@ http_response DELETE_Handler::handleRequest() {
 }
 
 http_response DELETE_Handler::handle_logout() {
+	// /login
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Logout failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Logout failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Logout failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	db_json->logout(token);
+	
 	return http_response("{}", STATUS_NO_CONTENT);
 }
 
