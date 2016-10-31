@@ -15,4 +15,14 @@ public:
 	InvalidJsonException(){};
 };
 
+class CurlInitException : public std::exception {
+public:
+	CurlInitException(){};
+};
+
+class CurlGetException : public std::exception {
+public:
+	CurlGetException(){};
+};
+
 #endif /* APPSERVER_INCLUDE_COMMON_EXCEPTIONS_H_ */
