@@ -184,6 +184,44 @@ TEST_F(DBRawTest, testGetSetFoto) {
 	EXPECT_THAT(tinyJPG, ::testing::ElementsAreArray(bytes));
 }
 
+TEST_F(DBRawTest, testContactos) {
+	string userName1("TestUserName1");
+	string userName2("TestUserName2");
+	string userName3("TestUserName3");
+	registrarTest(userName1, 0.5, 0.7);
+	registrarTest(userName2, 0.4, 0.2);
+	registrarTest(userName3, 0.2, 0.1);
+	uint32_t uid1 = db->login(userName1, defaultPassHash);
+	uint32_t uid2 = db->login(userName2, defaultPassHash);
+	uint32_t uid3 = db->login(userName3, defaultPassHash);
+	db->solicitarContacto(uid1, uid2, "User 1 pide ser contacto de User 2");
+	db->solicitarContacto(uid3, uid2, "User 3 pide ser contacto de User 2");
+	vector <uint32_t> pending = db->getSolicitudes(uid2);
+	uint16_t numContactos = db->getNumContactos(uid2);
+	EXPECT_EQ(0, numContactos);
+	EXPECT_EQ(pending[0], uid1);
+	EXPECT_EQ(pending[1], uid3);
+	EXPECT_EQ(2, pending.size());
+	EXPECT_STREQ(db->getMsgSolicitud(uid1, uid2).c_str(),
+			"User 1 pide ser contacto de User 2");
+	EXPECT_STREQ(db->getMsgSolicitud(uid3, uid2).c_str(),
+			"User 3 pide ser contacto de User 2");
+	EXPECT_THROW(db->getMsgSolicitud(uid1, 1000), NonexistentRequest);
+	db->eliminarSolicitud(uid3, uid2);
+	pending = db->getSolicitudes(uid2);
+	EXPECT_EQ(1, pending.size());
+	db->aceptarSolicitud(uid1, uid2);
+	pending = db->getSolicitudes(uid2);
+	EXPECT_EQ(0, pending.size());
+	numContactos = db->getNumContactos(uid2);
+	EXPECT_EQ(1, numContactos);
+	vector <uint32_t> contactos = db->getContactos(uid2);
+	EXPECT_EQ(contactos[0], uid1);
+	contactos = db->getContactos(uid1);
+	EXPECT_EQ(contactos[0], uid2);
+	EXPECT_THROW(db->solicitarContacto(uid1, uid2, ""),  AlreadyContacts);
+}
+
 /**
  * Tests sobre tipos asociados
  */

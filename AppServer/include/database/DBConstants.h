@@ -3,6 +3,4 @@
 
 static const size_t DBConstMaxJPGBytes = 4000000; // Maximo 4 mbs
 
-
-
 #endif /* APPSERVER_INCLUDE_DATABASE_DBCONSTANTS_H_ */

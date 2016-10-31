@@ -144,6 +144,15 @@ public:
 };
 
 /**
+ * Ya eran contactos
+ */
+class AlreadyContacts: public BadInputException {
+public:
+	AlreadyContacts(const std::string what_arg) : BadInputException(what_arg) {};
+};
+
+
+/**
  * No existe contacto entre dos usuarios
  */
 class NonexistentContact: public BadInputException {

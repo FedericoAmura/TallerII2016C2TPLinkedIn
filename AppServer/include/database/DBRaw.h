@@ -15,6 +15,7 @@
 
 using std::string;
 using std::vector;
+using leveldb::WriteBatch;
 
 // Foto por defecto
 static const char* defaultFotoPath = "default.jpg";
@@ -58,7 +59,7 @@ class DBRaw {
 	 * @param batch				Puntero si se quiere batchear el write, null sino
 	 */
 	void incrementarContador(KeyCode keyCode, const string &tipo,
-			leveldb::WriteBatch* batch = NULL);
+			WriteBatch* batch = NULL);
 
 	/**
 	 * Dado un codigo de estado de leveldb, arroja una excepcion si algo fallo
@@ -119,7 +120,7 @@ class DBRaw {
 	 * @exception BadInputException		La foto no es un jpg
 	 */
 	void setFoto(uint32_t uID, const Foto &foto,
-			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+			WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Actualiza el resumen profesional del usuario
@@ -130,7 +131,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		El uID no es válido
 	 */
 	void setResumen(uint32_t uID, const string &resumen,
-			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+			WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Devuelve el resumen profesional del usuario
@@ -158,7 +159,7 @@ class DBRaw {
 	 * @exception NonexistentUserID		El uID no es válido
 	 */
 	void setDatos(uint32_t uID, const DatosUsuario &datos,
-			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+			WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Devuelve la foto del usuario
@@ -206,7 +207,7 @@ class DBRaw {
 	 * @exception NonexistentSkill		Alguno de los skills no existe en el shared
 	 */
 	void setSkills(uint32_t uID, vector<string> skills,
-			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+			WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Devuelve los skills de un usuario
@@ -225,7 +226,7 @@ class DBRaw {
 	 * @exception NonexistentPosition	Alguno de los puestos no existe en el shared
 	 */
 	void setPuestos(uint32_t uID, vector<Puesto> puestos,
-			leveldb::WriteBatch *batch = NULL, bool verifUID = true);
+			WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
 	 * Devuelve la lista de puestos de un usuario
@@ -303,6 +304,7 @@ class DBRaw {
 	 * @param uIDDestino				User ID de quien será agregado
 	 * @param mensaje					Mensaje definido por el usuario que envia la solicitud
 	 * @exception NonexistentUserID		Alguno de los uIDs es inválido
+	 * @exception AlreadyContacts		Ya eran contactos
 	 */
 	void solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino, const string &mensaje);
 
@@ -335,9 +337,11 @@ class DBRaw {
 	 * Elimina la solicitud de contacto
 	 * @param uIDFuente					User ID de quien pide agregar contacto
 	 * @param uIDDestino				User ID de quien será agregado
+	 * @param batch						Null para escribir a db, puntero para batchear
 	 * @exception NonexistentRequest	No existe peticion entre estos usuarios
 	 */
-	void eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino);
+	void eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino,
+			WriteBatch *batch = NULL);
 
 	/**
 	 * Elimina el vinculo de contacto entre dos usuarios

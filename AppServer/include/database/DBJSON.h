@@ -219,6 +219,7 @@ class DBJSON {
 	 * @param json						Ver documentacion API: "Crear petición (...)"
 	 * @exception NonexistentUserID		Algun user ID no es valido
 	 * @exception BadInputException		Falta algun campo del JSON
+	 * @exception AlreadyContacts		Ya eran contactos
 	 */
 	void crearPeticion(const Json &json);
 
