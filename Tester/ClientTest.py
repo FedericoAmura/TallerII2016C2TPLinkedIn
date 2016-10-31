@@ -36,12 +36,17 @@ user3_data["email"] = "rrrrra@gmail.com"
 user3_data["username"] = "juanperez"
 user3_data["password"] = base64.b64encode(hashlib.sha256("holaSoyPerez").digest())
 user3_data["city"] = "ciudad_perdida"
-user3_data["longitude"] = 10.4
+user3_data["longitude"] = "10.4"
 user3_data["latitude"] = 2.5
+
+user4_data = dict(user3_data);
+del user4_data["username"]
+#user4_data["city"] = None
 
 client1 = Client(user1_data)
 client2 = Client(user2_data)
 client3 = Client(user3_data)
+client4 = Client(user4_data)
 
 class ClientTest(unittest.TestCase):
 
@@ -57,6 +62,11 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(201, res1.status_code)
         self.assertEquals(201, res2.status_code)
         self.assertEquals(201, res3.status_code)
+
+    # hacer un signup con datos inválidos (por ej, "city" con valor "None")
+    def test_011_signup_invalid_data(self):
+        res = client4.signup()
+        self.assertEquals(422, res.status_code)
 
     # hacer un signup con un username ya existente debería devolver 422
     def test_02_repeated_signup(self):

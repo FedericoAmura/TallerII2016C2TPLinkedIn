@@ -111,6 +111,10 @@ http_response POST_Handler::handle_signup() {
 		error = Json::object { {"error_code", ERR_CODE_BAD_PASSWORD_SIZE}, {"description", ERR_DESC_BAD_PASSWORD_SIZE}};
 		std::cout << "[Error] Password must be 32 bytes. Sing Up failed. " << e.what()<< std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
+	} catch (BadInputException &e) {
+		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Bad Input: " << e.what() << ". Sing Up failed."<< std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 
 	std::cout << "Info: SignUp OK" << " userID: " << user_id <<std::endl;
@@ -194,6 +198,10 @@ http_response POST_Handler::handle_create_contact_request() {
 	} catch (NonexistentUserID &e) {
 		std::cout << "[Error] Non existent userID. Create contact request failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
+	} catch (BadInputException &e) {
+		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Bad Input: " << e.what() << ". Create contact request failed."<< std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 	return http_response("{}", STATUS_CREATED);
 }
@@ -233,6 +241,10 @@ http_response POST_Handler::handle_notify_message_seen() {
 	} catch (NonexistentChat &e) {
 		std::cout << "[Error] Non existent chat. Notify Message Seen failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
+	} catch (BadInputException &e) {
+		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Bad Input: " << e.what() << ". Notify Message Seen failed."<< std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 	return http_response("{}", STATUS_NO_CONTENT);
 }
@@ -272,6 +284,10 @@ http_response POST_Handler::handle_send_message() {
 	} catch (NonexistentUserID &e) {
 		std::cout << "[Error] Non existent userID. Send Message failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
+	} catch (BadInputException &e) {
+		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Bad Input: " << e.what() << ". Send Message failed."<< std::endl;
+		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 	return http_response("{}", STATUS_CREATED);
 }

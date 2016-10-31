@@ -35,8 +35,8 @@ bool DBJSON::validar_token(const string &token) {
 }
 
 uint32_t DBJSON::registrarse(const Json &json) {
-	camposExisten(json, "first_name", "last_name", "email", "city",
-			"birth", "longitude", "latitude");
+	camposExisten(json, "first_name", "last_name", "email", "city", "username",
+			"password", "birth", "longitude", "latitude");
 	string nombre(json["first_name"].string_value());
 	nombre.append(" ");
 	nombre.append(json["last_name"].string_value());
@@ -250,4 +250,3 @@ void DBJSON::marcarChatLeido(const Json &json) {
 
 void DBJSON::enviarMensaje(const Json &json) {
 }
-
