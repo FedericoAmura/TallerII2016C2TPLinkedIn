@@ -394,23 +394,128 @@ http_response GET_Handler::handle_get_including_messages() {
 }
 
 http_response GET_Handler::handle_get_categories() {
-	return http_response("{\"categories\":\"{categories}\"}\n", STATUS_OK);
+	Json data;
+	try {
+		data = SharedServerConnector::get_categories();
+	} catch (CurlInitException &e) {
+		std::cout << "[Error] Curl: init failed. Query (categories) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (CurlGetException &e) {
+		std::cout << "[Error] Curl: GET failed. Query (categories) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid data received from Shared Server. Query (categories) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_jobpositions_by_category() {
-	return http_response("{\"job_positions\":\"{job positions by category}\"}\n", STATUS_OK);
+	// /job_positions/categories/<category>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string category = vec_uri[2];
+	Json data;
+	try {
+		data = SharedServerConnector::get_job_positions();
+	} catch (CurlInitException &e) {
+		std::cout << "[Error] Curl: init failed. Query (particular job position) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (CurlGetException &e) {
+		std::cout << "[Error] Curl: GET failed. Query (particular job position) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid data received from Shared Server. Query (particular job position) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	}
+
+	std::vector<Json> job_positions_found;
+	for (Json j : data["job_positions"].array_items()) {
+		if (j["category"].string_value() == category)
+			job_positions_found.push_back(j);
+	}
+	if (job_positions_found.empty())
+		return http_response("", STATUS_NOT_FOUND);
+	Json resp = Json::object{{"skills", Json::array(job_positions_found)}};
+	return http_response(resp.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_jobposition() {
-	return http_response("{\"job_position\":\"{job position}\"}\n", STATUS_OK);
+	// /job_positions/<job_position>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string job_pos = vec_uri[1];
+	Json data;
+	try {
+		data = SharedServerConnector::get_job_positions();
+	} catch (CurlInitException &e) {
+		std::cout << "[Error] Curl: init failed. Query (particular job position) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (CurlGetException &e) {
+		std::cout << "[Error] Curl: GET failed. Query (job position) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid data received from Shared Server. Query (job position) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	}
+
+	for (Json j : data["job_positions"].array_items())
+		if (j["name"].string_value() == job_pos)
+			return http_response(j.dump(), STATUS_OK);
+
+	return http_response("", STATUS_NOT_FOUND);
 }
 
 http_response GET_Handler::handle_get_skills_by_category() {
-	return http_response("{\"skills\":\"{skills by category}\"}\n", STATUS_OK);
+	// /skills/categories/<category>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string category = vec_uri[2];
+	Json data;
+	try {
+		data = SharedServerConnector::get_skills();
+	} catch (CurlInitException &e) {
+		std::cout << "[Error] Curl: init failed. Query (particular skill) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (CurlGetException &e) {
+		std::cout << "[Error] Curl: GET failed. Query (particular skill) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid data received from Shared Server. Query (particular skill) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	}
+
+	std::vector<Json> skills_found;
+	for (Json j : data["skills"].array_items()) {
+		if (j["category"].string_value() == category)
+			skills_found.push_back(j);
+	}
+	if (skills_found.empty())
+		return http_response("", STATUS_NOT_FOUND);
+	Json resp = Json::object{{"skills", Json::array(skills_found)}};
+	return http_response(resp.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_skill() {
-	return http_response("{\"skill\":\"{skill}\"}\n", STATUS_OK);
+	// /skills/<skill>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string skill = vec_uri[1];
+	Json data;
+	try {
+		data = SharedServerConnector::get_skills();
+	} catch (CurlInitException &e) {
+		std::cout << "[Error] Curl: init failed. Query (particular skill) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (CurlGetException &e) {
+		std::cout << "[Error] Curl: GET failed. Query (particular skill) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid data received from Shared Server. Query (particular skill) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	}
+
+	for (Json j : data["skills"].array_items())
+		if (j["name"].string_value() == skill)
+			return http_response(j.dump(), STATUS_OK);
+
+	return http_response("", STATUS_NOT_FOUND);
 }
 
 GET_Handler::~GET_Handler() {

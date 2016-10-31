@@ -16,7 +16,7 @@ static const std::string APP_SERVER_URL		= "http://127.0.0.1";
 /* URIs */
 /* User */
 static const std::string USER_ID = "\\d{1,}";
-static const std::string DESCRIPTION = "[a-z]{1,}";
+static const std::string DESCRIPTION = "[a-zA-Z]{1,}";
 
 static const std::string LOGIN_URI				= "/login";
 static const std::string SIGNUP_URI				= "/signup";

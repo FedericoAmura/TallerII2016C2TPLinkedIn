@@ -9,6 +9,7 @@
 #define APPSERVER_INCLUDE_HANDLERS_GET_HANDLER_H_
 
 #include "HTTPRequestHandler.h"
+#include "SharedServerConnector.h"
 
 class GET_Handler : public HTTPRequestHandler {
 private:

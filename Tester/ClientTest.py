@@ -270,20 +270,36 @@ class ClientTest(unittest.TestCase):
         res = client1.get_categories()
         self.assertEquals(200, res.status_code)
 
-    def test_get_job_position_by_category(self):
-        res = client1.get_job_position_by_category("categ")
+    def test_get_job_position_by_nonexistent_category(self):
+        res = client1.get_job_position_by_category("nonexistent")
+        self.assertEquals(404, res.status_code)
+
+    def test_get_job_position_by_existent_category(self):
+        res = client1.get_job_position_by_category("Musica")
         self.assertEquals(200, res.status_code)
 
-    def test_get_job_position(self):
-        res = client1.get_job_position("pos")
+    def test_get_nonexistent_job_position(self):
+        res = client1.get_job_position("nonexistent")
+        self.assertEquals(404, res.status_code)
+
+    def test_get_existent_job_position(self):
+        res = client1.get_job_position("Tester")
         self.assertEquals(200, res.status_code)
 
-    def test_get_skills_by_category(self):
-        res = client1.get_skills_by_category("categ")
+    def test_get_skills_by_nonexistent_category(self):
+        res = client1.get_skills_by_category("nonexistent")
+        self.assertEquals(404, res.status_code)
+
+    def test_get_skills_by_existent_category(self):
+        res = client1.get_skills_by_category("Programacion")
         self.assertEquals(200, res.status_code)
 
-    def test_get_skill(self):
-        res = client1.get_skill("java")
+    def test_get_nonexistent_skill(self):
+        res = client1.get_skill("nonexistent")
+        self.assertEquals(404, res.status_code)
+
+    def test_get_existent_skill(self):
+        res = client1.get_skill("Python")
         self.assertEquals(200, res.status_code)
 
 

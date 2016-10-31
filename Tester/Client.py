@@ -227,7 +227,7 @@ class Client:
         return self.makeRequest_GET(url, "", {})
 
     def get_skills_by_category(self, category):
-        url = self.url_base + "/skills/" + category
+        url = self.url_base + "/skills/categories/" + category
         return self.makeRequest_GET(url, "", {})
 
     def get_skill(self, skill):
