@@ -183,28 +183,28 @@ class DBJSON {
 
 	/**
 	 * Devuelve una peticion dados dos IDs de usuario
-	 * @param userID1					Un user ID
-	 * @param userID2					El otro user ID
+	 * @param uIDFuente					User ID que origina la peticion
+	 * @param uIDDestino				User ID destino
 	 * @exception NonexistentRequest	No existe peticion entre estos usuarios
 	 * @return							Ver documentacion API: "Consultar número de peticiones pendientes
 	 */
-	Json getPeticion(uint32_t userID1, uint32_t userID2);
+	Json getPeticion(uint32_t uIDFuente, uint32_t uIDDestino);
 
 	/**
 	 * Acepta una petición entre dos usuarios
-	 * @param userID1					Un user ID
-	 * @param userID2					El otro user ID
+	 * @param uIDFuente					User ID que origina la peticion
+	 * @param uIDDestino				User ID destino
 	 * @exception NonexistentRequest	No existe peticion entre estos usuarios
 	 */
-	void aceptarPeticion(uint32_t userID1, uint32_t userID2);
+	void aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino);
 
 	/**
 	 * Rechaza una petición entre dos usuarios
-	 * @param userID1					Un user ID
-	 * @param userID2					El otro user ID
+	 * @param uIDFuente					User ID que origina la peticion
+	 * @param uIDDestino				User ID destino
 	 * @exception NonexistentRequest	No existe peticion entre estos usuarios
 	 */
-	void declinarPeticion(uint32_t userID1, uint32_t userID2);
+	void declinarPeticion(uint32_t uIDFuente, uint32_t uIDDestino);
 
 	/**
 	 * Devuelve la lista de contactos para un usuario
