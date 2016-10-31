@@ -32,6 +32,7 @@ enum KeyCode : uint8_t
 	US_CONTACT_PAIR,
 	US_CONTACT_COUNT,
 	SOLIC,
+	SOLIC_COUNT,
 	SOLIC_TXT,
 	US_POP,
 	US_POP_PAIR,
@@ -360,12 +361,16 @@ void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
 	if (!existe)	{
 		pending.push_back(uIDFuente);
 	}
+	uint16_t contador = pending.size();
 	IDKey solicKey(SOLIC, uIDDestino);
 	IDKey solicTextKey(SOLIC_TXT, uIDFuente, uIDDestino);
+	IDKey solicCountKey(SOLIC_COUNT, uIDDestino);
 	Slice solicData((char*)pending.data(), pending.size()*sizeof(uint32_t));
 	Slice msgData(mensaje.data(), mensaje.length());
+	Slice countData((char*) &contador, sizeof(uint16_t));
 	batch.Put(solicKey.toSlice(), solicData);
 	batch.Put(solicTextKey.toSlice(), msgData);
+	batch.Put(solicCountKey.toSlice(), countData);
 	Status status = db->Write(WriteOptions(), &batch);
 	verificarEstadoDB(status, "Error al guardar nueva solicitud de contacto.");
 }
@@ -382,6 +387,17 @@ vector<uint32_t> DBRaw::getSolicitudes(uint32_t uIDConsultador) {
 		result.push_back(retVal.data()[i]);
 	}
 	return result;
+}
+
+uint16_t DBRaw::getNumSolicitudes(uint32_t uID) {
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	string retVal;
+	IDKey countKey(SOLIC_COUNT, uID);
+	Status status = db->Get(ReadOptions(), countKey.toSlice(), &retVal);
+	if (status.IsNotFound())
+		return 0;
+	verificarEstadoDB(status, "Error al obtener numero de solicitudes.");
+	return uint16_t(retVal.data()[0]);
 }
 
 string DBRaw::getMsgSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
@@ -444,10 +460,14 @@ void DBRaw::eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino,
 	vector<uint32_t>::iterator it = std::find(pending.begin(), pending.end(), uIDFuente);
 	if (it == pending.end()) throw NonexistentRequest("No existe el pedido de contacto");
 	pending.erase(it);
+	uint16_t contador = pending.size();
 	IDKey solicKey(SOLIC, uIDDestino);
 	IDKey solicTextKey(SOLIC_TXT, uIDFuente, uIDDestino);
+	IDKey solicCountKey(SOLIC_COUNT, uIDDestino);
 	Slice solicData((char*)pending.data(), pending.size()*sizeof(uint32_t));
+	Slice solicCountData((char*)&contador, sizeof(uint16_t));
 	batch->Put(solicKey.toSlice(), solicData);
+	batch->Put(solicCountKey.toSlice(), solicCountData);
 	batch->Delete(solicTextKey.toSlice());
 	if (writeToDB)
 	{
@@ -458,7 +478,43 @@ void DBRaw::eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino,
 	}
 }
 
+/**
+ * Elimina el opuesto de cada lista de contactos por uid
+ * Elimina el par
+ * Reduce el contador de cada uid
+ */
 void DBRaw::eliminarContacto(uint32_t uID1, uint32_t uID2) {
+	WriteBatch batch;
+	uint32_t uIDMenor = uID1 < uID2 ? uID1 : uID2;
+	uint32_t uIDMayor = uID1 >= uID2 ? uID1 : uID2;
+	vector<uint32_t> contactos1 = getContactos(uID1);
+	vector<uint32_t> contactos2 = getContactos(uID2);
+	vector<uint32_t>::iterator it = std::find(contactos1.begin(), contactos1.end(), uID2);
+	if (it == contactos1.end()) throw NonexistentContact("No eran contactos");
+	contactos1.erase(it);
+	it = std::find(contactos2.begin(), contactos2.end(), uID1);
+	contactos2.erase(it);
+	uint16_t newCount1 = contactos1.size();
+	uint16_t newCount2 = contactos2.size();
+
+	IDKey contact1Key(US_CONTACT, uID1);
+	IDKey contact2Key(US_CONTACT, uID2);
+	IDKey count1Key(US_CONTACT_COUNT, uID1);
+	IDKey count2Key(US_CONTACT_COUNT, uID2);
+	IDKey pairKey(US_CONTACT_PAIR, uIDMenor, uIDMayor);
+
+	Slice contact1Data((char*) contactos1.data(), contactos1.size()*sizeof(uint32_t));
+	Slice contact2Data((char*) contactos2.data(), contactos2.size()*sizeof(uint32_t));
+	Slice count1Data((char*)&newCount1, sizeof(uint16_t));
+	Slice count2Data((char*)&newCount2, sizeof(uint16_t));
+
+	batch.Put(contact1Key.toSlice(), contact1Data);
+	batch.Put(contact2Key.toSlice(), contact2Data);
+	batch.Put(count1Key.toSlice(), count1Data);
+	batch.Put(count2Key.toSlice(), count2Data);
+	batch.Delete(pairKey.toSlice());
+	Status status = db->Write(WriteOptions(), &batch);
+	verificarEstadoDB(status, "Error al eliminar contacto.");
 }
 
 std::vector<uint32_t> DBRaw::getContactos(uint32_t uID) {
@@ -483,7 +539,19 @@ uint16_t DBRaw::getNumContactos(uint32_t uID) {
 	Status status = db->Get(ReadOptions(), countKey.toSlice(), &retVal);
 	if (status.IsNotFound())
 		return 0;
+	verificarEstadoDB(status, "Error al obtener numero de contactos.");
 	return uint16_t(retVal.data()[0]);
+}
+
+bool DBRaw::sonContactos(uint32_t uID1, uint32_t uID2) {
+	uint32_t uIDMenor = uID1 < uID2 ? uID1 : uID2;
+	uint32_t uIDMayor = uID1 >= uID2 ? uID1 : uID2;
+	IDKey pairKey(US_CONTACT_PAIR, uIDMenor, uIDMayor);
+	string retVal;
+	Status status = db->Get(ReadOptions(), pairKey.toSlice(), &retVal);
+	if (status.IsNotFound()) return false;
+	verificarEstadoDB(status, "Error al obtener numero de contactos.");
+	return true;
 }
 
 
@@ -494,6 +562,10 @@ uint32_t DBRaw::numUltMensaje(uint32_t uID1, uint32_t uID2) {
 std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
 }*/
+
+/**
+ * Metodos privados ------------------------------------------------
+ */
 
 void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 {

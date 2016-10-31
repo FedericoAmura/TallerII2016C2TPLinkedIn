@@ -85,6 +85,10 @@ US_CONTACT_COUNT[1] uID[4] = len[2]
 
 SOLIC[1] uIDDestino[4] = uIDFuente1[4] uIDFuente2[4] ...
 
+**Numero de solicitudes pendientes**
+
+SOLIC_COUNT[1] uIDDestino[4] = len[2]
+
 **Mensajes de solicitudes de contacto**
 
 SOLIC_TXT[1] uIDFuente[4] uIDDestino[4] = texto[VAR]

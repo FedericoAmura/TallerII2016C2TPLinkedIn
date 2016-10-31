@@ -202,6 +202,7 @@ TEST_F(DBRawTest, testContactos) {
 	EXPECT_EQ(pending[0], uid1);
 	EXPECT_EQ(pending[1], uid3);
 	EXPECT_EQ(2, pending.size());
+	EXPECT_EQ(2, (int)db->getNumSolicitudes(uid2));
 	EXPECT_STREQ(db->getMsgSolicitud(uid1, uid2).c_str(),
 			"User 1 pide ser contacto de User 2");
 	EXPECT_STREQ(db->getMsgSolicitud(uid3, uid2).c_str(),
@@ -210,9 +211,11 @@ TEST_F(DBRawTest, testContactos) {
 	db->eliminarSolicitud(uid3, uid2);
 	pending = db->getSolicitudes(uid2);
 	EXPECT_EQ(1, pending.size());
+	EXPECT_EQ(1, (int)db->getNumSolicitudes(uid2));
 	db->aceptarSolicitud(uid1, uid2);
 	pending = db->getSolicitudes(uid2);
 	EXPECT_EQ(0, pending.size());
+	EXPECT_EQ(0, (int)db->getNumSolicitudes(uid2));
 	numContactos = db->getNumContactos(uid2);
 	EXPECT_EQ(1, numContactos);
 	vector <uint32_t> contactos = db->getContactos(uid2);
@@ -220,6 +223,14 @@ TEST_F(DBRawTest, testContactos) {
 	contactos = db->getContactos(uid1);
 	EXPECT_EQ(contactos[0], uid2);
 	EXPECT_THROW(db->solicitarContacto(uid1, uid2, ""),  AlreadyContacts);
+	EXPECT_TRUE(db->sonContactos(uid1,uid2));
+	EXPECT_TRUE(db->sonContactos(uid2,uid1));
+	EXPECT_FALSE(db->sonContactos(uid1,uid3));
+	EXPECT_FALSE(db->sonContactos(uid3,uid2));
+	db->eliminarContacto(uid1, uid2);
+	EXPECT_FALSE(db->sonContactos(uid1,uid2));
+	EXPECT_EQ(0, db->getNumContactos(uid1));
+	EXPECT_EQ(0, db->getNumContactos(uid2));
 }
 
 /**

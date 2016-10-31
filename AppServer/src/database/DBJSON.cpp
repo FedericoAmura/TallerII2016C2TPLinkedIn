@@ -187,24 +187,38 @@ Json DBJSON::busqueda_profresional(const vector<string>
 }
 
 Json DBJSON::getPeticionesPendientes(uint32_t userID) {
-	Json data = Json::object {};
+	vector<uint32_t> solicitudes = db->getSolicitudes(userID);
+	Json::array peticiones;
+	for (uint32_t ID : solicitudes)
+	{
+		peticiones.push_back((int)ID);
+	}
+	Json data = Json::object { { "pending" , peticiones } };
 	return data;
 }
 
 Json DBJSON::getNumPeticionesPendientes(uint32_t userID) {
-	Json data = Json::object {};
+	uint16_t count = db->getNumSolicitudes(userID);
+	Json data = Json::object { { "count" , count } };
 	return data;
 }
 
-Json DBJSON::getPeticion(uint32_t userID1, uint32_t userID2) {
-	Json data = Json::object {};
+Json DBJSON::getPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
+	string msg(db->getMsgSolicitud(uIDFuente, uIDDestino));
+	Json data = Json::object {
+		{ "userID" , (int)uIDFuente},
+		{ "targetID" , (int)uIDDestino},
+		{ "message" , msg},
+	};
 	return data;
 }
 
-void DBJSON::aceptarPeticion(uint32_t userID1, uint32_t userID2) {
+void DBJSON::aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
+	db->aceptarSolicitud(uIDFuente, uIDDestino);
 }
 
-void DBJSON::declinarPeticion(uint32_t userID1, uint32_t userID2) {
+void DBJSON::declinarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
+	db->eliminarSolicitud(uIDFuente, uIDDestino);
 }
 
 Json DBJSON::getContactos(uint32_t userID) {
@@ -213,13 +227,18 @@ Json DBJSON::getContactos(uint32_t userID) {
 }
 
 void DBJSON::crearPeticion(const Json &json) {
+	uint32_t uIDOrigen = json["userID"].int_value();
+	uint32_t uIDDestino = json["targetID"].int_value();
+	string mensaje(json["message"].string_value());
+	db->solicitarContacto(uIDOrigen, uIDDestino, mensaje);
 }
 
 bool DBJSON::esContacto(uint32_t userID1, uint32_t userID2) {
-	return false;
+	return db->sonContactos(userID1, userID2);
 }
 
 void DBJSON::eliminarContacto(uint32_t userID1, uint32_t userID2) {
+	db->eliminarContacto(userID1, userID2);
 }
 
 Json DBJSON::esRecomendado(uint32_t userIDRecomendador, uint32_t userIDRecomendado) {
