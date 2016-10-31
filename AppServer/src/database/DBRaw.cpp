@@ -4,6 +4,7 @@
 #include "../../include/log4cpp/OstreamAppender.hh"
 #include "../../include/log4cpp/BasicLayout.hh"
 #include <fstream>
+#include <algorithm>
 
 using leveldb::Slice;
 using leveldb::WriteBatch;
@@ -51,6 +52,11 @@ public:
  IDKey(KeyCode prefijo, uint32_t key) : data(5) {
 	 data[0] = prefijo;
 	 copy((char*)&key, (char*)(&key+1), data.begin()+1);
+ }
+ IDKey(KeyCode prefijo, uint32_t key1, uint32_t key2) : data(9) {
+ 	 data[0] = prefijo;
+ 	 copy((char*)&key1, (char*)(&key1+1), data.begin()+1);
+ 	 copy((char*)(&key2), (char*)(&key2+1), data.begin()+5);
  }
  Slice toSlice() {
 	 return Slice (data.data(), data.size());
@@ -335,42 +341,159 @@ std::vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill,
 
 std::vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto,
 		uint conteo) {
-}*
+}*/
 
 void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
 		const string& mensaje) {
+	if (uIDFuente == uIDDestino) throw AlreadyContacts("Contacto con si mismo");
+	// No hace falta LOCK porque no es relevante si si pisa la misma solicitud
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uIDFuente);
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uIDDestino);
+	// Verificamos si ya son contactos, y en ese caso no hago nada
+	vector<uint32_t> contactos = getContactos(uIDDestino);
+	if (std::find(contactos.begin(), contactos.end(), uIDFuente) != contactos.end())
+		throw AlreadyContacts("Ya eran contactos");
+	WriteBatch batch;
+	// Si ya existe la solicitud, se la reescribe
+	vector<uint32_t> pending = getSolicitudes(uIDDestino);
+	bool existe = std::find(pending.begin(), pending.end(), uIDFuente) != pending.end();
+	if (!existe)	{
+		pending.push_back(uIDFuente);
+	}
+	IDKey solicKey(SOLIC, uIDDestino);
+	IDKey solicTextKey(SOLIC_TXT, uIDFuente, uIDDestino);
+	Slice solicData((char*)pending.data(), pending.size()*sizeof(uint32_t));
+	Slice msgData(mensaje.data(), mensaje.length());
+	batch.Put(solicKey.toSlice(), solicData);
+	batch.Put(solicTextKey.toSlice(), msgData);
+	Status status = db->Write(WriteOptions(), &batch);
+	verificarEstadoDB(status, "Error al guardar nueva solicitud de contacto.");
 }
 
-std::vector<uint32_t> DBRaw::getSolicitudes(uint32_t uIDConsultador) {
+vector<uint32_t> DBRaw::getSolicitudes(uint32_t uIDConsultador) {
+	vector<uint32_t> result;
+	string retVal;
+	IDKey solicKey(SOLIC, uIDConsultador);
+	Status status = db->Get(ReadOptions(), solicKey.toSlice(), &retVal);
+	if (!status.IsNotFound())
+		verificarEstadoDB(status, "Error al obtener solicitudes.");
+	for (int i = 0; i < retVal.length(); i += sizeof(uint32_t))
+	{
+		result.push_back(retVal.data()[i]);
+	}
+	return result;
 }
 
 string DBRaw::getMsgSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
+	string retVal;
+	IDKey solicTextKey(SOLIC_TXT, uIDFuente, uIDDestino);
+	Status status = db->Get(ReadOptions(), solicTextKey.toSlice(), &retVal);
+	if (status.IsNotFound())
+		throw NonexistentRequest("No existe el pedido de contacto");
+	verificarEstadoDB(status, "Error al obtener mensaje de solicitud.");
+	return retVal;
 }
 
 void DBRaw::aceptarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
+	WriteBatch batch;
+	// TODO: Lock para ambos users
+	/**
+	 * Se supone que al crear la solicitud se chequea si ya eran contactos
+	 * y ahora no hace falta
+	 */
+	uint32_t uIDMenor = uIDFuente < uIDDestino ? uIDFuente : uIDDestino;
+	uint32_t uIDMayor = uIDFuente >= uIDDestino ? uIDFuente : uIDDestino;
+	vector<uint32_t> contactosFuente = getContactos(uIDFuente);
+	vector<uint32_t> contactosDestino = getContactos(uIDDestino);
+	contactosFuente.push_back(uIDDestino);
+	contactosDestino.push_back(uIDFuente);
+	uint16_t newCountFuente = contactosFuente.size();
+	uint16_t newCountDest = contactosDestino.size();
+
+	IDKey contactFuenteKey(US_CONTACT, uIDFuente);
+	IDKey contactDestKey(US_CONTACT, uIDDestino);
+	IDKey countFuenteKey(US_CONTACT_COUNT, uIDFuente);
+	IDKey CountDestKey(US_CONTACT_COUNT, uIDDestino);
+	IDKey pairKey(US_CONTACT_PAIR, uIDMenor, uIDMayor);
+
+	Slice contactFuenteData((char*) contactosFuente.data(),
+			contactosFuente.size()*sizeof(uint32_t));
+	Slice contactDestData((char*) contactosDestino.data(),
+			contactosDestino.size()*sizeof(uint32_t));
+	Slice countFuenteData((char*)&newCountFuente, sizeof(uint16_t));
+	Slice countDestData((char*)&newCountDest, sizeof(uint16_t));
+	Slice pairData;
+	batch.Put(contactFuenteKey.toSlice(), contactFuenteData);
+	batch.Put(contactDestKey.toSlice(), contactDestData);
+	batch.Put(countFuenteKey.toSlice(), countFuenteData);
+	batch.Put(CountDestKey.toSlice(), countDestData);
+	batch.Put(pairKey.toSlice(), pairData);
+	eliminarSolicitud(uIDFuente, uIDDestino, &batch);
+	Status status = db->Write(WriteOptions(), &batch);
+	if (status.IsNotFound())
+		throw NonexistentRequest("No existe el pedido de contacto");
+	verificarEstadoDB(status, "Error al eliminar solicitud de contacto.");
 }
 
-void DBRaw::eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
+void DBRaw::eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino,
+		WriteBatch *batch) {
+	WriteBatch localBatch;
+	bool writeToDB = !batch;
+	if (writeToDB) batch = &localBatch;
+	vector<uint32_t> pending = getSolicitudes(uIDDestino);
+	vector<uint32_t>::iterator it = std::find(pending.begin(), pending.end(), uIDFuente);
+	if (it == pending.end()) throw NonexistentRequest("No existe el pedido de contacto");
+	pending.erase(it);
+	IDKey solicKey(SOLIC, uIDDestino);
+	IDKey solicTextKey(SOLIC_TXT, uIDFuente, uIDDestino);
+	Slice solicData((char*)pending.data(), pending.size()*sizeof(uint32_t));
+	batch->Put(solicKey.toSlice(), solicData);
+	batch->Delete(solicTextKey.toSlice());
+	if (writeToDB)
+	{
+		Status status = db->Write(WriteOptions(), batch);
+		if (status.IsNotFound())
+			throw NonexistentRequest("No existe el pedido de contacto");
+		verificarEstadoDB(status, "Error al eliminar solicitud de contacto.");
+	}
 }
 
 void DBRaw::eliminarContacto(uint32_t uID1, uint32_t uID2) {
 }
 
 std::vector<uint32_t> DBRaw::getContactos(uint32_t uID) {
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	vector<uint32_t> result;
+	string retVal;
+	IDKey solicKey(US_CONTACT, uID);
+	Status status = db->Get(ReadOptions(), solicKey.toSlice(), &retVal);
+	if (!status.IsNotFound())
+		verificarEstadoDB(status, "Error al obtener solicitudes.");
+	for (int i = 0; i < retVal.length(); i += sizeof(uint32_t))
+	{
+		result.push_back(retVal.data()[i]);
+	}
+	return result;
+}
+
+uint16_t DBRaw::getNumContactos(uint32_t uID) {
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	string retVal;
+	IDKey countKey(US_CONTACT_COUNT, uID);
+	Status status = db->Get(ReadOptions(), countKey.toSlice(), &retVal);
+	if (status.IsNotFound())
+		return 0;
+	return uint16_t(retVal.data()[0]);
 }
 
 
-
+/*
 uint32_t DBRaw::numUltMensaje(uint32_t uID1, uint32_t uID2) {
 }
 
 std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
 }*/
-
-uint16_t DBRaw::getNumContactos(uint32_t uID) {
-	return 0; //TODO: Implementar
-}
 
 void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 {
