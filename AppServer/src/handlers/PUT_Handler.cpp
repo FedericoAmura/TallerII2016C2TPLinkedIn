@@ -41,7 +41,7 @@ http_response PUT_Handler::handleRequest() {
 http_response PUT_Handler::handle_update_profile() {
 	/* uri = /users/<userID> */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
-	std::string userID_s = vec_uri[1];
+	uint32_t userID = std::stoi(vec_uri[1]);
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
@@ -68,7 +68,6 @@ http_response PUT_Handler::handle_update_profile() {
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 
-	uint32_t userID = std::stoi(userID_s);
 	try {
 		db_json->setDatos(userID, data);
 	} catch (NonexistentUserID &e) {
@@ -94,7 +93,7 @@ http_response PUT_Handler::handle_update_profile() {
 http_response PUT_Handler::handle_update_resume() {
 	/* uri = /users/<userID>/summary */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
-	std::string userID_s = vec_uri[1];
+	uint32_t userID = std::stoi(vec_uri[1]);
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
@@ -121,7 +120,6 @@ http_response PUT_Handler::handle_update_resume() {
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 
-	uint32_t userID = std::stoi(userID_s);
 	try {
 		db_json->setResumen(userID, data);
 	} catch (NonexistentUserID &e) {
@@ -138,7 +136,7 @@ http_response PUT_Handler::handle_update_resume() {
 http_response PUT_Handler::handle_update_photo() {
 	/* uri = /users/<userID>/photo */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
-	std::string userID_s = vec_uri[1];
+	uint32_t userID = std::stoi(vec_uri[1]);
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
@@ -165,7 +163,6 @@ http_response PUT_Handler::handle_update_photo() {
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 
-	uint32_t userID = std::stoi(userID_s);
 	try {
 		db_json->setFoto(userID, data);
 	} catch (NonexistentUserID &e) {
@@ -185,9 +182,10 @@ http_response PUT_Handler::handle_update_photo() {
 
 http_response PUT_Handler::handle_recommend_user() {
 	/* uri = /users/popular/<userID1>/<userID2> */
-	std::vector<std::string> vec_uri = split(request->uri(), "/");
-	std::string userID1_s = vec_uri[2];
-	std::string userID2_s = vec_uri[3];
+	/* TODO medio al pedo??? */
+//	std::vector<std::string> vec_uri = split(request->uri(), "/");
+//	uint32_t userID1 = std::stoi(vec_uri[2]);
+//	uint32_t userID2 = std::stoi(vec_uri[3]);
 
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);

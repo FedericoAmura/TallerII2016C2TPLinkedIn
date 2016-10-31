@@ -124,8 +124,8 @@ http_response POST_Handler::handle_signup() {
 http_response POST_Handler::handle_accept_contact_request() {
 	/* uri = /users/<userID>/contacts/<other_userID> */
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
-	std::string userID1_s = vec_uri[1];
-	std::string userID2_s = vec_uri[3];
+	uint32_t userID1 = std::stoi(vec_uri[1]);
+	uint32_t userID2 = std::stoi(vec_uri[3]);
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
@@ -152,8 +152,6 @@ http_response POST_Handler::handle_accept_contact_request() {
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
 
-	uint32_t userID1 = std::stoi(userID1_s);
-	uint32_t userID2 = std::stoi(userID2_s);
 	try {
 		db_json->aceptarPeticion(userID1, userID2);
 	} catch (NonexistentRequest &e) {
