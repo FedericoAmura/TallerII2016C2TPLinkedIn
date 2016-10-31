@@ -326,6 +326,14 @@ class DBRaw {
 	string getMsgSolicitud(uint32_t uIDFuente, uint32_t uIDDestino);
 
 	/**
+	 * Devuelve el numero de peticiones que un usuario tiene pendientes
+	 * @param uID						User ID
+	 * @exception NonexistentUserID		El uID parametro es inválido
+	 * @return							Numero de peticiones
+	 */
+	uint16_t getNumSolicitudes(uint32_t uID);
+
+	/**
 	 * Elimina la solicitud de contacto y vuelve a ambos contactos uno del otro
 	 * @param uIDFuente					User ID de quien pide agregar contacto
 	 * @param uIDDestino				User ID de quien será agregado
@@ -366,6 +374,15 @@ class DBRaw {
 	 * @exception NonexistentUserID		UserID inválido
 	 */
 	uint16_t getNumContactos(uint32_t uID);
+
+	/**
+	 * Devuelve si dos usuarios son contactos
+	 * Devuelve false en caso que uno de los usuarios no exista tambien
+	 * @param uID1				Usuario 1
+	 * @param uID2				Usuario 2
+	 * @return
+	 */
+	bool sonContactos(uint32_t uID1, uint32_t uID2);
 
 	/**
 	 * Devuelve el numero del ultimo mensaje en una conversacion
