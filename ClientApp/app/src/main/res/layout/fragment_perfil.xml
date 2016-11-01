@@ -40,19 +40,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/person_photo"
-                android:src="@drawable/messi"
                 android:layout_marginTop="30dp"
-                android:maxHeight="200px"
-                android:maxWidth="200px"
-                android:minHeight="200px"
-                android:minWidth="200px"
+                android:maxHeight="100px"
+                android:maxWidth="100px"
+                android:minHeight="100px"
+                android:minWidth="100px"
                 android:adjustViewBounds="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginRight="16dp"
                 />
 
-            <TextView
+            <!--<TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/person_age"
@@ -65,45 +64,48 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/person_email"
                 android:layout_below="@+id/person_age"
-                />
+                /> -->
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/person_email">
+                android:layout_below="@+id/person_name"
+                android:layout_toRightOf="@+id/person_photo">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_relaciones_black"
                     android:id="@+id/relaciones_foto"
-                    android:maxHeight="40px"
-                    android:maxWidth="40px"
-                    android:minHeight="40px"
-                    android:minWidth="40px"
+                    android:maxHeight="50px"
+                    android:maxWidth="50px"
+                    android:minHeight="50px"
+                    android:minWidth="50px"
                     android:adjustViewBounds="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/person_relaciones" />
+                    android:id="@+id/person_relaciones"
+                    android:textSize="20sp"/>
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_recomendacion"
                     android:id="@+id/recomendaciones_foto"
-                    android:maxHeight="40px"
-                    android:maxWidth="40px"
-                    android:minHeight="40px"
-                    android:minWidth="40px"
+                    android:maxHeight="50px"
+                    android:maxWidth="50px"
+                    android:minHeight="50px"
+                    android:minWidth="50px"
                     android:adjustViewBounds="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/person_fav" />
+                    android:id="@+id/person_fav"
+                    android:textSize="20sp"/>
             </LinearLayout>
 
         </RelativeLayout>
@@ -223,13 +225,22 @@
             android:padding="16dp"
             >
 
-            <TextView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:id="@+id/llExpLaboral"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="30dp"
+                />
+
+            <!--<TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvExperiencia"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="30dp"
-                />
+                />-->
 
         </RelativeLayout>
 
@@ -279,11 +290,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tituloUbicacion"
-
             />
 
     </android.support.v7.widget.CardView>
 
+    <!-- Bottom Bar -->
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/botonCerrarSesion"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cerrar sesion"
+            android:textColor="@android:color/black"/>
+
+        <Button
+            android:id="@+id/botonEditarPerfil"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:backgroundTint="@color/colorAccent"
+            android:text="Editar datos"
+            android:textColor="@android:color/black"/>
+
+    </LinearLayout>
 </LinearLayout>
 </ScrollView>
