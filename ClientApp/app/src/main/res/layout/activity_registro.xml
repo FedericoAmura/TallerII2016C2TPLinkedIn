@@ -149,7 +149,6 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Fecha de nacimiento (dd/mm/aaaa)"
-                android:inputType="numberSigned"
                 android:textSize="25dp"
                 android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
