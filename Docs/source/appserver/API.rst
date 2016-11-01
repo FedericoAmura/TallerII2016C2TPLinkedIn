@@ -413,15 +413,15 @@ Ver si un usuario particular recomendó a otro
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/popular/<userID1>/<userID2>
+URL                  	| \http://<appserver>/users/popular/<recommendedID>/<recommenderID>
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - Alguno de los usuarios no existe
 			| 200 - OK + Siguiente JSON:
 			| {
-			|  “recommender” : <userID1>
-			|  “recommended” : <userID2>
+			|  “recommender” : <recommenderID>
+			|  “recommended” : <recommendedID>
 			|  “recommends” : true/false
 			| }
 ======================  ==========================
@@ -430,13 +430,12 @@ Recomendar a un usuario
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/popular/<senderID>/<receiverID>
+URL                  	| \http://<appserver>/users/popular/<recommendedID>/<recommenderID>
 AUTH                 	| Si
 VERB                 	| PUT
 PARAMETROS           	| {
-			|  “recommender” : <senderID>
+			|  “recommender” : <recommenderID>
 			|  “recommended” : <recommendedID>
-                        |  “receiver” : <receiverID>
 			|  “recommends” : true/false
 			| }
 POSIBLES RESPUESTAS	| 404 - Alguno de los usuarios no existe

@@ -271,6 +271,32 @@ TEST_F(DBJsonTest, testPeticionesYContactos)
 	EXPECT_FALSE(dbj->esContacto(uid2, uid1));
 }
 
+TEST_F(DBJsonTest, testRecomendaciones)
+{
+	string userName1("Username1");
+	uint32_t uid1 = registrarTest(userName1, 1.0, 0.5);
+	string userName2("Username2");
+	uint32_t uid2 = registrarTest(userName2, 2.0, 1.5);
+	EXPECT_FALSE(dbj->esRecomendado(uid1, uid2)["recommends"].bool_value());
+	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
+	Json recomendacion = Json::object {
+		{ "recommender" , (int)uid1 },
+		{ "recommended", (int)uid2 },
+		{ "recommends",  true },
+	};
+	dbj->actualizarRecomendacion(recomendacion);
+	EXPECT_TRUE(dbj->esRecomendado(uid1, uid2)["recommends"].bool_value());
+	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
+	recomendacion = Json::object {
+		{ "recommender" , (int)uid1 },
+		{ "recommended", (int)uid2 },
+		{ "recommends",  false },
+	};
+	dbj->actualizarRecomendacion(recomendacion);
+	EXPECT_FALSE(dbj->esRecomendado(uid1, uid2)["recommends"].bool_value());
+	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
+}
+
 TEST(JsonTest, TestJsonChecker)
 {
 	Json json = Json::object {

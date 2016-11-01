@@ -235,6 +235,42 @@ TEST_F(DBRawTest, testContactos) {
 	EXPECT_EQ(0, db->getNumContactos(uid2));
 }
 
+TEST_F(DBRawTest, testRecomendaciones) {
+	string userName1("TestUserName1");
+	string userName2("TestUserName2");
+	string userName3("TestUserName3");
+	uint32_t uid1 = registrarTest(userName1, 0.5, 0.7);
+	uint32_t uid2 = registrarTest(userName2, 0.4, 0.2);
+	uint32_t uid3 = registrarTest(userName3, 0.2, 0.1);
+	EXPECT_EQ(db->getPopularidad(uid1), 0);
+	EXPECT_EQ(db->getPopularidad(uid1), 0);
+	EXPECT_EQ(db->getPopularidad(uid1), 0);
+	db->setRecomendacion(uid1, uid2, true);
+	EXPECT_EQ(db->getPopularidad(uid2), 1);
+	db->setRecomendacion(uid1, uid2, true); // Ignorado
+	EXPECT_EQ(db->getPopularidad(uid2), 1);
+	db->setRecomendacion(uid1, uid2, false);
+	EXPECT_EQ(db->getPopularidad(uid2), 0);
+	db->setRecomendacion(uid1, uid2, false); // Ignorado
+	EXPECT_EQ(db->getPopularidad(uid2), 0);
+	db->setRecomendacion(uid1, uid1, true); // Ignorado
+	db->setRecomendacion(uid2, uid1, true);
+	db->setRecomendacion(uid2, uid3, true);
+	db->setRecomendacion(uid3, uid1, true);
+	EXPECT_EQ(db->getPopularidad(uid1), 2);
+	EXPECT_EQ(db->getPopularidad(uid2), 0);
+	EXPECT_EQ(db->getPopularidad(uid3), 1);
+	EXPECT_FALSE(db->esRecomendado(uid1, uid1));
+	EXPECT_FALSE(db->esRecomendado(uid1, uid2));
+	EXPECT_FALSE(db->esRecomendado(uid1, uid3));
+	EXPECT_TRUE(db->esRecomendado(uid2, uid1));
+	EXPECT_FALSE(db->esRecomendado(uid2, uid2));
+	EXPECT_TRUE(db->esRecomendado(uid2, uid3));
+	EXPECT_TRUE(db->esRecomendado(uid3, uid1));
+	EXPECT_FALSE(db->esRecomendado(uid3, uid2));
+	EXPECT_FALSE(db->esRecomendado(uid3, uid3));
+}
+
 /**
  * Tests sobre tipos asociados
  */
