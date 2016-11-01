@@ -13,6 +13,12 @@ file(GLOB_RECURSE TEST "test/*.cpp")
 #Pero al gcov no le gusta, no se ejecuta el fprogiles-arcs despues
 
 add_executable(AppServer ${COMMONSRC} "src/AppServer.cpp")
+#Para la generacion del paquete de instalacion
+install(TARGETS AppServer DESTINATION appserver)
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Jobify Team")
+include(CPack)
+
 add_executable(UnitTest ${COMMONSRC} ${TEST} )
 
 find_package(CURL)
