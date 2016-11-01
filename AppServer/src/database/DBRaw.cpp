@@ -417,6 +417,7 @@ void DBRaw::aceptarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
 	 * Se supone que al crear la solicitud se chequea si ya eran contactos
 	 * y ahora no hace falta
 	 */
+	getMsgSolicitud(uIDFuente, uIDDestino); // Chequeo que exista la peticion
 	uint32_t uIDMenor = uIDFuente < uIDDestino ? uIDFuente : uIDDestino;
 	uint32_t uIDMayor = uIDFuente >= uIDDestino ? uIDFuente : uIDDestino;
 	vector<uint32_t> contactosFuente = getContactos(uIDFuente);
@@ -446,9 +447,7 @@ void DBRaw::aceptarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
 	batch.Put(pairKey.toSlice(), pairData);
 	eliminarSolicitud(uIDFuente, uIDDestino, &batch);
 	Status status = db->Write(WriteOptions(), &batch);
-	if (status.IsNotFound())
-		throw NonexistentRequest("No existe el pedido de contacto");
-	verificarEstadoDB(status, "Error al eliminar solicitud de contacto.");
+	verificarEstadoDB(status, "Error al aceptar solicitud de contacto.");
 }
 
 void DBRaw::eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino,

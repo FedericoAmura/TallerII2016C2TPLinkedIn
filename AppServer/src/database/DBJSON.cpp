@@ -222,8 +222,13 @@ void DBJSON::declinarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 }
 
 Json DBJSON::getContactos(uint32_t userID) {
-	Json data = Json::object {};
-	return data;
+	vector<uint32_t> contactos = db->getContactos(userID);
+	Json::array array;
+	for (uint32_t ID : contactos)
+	{
+		array.push_back((int) ID);
+	}
+	return Json::object { { "contacts" , array } };
 }
 
 void DBJSON::crearPeticion(const Json &json) {
