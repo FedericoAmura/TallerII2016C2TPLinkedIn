@@ -151,7 +151,6 @@ public:
 	AlreadyContacts(const std::string what_arg) : BadInputException(what_arg) {};
 };
 
-
 /**
  * No existe contacto entre dos usuarios
  */

@@ -61,12 +61,13 @@ class DBRawTest : public ::testing::Test {
 	 * @param userName				Nombre de usuario
 	 * @param latitud				Latitud
 	 * @param longitud				Longitud
+	 * @return						El user ID del recien registrado
 	 */
-	void registrarTest(string userName, double latitud, double longitud)	{
+	uint32_t registrarTest(string userName, double latitud, double longitud)	{
 		Fecha fecha(defaultFecha);
 		Geolocacion geo(latitud, longitud);
 		DatosUsuario datos(defaultNombre, defaultEmail, defaultCiudad, fecha, geo);
-		db->registrarse(datos, userName, defaultPassHash);
+		return db->registrarse(datos, userName, defaultPassHash);
 	}
 };
 
@@ -188,14 +189,11 @@ TEST_F(DBRawTest, testContactos) {
 	string userName1("TestUserName1");
 	string userName2("TestUserName2");
 	string userName3("TestUserName3");
-	registrarTest(userName1, 0.5, 0.7);
-	registrarTest(userName2, 0.4, 0.2);
-	registrarTest(userName3, 0.2, 0.1);
-	uint32_t uid1 = db->login(userName1, defaultPassHash);
-	uint32_t uid2 = db->login(userName2, defaultPassHash);
-	uint32_t uid3 = db->login(userName3, defaultPassHash);
-	db->solicitarContacto(uid1, uid2, "User 1 pide ser contacto de User 2");
-	db->solicitarContacto(uid3, uid2, "User 3 pide ser contacto de User 2");
+	uint32_t uid1 = registrarTest(userName1, 0.5, 0.7);
+	uint32_t uid2 = registrarTest(userName2, 0.4, 0.2);
+	uint32_t uid3 = registrarTest(userName3, 0.2, 0.1);
+	db->solicitarContacto(uid1, uid2, "User 1° pide ser contacto de User 2°");
+	db->solicitarContacto(uid3, uid2, "User 3° pide ser contacto de User 2°");
 	vector <uint32_t> pending = db->getSolicitudes(uid2);
 	uint16_t numContactos = db->getNumContactos(uid2);
 	EXPECT_EQ(0, numContactos);
@@ -204,10 +202,11 @@ TEST_F(DBRawTest, testContactos) {
 	EXPECT_EQ(2, pending.size());
 	EXPECT_EQ(2, (int)db->getNumSolicitudes(uid2));
 	EXPECT_STREQ(db->getMsgSolicitud(uid1, uid2).c_str(),
-			"User 1 pide ser contacto de User 2");
+			"User 1° pide ser contacto de User 2°");
 	EXPECT_STREQ(db->getMsgSolicitud(uid3, uid2).c_str(),
-			"User 3 pide ser contacto de User 2");
+			"User 3° pide ser contacto de User 2°");
 	EXPECT_THROW(db->getMsgSolicitud(uid1, 1000), NonexistentRequest);
+	EXPECT_THROW(db->eliminarSolicitud(uid2, uid3), NonexistentRequest);
 	db->eliminarSolicitud(uid3, uid2);
 	pending = db->getSolicitudes(uid2);
 	EXPECT_EQ(1, pending.size());
@@ -218,6 +217,9 @@ TEST_F(DBRawTest, testContactos) {
 	EXPECT_EQ(0, (int)db->getNumSolicitudes(uid2));
 	numContactos = db->getNumContactos(uid2);
 	EXPECT_EQ(1, numContactos);
+	EXPECT_THROW(db->solicitarContacto(uid1, uid2, ""), AlreadyContacts);
+	EXPECT_THROW(db->solicitarContacto(uid2, uid1, ""), AlreadyContacts);
+	EXPECT_THROW(db->solicitarContacto(uid1, uid1, ""), AlreadyContacts);
 	vector <uint32_t> contactos = db->getContactos(uid2);
 	EXPECT_EQ(contactos[0], uid1);
 	contactos = db->getContactos(uid1);
@@ -231,6 +233,42 @@ TEST_F(DBRawTest, testContactos) {
 	EXPECT_FALSE(db->sonContactos(uid1,uid2));
 	EXPECT_EQ(0, db->getNumContactos(uid1));
 	EXPECT_EQ(0, db->getNumContactos(uid2));
+}
+
+TEST_F(DBRawTest, testRecomendaciones) {
+	string userName1("TestUserName1");
+	string userName2("TestUserName2");
+	string userName3("TestUserName3");
+	uint32_t uid1 = registrarTest(userName1, 0.5, 0.7);
+	uint32_t uid2 = registrarTest(userName2, 0.4, 0.2);
+	uint32_t uid3 = registrarTest(userName3, 0.2, 0.1);
+	EXPECT_EQ(db->getPopularidad(uid1), 0);
+	EXPECT_EQ(db->getPopularidad(uid1), 0);
+	EXPECT_EQ(db->getPopularidad(uid1), 0);
+	db->setRecomendacion(uid1, uid2, true);
+	EXPECT_EQ(db->getPopularidad(uid2), 1);
+	db->setRecomendacion(uid1, uid2, true); // Ignorado
+	EXPECT_EQ(db->getPopularidad(uid2), 1);
+	db->setRecomendacion(uid1, uid2, false);
+	EXPECT_EQ(db->getPopularidad(uid2), 0);
+	db->setRecomendacion(uid1, uid2, false); // Ignorado
+	EXPECT_EQ(db->getPopularidad(uid2), 0);
+	db->setRecomendacion(uid1, uid1, true); // Ignorado
+	db->setRecomendacion(uid2, uid1, true);
+	db->setRecomendacion(uid2, uid3, true);
+	db->setRecomendacion(uid3, uid1, true);
+	EXPECT_EQ(db->getPopularidad(uid1), 2);
+	EXPECT_EQ(db->getPopularidad(uid2), 0);
+	EXPECT_EQ(db->getPopularidad(uid3), 1);
+	EXPECT_FALSE(db->esRecomendado(uid1, uid1));
+	EXPECT_FALSE(db->esRecomendado(uid1, uid2));
+	EXPECT_FALSE(db->esRecomendado(uid1, uid3));
+	EXPECT_TRUE(db->esRecomendado(uid2, uid1));
+	EXPECT_FALSE(db->esRecomendado(uid2, uid2));
+	EXPECT_TRUE(db->esRecomendado(uid2, uid3));
+	EXPECT_TRUE(db->esRecomendado(uid3, uid1));
+	EXPECT_FALSE(db->esRecomendado(uid3, uid2));
+	EXPECT_FALSE(db->esRecomendado(uid3, uid3));
 }
 
 /**

@@ -320,9 +320,65 @@ void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
 	db->Write(WriteOptions(), &batch);
 }
 
+bool DBRaw::esRecomendado(uint32_t uIDRecomendador, uint32_t uIDRecomendado) {
+	IDKey pairKey(US_POP_PAIR, uIDRecomendado, uIDRecomendador);
+	string retVal;
+	Status status = db->Get(ReadOptions(), pairKey.toSlice(), &retVal);
+	if (status.IsNotFound()) return false;
+	return true;
+}
+
+void DBRaw::setRecomendacion(uint32_t uIDRecomendador,
+		uint32_t uIDRecomendado, bool estado) {
+	if (uIDRecomendado == uIDRecomendador) return; // No se puede autorecomendar
+	verificarContador<NonexistentUserID>
+		(LAST_UID, string("user ID"), uIDRecomendador);
+	verificarContador<NonexistentUserID>
+		(LAST_UID, string("user ID"), uIDRecomendado);
+	ReadOptions readOptions;
+	IDKey pairKey(US_POP_PAIR, uIDRecomendado, uIDRecomendador);
+	Slice pairKeySlice(pairKey.toSlice());
+	string retVal;
+	Status status = db->Get(readOptions, pairKeySlice, &retVal);
+	string mensajeError;
+	if (estado){
+		mensajeError = "Error al recomendar usuario";
+		if (!status.IsNotFound()) return; // Ya estaba recomenadado
+	}
+	else {
+		mensajeError = "Error al desrecomendar usuario";
+		if (status.IsNotFound()) return; // No estaba recomenadado
+	}
+	uint32_t count = 0;
+	IDKey countKey(US_POP, uIDRecomendado);
+	Slice countKeySlice(countKey.toSlice());
+	status = db->Get(readOptions, countKeySlice, &retVal);
+	if (!status.IsNotFound())
+	{
+		verificarEstadoDB(status, mensajeError.c_str());
+		count = retVal.data()[0];
+	}
+	if (estado) ++count;
+	else --count;
+	Slice countData((char*) &count, sizeof(count));
+	WriteBatch batch;
+	if (estado) {
+		batch.Put(pairKeySlice, Slice());
+	}
+	else batch.Delete(pairKeySlice);
+	batch.Put(countKeySlice, countData);
+	status = db->Write(WriteOptions(), &batch);
+	verificarEstadoDB(status, mensajeError.c_str());
+}
+
 uint32_t DBRaw::getPopularidad(uint32_t uID) {
-	// TODO: Implementar
-	return 0;
+	verificarContador<NonexistentUserID> (LAST_UID, string("user ID"), uID);
+	IDKey countKey(US_POP, uID);
+	string retVal;
+	Status status = db->Get(ReadOptions(), countKey.toSlice(), &retVal);
+	if (status.IsNotFound()) return 0;
+	verificarEstadoDB(status, "Error al consultar popularidad.");
+	return retVal.data()[0];
 }
 
 
@@ -417,6 +473,7 @@ void DBRaw::aceptarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
 	 * Se supone que al crear la solicitud se chequea si ya eran contactos
 	 * y ahora no hace falta
 	 */
+	getMsgSolicitud(uIDFuente, uIDDestino); // Chequeo que exista la peticion
 	uint32_t uIDMenor = uIDFuente < uIDDestino ? uIDFuente : uIDDestino;
 	uint32_t uIDMayor = uIDFuente >= uIDDestino ? uIDFuente : uIDDestino;
 	vector<uint32_t> contactosFuente = getContactos(uIDFuente);
@@ -446,9 +503,7 @@ void DBRaw::aceptarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
 	batch.Put(pairKey.toSlice(), pairData);
 	eliminarSolicitud(uIDFuente, uIDDestino, &batch);
 	Status status = db->Write(WriteOptions(), &batch);
-	if (status.IsNotFound())
-		throw NonexistentRequest("No existe el pedido de contacto");
-	verificarEstadoDB(status, "Error al eliminar solicitud de contacto.");
+	verificarEstadoDB(status, "Error al aceptar solicitud de contacto.");
 }
 
 void DBRaw::eliminarSolicitud(uint32_t uIDFuente, uint32_t uIDDestino,

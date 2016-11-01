@@ -222,8 +222,13 @@ void DBJSON::declinarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 }
 
 Json DBJSON::getContactos(uint32_t userID) {
-	Json data = Json::object {};
-	return data;
+	vector<uint32_t> contactos = db->getContactos(userID);
+	Json::array array;
+	for (uint32_t ID : contactos)
+	{
+		array.push_back((int) ID);
+	}
+	return Json::object { { "contacts" , array } };
 }
 
 void DBJSON::crearPeticion(const Json &json) {
@@ -242,11 +247,20 @@ void DBJSON::eliminarContacto(uint32_t userID1, uint32_t userID2) {
 }
 
 Json DBJSON::esRecomendado(uint32_t userIDRecomendador, uint32_t userIDRecomendado) {
-	Json data = Json::object {};
+	bool estado = db->esRecomendado(userIDRecomendador, userIDRecomendado);
+	Json data = Json::object {
+		{ "recommender" , (int)userIDRecomendador },
+		{ "recommended" , (int)userIDRecomendado },
+		{ "recommends" , estado },
+	};
 	return data;
 }
 
 void DBJSON::actualizarRecomendacion(const Json &json) {
+	uint32_t recomendador = (uint32_t) json["recommender"].int_value();
+	uint32_t recomendado = (uint32_t) json["recommended"].int_value();
+	bool estado = json["recommends"].bool_value();
+	db->setRecomendacion(recomendador, recomendado, estado);
 }
 
 Json DBJSON::getPopulares() {

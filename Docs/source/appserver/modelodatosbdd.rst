@@ -75,7 +75,7 @@ US_CONTACT[1] uID[4] = uID1[4] uID2[4] ...
 
 **Lookup: Dos usuarios son contactos** (uID1 < uID2)
 
-US_CONTACT_PAIR[1] uID1[4] uID2[4] = true
+US_CONTACT_PAIR[1] uID1[4] uID2[4] = NULL
 
 **Número de contactos de un usuario** (Máximo de 65535 contactos)
 
@@ -99,7 +99,7 @@ US_POP[1] uID[4] = count[4]
 
 **Lookup: Un usuario recomendó a otro**
 
-US_POP_PAIR[1] uIDreceptor[4] uIDrecomendador[4] = true
+US_POP_PAIR[1] uIDreceptor[4] uIDrecomendador[4] = NULL
 
 **Reverse lookup: Popularidad** (Lista ordenada)
 

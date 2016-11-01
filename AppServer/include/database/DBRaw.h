@@ -277,6 +277,27 @@ class DBRaw {
 	uint32_t getPopularidad(uint32_t uID);
 
 	/**
+	 * Recomienda o desrecomienda un usuario a otro
+	 * Si la recomendacion ya existia, se ignora
+	 * @param uIDRecomendador			User ID de quien recomienda
+	 * @param uIDRecomendado			User ID de quien es recomendad
+	 * @param estado					True para recomendar, false para desrecomendar
+	 * @exception NonexistentUserID		Algun uID es inválido
+	 */
+	void setRecomendacion(uint32_t uIDRecomendador,
+			uint32_t uIDRecomendado, bool estado);
+
+	/**
+	 * Informa si un usuario ha recomendado a otro
+	 * No verifica si existen los usuarios, en caso de que
+	 * alguno no exista devuelve false
+	 * @param uIDRecomendador			User ID de quien recomienda
+	 * @param uIDRecomendado			User ID de quien es recomendad
+	 * @return							True si el recomendado +1 por el recomendador
+	 */
+	bool esRecomendado(uint32_t uIDRecomendador, uint32_t uIDRecomendado);
+
+	/**
 	 * Realiza una busqueda sobre solo los usuarios más populares
 	 * @param conteo					Cuantos de los más populares retornar
 	 * @return							Vector con todos los uIDs matcheantes

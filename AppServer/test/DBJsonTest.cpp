@@ -94,15 +94,9 @@ TEST_F(DBJsonTest, testRegistroYLogin)
 TEST_F(DBJsonTest, testGetSetResumen)
 {
 	string userName("Username");
-	registrarTest(userName, 1.0, 0.5);
-	Json loginJson = Json::object {
-				{ "username", userName },
-				{ "password", defaultBase64PassHash },
-	};
-	uint32_t uid = dbj->login(loginJson);
-
+	uint32_t uid = registrarTest(userName, 1.0, 0.5);
 	Json resumenJson = Json::object {
-				{ "resume", "Test resumen." }
+		{ "resume", "Test resumen." }
 	};
 	dbj->setResumen(uid, resumenJson);
 	Json result(dbj->getResumen(uid));
@@ -112,15 +106,9 @@ TEST_F(DBJsonTest, testGetSetResumen)
 TEST_F(DBJsonTest, testGetSetFoto)
 {
 	string userName("Username");
-	registrarTest(userName, 1.0, 0.5);
-	Json loginJson = Json::object {
-				{ "username", userName },
-				{ "password", defaultBase64PassHash },
-	};
-	uint32_t uid = dbj->login(loginJson);
-
+	uint32_t uid = registrarTest(userName, 1.0, 0.5);
 	Json fotoJson = Json::object {
-				{ "photo", tinyJPGBase64 }
+		{ "photo", tinyJPGBase64 }
 	};
 	dbj->setFoto(uid, fotoJson);
 	Json resultFoto(dbj->getFoto(uid));
@@ -132,20 +120,15 @@ TEST_F(DBJsonTest, testGetSetFoto)
 TEST_F(DBJsonTest, testGetSetPerfil)
 {
 	string userName("Username");
-	registrarTest(userName, 1.0, 0.5);
-	Json loginJson = Json::object {
-				{ "username", userName },
-				{ "password", defaultBase64PassHash },
-	};
-	uint32_t uid = dbj->login(loginJson);
+	uint32_t uid = registrarTest(userName, 1.0, 0.5);
 
 	// Prueba can escases de datos
 	Json datosJson1 = Json::object {
-				{ "name" , "Nombre Test" },
-				{ "skills", Json::array { } },
-				{"job_positions",  Json::array { } },
-				{ "city" , "Una ciudad" },
-			};
+		{ "name" , "Nombre Test" },
+		{ "skills", Json::array { } },
+		{"job_positions",  Json::array { } },
+		{ "city" , "Una ciudad" },
+	};
 	dbj->setDatos(uid, datosJson1);
 	Json result1(dbj->getDatos(uid));
 
@@ -158,22 +141,22 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 
 	// Prueba con abundancia de datos
 	Json datosJson2 = Json::object {
-			{ "name" , "Nombre Test" },
-			{ "skills", Json::array { "Skill1", "Skill2" } },
-			{"job_positions",  Json::array { Json::object {
-				{ "name", "Puesto1"},
-				{ "start", "4/11/1994"},
-				{ "end", "current"}
-				},
-				Json::object {
-				{ "name", "Puesto2"},
-				{ "start", "4/2/1990"},
-				{ "end" , "11/3/1992"}
-				} } },
-			{ "city" , "Una ciudad" },
-			{ "resume" , "Test resumen" },
-			{ "photo" , tinyJPGBase64 },
-		};
+		{ "name" , "Nombre Test" },
+		{ "skills", Json::array { "Skill1", "Skill2" } },
+		{"job_positions",  Json::array { Json::object {
+			{ "name", "Puesto1"},
+			{ "start", "4/11/1994"},
+			{ "end", "current"}
+			},
+			Json::object {
+			{ "name", "Puesto2"},
+			{ "start", "4/2/1990"},
+			{ "end" , "11/3/1992"}
+			} } },
+		{ "city" , "Una ciudad" },
+		{ "resume" , "Test resumen" },
+		{ "photo" , tinyJPGBase64 },
+	};
 	dbj->setDatos(uid, datosJson2);
 	Json result2(dbj->getDatos(uid));
 
@@ -210,19 +193,108 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 TEST_F(DBJsonTest, testBrief)
 {
 	string userName("Username");
-	registrarTest(userName, 1.0, 0.5);
-	Json loginJson = Json::object {
-				{ "username", userName },
-				{ "password", defaultBase64PassHash },
-	};
-	uint32_t uid = dbj->login(loginJson);
+	uint32_t uid = registrarTest(userName, 1.0, 0.5);
 
 	Json jBrief = dbj->getDatosBrief(uid);
 	EXPECT_STREQ(jBrief["name"].string_value().c_str(), "TNombre TApellido");
 	EXPECT_STREQ(jBrief["city"].string_value().c_str(), "Ciudad");
 	EXPECT_EQ(0, jBrief["popularidad"].int_value());
 	EXPECT_LT(0,jBrief["thumb"].string_value().length());
+}
 
+TEST_F(DBJsonTest, testPeticionesYContactos)
+{
+	string userName1("Username1");
+	uint32_t uid1 = registrarTest(userName1, 1.0, 0.5);
+	string userName2("Username2");
+	uint32_t uid2 = registrarTest(userName2, 2.0, 1.5);
+	string userName3("Username3");
+	uint32_t uid3 = registrarTest(userName3, 3.0, 2.5);
+
+	EXPECT_EQ(dbj->getContactos(uid1)["contacts"].array_items().size(),0);
+	EXPECT_EQ(dbj->getContactos(uid2)["contacts"].array_items().size(),0);
+	EXPECT_EQ(dbj->getContactos(uid3)["contacts"].array_items().size(),0);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid1)["count"].int_value(),0);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid2)["count"].int_value(),0);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid3)["count"].int_value(),0);
+	Json peticion = Json::object {
+		{ "userID" , "0" },
+		{ "targetID", "1" },
+		{ "message",  "User 0 quiere ser contacto de User 1" },
+	};
+	dbj->crearPeticion(peticion);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid1)["count"].int_value(),0);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid2)["count"].int_value(),1);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid3)["count"].int_value(),0);
+	EXPECT_EQ(dbj->getPeticionesPendientes(uid1)["pending"].array_items().size(), 0);
+	EXPECT_EQ(dbj->getPeticionesPendientes(uid2)["pending"].array_items().size(), 1);
+	EXPECT_EQ(dbj->getPeticionesPendientes(uid3)["pending"].array_items().size(), 0);
+	Json retPeticion = dbj->getPeticion(uid1, uid2);
+	EXPECT_THROW(dbj->getPeticion(uid1, uid1), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(uid1, uid3), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(uid2, uid1), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(uid2, uid2), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(uid2, uid3), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(uid3, uid1), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(uid3, uid2), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(uid3, uid3), NonexistentRequest);
+	EXPECT_THROW(dbj->getPeticion(2589, uid3), NonexistentRequest);
+	EXPECT_EQ(retPeticion["userID"].int_value(), uid1);
+	EXPECT_EQ(retPeticion["targetID"].int_value(), uid2);
+	EXPECT_STREQ(retPeticion["message"].string_value().c_str(),
+			"User 0 quiere ser contacto de User 1");
+	peticion = Json::object {
+		{ "userID" , "2" },
+		{ "targetID", "1" },
+		{ "message",  "User 2 quiere ser contacto de User 1" },
+	};
+	dbj->crearPeticion(peticion);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid2)["count"].int_value(),2);
+	EXPECT_NO_THROW(dbj->getPeticion(uid3, uid2));
+	dbj->declinarPeticion(uid3, uid2);
+	EXPECT_THROW(dbj->getPeticion(uid3, uid2), NonexistentRequest);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid2)["count"].int_value(),1);
+	dbj->aceptarPeticion(uid1, uid2);
+	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid2)["count"].int_value(),0);
+	EXPECT_EQ(dbj->getContactos(uid1)["contacts"].array_items().size(),1);
+	EXPECT_EQ(dbj->getContactos(uid2)["contacts"].array_items().size(),1);
+	EXPECT_TRUE(dbj->esContacto(uid1, uid2));
+	EXPECT_TRUE(dbj->esContacto(uid2, uid1));
+	EXPECT_FALSE(dbj->esContacto(uid1, uid3));
+	EXPECT_FALSE(dbj->esContacto(uid3, uid2));
+	EXPECT_EQ(dbj->getContactos(uid2)["contacts"].array_items()[0].int_value(), uid1);
+	EXPECT_EQ(dbj->getContactos(uid1)["contacts"].array_items()[0].int_value(), uid2);
+	dbj->eliminarContacto(uid2, uid1);
+	EXPECT_EQ(dbj->getContactos(uid1)["contacts"].array_items().size(),0);
+	EXPECT_EQ(dbj->getContactos(uid2)["contacts"].array_items().size(),0);
+	EXPECT_FALSE(dbj->esContacto(uid1, uid2));
+	EXPECT_FALSE(dbj->esContacto(uid2, uid1));
+}
+
+TEST_F(DBJsonTest, testRecomendaciones)
+{
+	string userName1("Username1");
+	uint32_t uid1 = registrarTest(userName1, 1.0, 0.5);
+	string userName2("Username2");
+	uint32_t uid2 = registrarTest(userName2, 2.0, 1.5);
+	EXPECT_FALSE(dbj->esRecomendado(uid1, uid2)["recommends"].bool_value());
+	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
+	Json recomendacion = Json::object {
+		{ "recommender" , (int)uid1 },
+		{ "recommended", (int)uid2 },
+		{ "recommends",  true },
+	};
+	dbj->actualizarRecomendacion(recomendacion);
+	EXPECT_TRUE(dbj->esRecomendado(uid1, uid2)["recommends"].bool_value());
+	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
+	recomendacion = Json::object {
+		{ "recommender" , (int)uid1 },
+		{ "recommended", (int)uid2 },
+		{ "recommends",  false },
+	};
+	dbj->actualizarRecomendacion(recomendacion);
+	EXPECT_FALSE(dbj->esRecomendado(uid1, uid2)["recommends"].bool_value());
+	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
 }
 
 TEST(JsonTest, TestJsonChecker)
