@@ -232,8 +232,11 @@ Json DBJSON::getContactos(uint32_t userID) {
 }
 
 void DBJSON::crearPeticion(const Json &json) {
-	uint32_t uIDOrigen = std::stoi(json["userID"].string_value());//.int_value();
-	uint32_t uIDDestino = std::stoi(json["targetID"].string_value());//.int_value();
+	if (json["userID"].is_string() || json["targetID"].is_string())
+		throw BadInputException("datos inválidos");
+	uint32_t uIDOrigen = json["userID"].int_value();
+	uint32_t uIDDestino = json["targetID"].int_value();
+//	if (uIDOrigen == uIDDestino) throw BadInputException("datos inválidos");
 	string mensaje(json["message"].string_value());
 	db->solicitarContacto(uIDOrigen, uIDDestino, mensaje);
 }

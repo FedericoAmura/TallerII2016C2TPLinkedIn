@@ -98,7 +98,7 @@ class ClientTest(unittest.TestCase):
     #checked
     def test_06_create_contact_request_to_non_existent_user(self):
         data = {}
-        data["targetID"] = "99999999"
+        data["targetID"] = 999999999
         data["message"] = "Hello!!!"
         res = client1.create_contact_request(data)
         self.assertEquals(404, res.status_code)
@@ -123,7 +123,7 @@ class ClientTest(unittest.TestCase):
     #NOT checked (TODO falta implementación en DBJSON (debería ser 400))
     def test_09_send_message_to_non_existent_user(self):
         data = {}
-        data["receiverID"] = "999999"
+        data["receiverID"] = 999999
         data["message"] = "blabla"
         res = client1.send_msg(data)
         self.assertEquals(201, res.status_code)
@@ -177,12 +177,10 @@ class ClientTest(unittest.TestCase):
 
     #NOT checked (TODO falta implementación en DBJSON)
     def test_16_recommend_user(self):
-        receiverID = client2.get_user_id()
         data = {}
-        data["recommended"] = client3.get_user_id()
-        data["receiver"] = receiverID
+        data["recommended"] = int(client3.get_user_id())
         data["recommends"] = True
-        res = client1.recommend_user(receiverID, data)
+        res = client1.recommend_user(data)
         self.assertEquals(204, res.status_code)
 
 ### DELETE

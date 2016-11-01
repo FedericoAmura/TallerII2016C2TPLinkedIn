@@ -218,8 +218,8 @@ TEST_F(DBJsonTest, testPeticionesYContactos)
 	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid2)["count"].int_value(),0);
 	EXPECT_EQ(dbj->getNumPeticionesPendientes(uid3)["count"].int_value(),0);
 	Json peticion = Json::object {
-		{ "userID" , "0" },
-		{ "targetID", "1" },
+		{ "userID" , 0 },
+		{ "targetID", 1 },
 		{ "message",  "User 0 quiere ser contacto de User 1" },
 	};
 	dbj->crearPeticion(peticion);
@@ -244,8 +244,8 @@ TEST_F(DBJsonTest, testPeticionesYContactos)
 	EXPECT_STREQ(retPeticion["message"].string_value().c_str(),
 			"User 0 quiere ser contacto de User 1");
 	peticion = Json::object {
-		{ "userID" , "2" },
-		{ "targetID", "1" },
+		{ "userID" , 2 },
+		{ "targetID", 1 },
 		{ "message",  "User 2 quiere ser contacto de User 1" },
 	};
 	dbj->crearPeticion(peticion);
