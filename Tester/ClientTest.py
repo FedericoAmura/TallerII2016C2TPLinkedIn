@@ -51,11 +51,13 @@ client4 = Client(user4_data)
 class ClientTest(unittest.TestCase):
 
 ### POST
+    #checked
     def test_00_login_before_signup(self):
         res = client1.login()
         self.assertEquals(403, res.status_code)
 
-    def test_010_signup(self):
+    #checked
+    def test_01_signup(self):
         res1 = client1.signup()
         res2 = client2.signup()
         res3 = client3.signup()
@@ -64,16 +66,19 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(201, res3.status_code)
 
     # hacer un signup con datos inválidos (por ej, "city" con valor "None")
-    def test_011_signup_invalid_data(self):
+    #checked
+    def test_02_signup_invalid_data(self):
         res = client4.signup()
         self.assertEquals(422, res.status_code)
 
     # hacer un signup con un username ya existente debería devolver 422
-    def test_02_repeated_signup(self):
+    #checked
+    def test_03_repeated_signup(self):
         res = client1.signup()
         self.assertEquals(422, res.status_code)
 
-    def test_03_login(self):
+    #checked
+    def test_04_login(self):
         res1 = client1.login()
         res2 = client2.login()
         res3 = client3.login()
@@ -84,58 +89,70 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res2.status_code)
         self.assertEquals(200, res3.status_code)
 
-    def test_04_accept_non_existent_contact_request(self):
+    #checked
+    def test_05_accept_non_existent_contact_request(self):
         another_userID = "9999999"
         res = client1.accept_contact_request(another_userID)
         self.assertEquals(404, res.status_code)
 
-    def test_05_create_contact_request_to_non_existent_user(self):
+    #checked
+    def test_06_create_contact_request_to_non_existent_user(self):
         data = {}
         data["targetID"] = "99999999"
         data["message"] = "Hello!!!"
         res = client1.create_contact_request(data)
         self.assertEquals(404, res.status_code)
 
-    def test_06_create_contact_request_to_existent_user(self):
+    #checked
+    def test_07_create_contact_request_to_existent_user(self):
         data = {}
         data["targetID"] = client2.get_user_id()
         data["message"] = "Hello!!!"
-        res = client1.create_contact_request(data)
-        self.assertEquals(201, res.status_code)
+        res1 = client1.create_contact_request(data)
+        data["targetID"] = client3.get_user_id()
+        res2 = client1.create_contact_request(data)
+        self.assertEquals(201, res1.status_code)
+        self.assertEquals(201, res2.status_code)
 
-    def test_07_accept_existent_contact_request(self):
+    #checked
+    def test_08_accept_existent_contact_request(self):
         another_userID = client1.get_user_id()
         res = client2.accept_contact_request(another_userID)
         self.assertEquals(204, res.status_code)
 
-    def test_08_send_message_to_non_existent_user(self):
+    #NOT checked (TODO falta implementación en DBJSON (debería ser 400))
+    def test_09_send_message_to_non_existent_user(self):
         data = {}
         data["receiverID"] = "999999"
         data["message"] = "blabla"
         res = client1.send_msg(data)
-        self.assertEquals(201, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+        self.assertEquals(201, res.status_code)
 
-    def test_09_send_message_to_existent_user(self):
+    #NOT checked (TODO falta implementación en DBJSON)
+    def test_10_send_message_to_existent_user(self):
         data = {}
         data["receiverID"] = client2.get_user_id()
         data["message"] = "blabla"
         res = client1.send_msg(data)
         self.assertEquals(201, res.status_code)
 
-    def test_10_notify_message_seen_to_non_existent_chat(self):
+    #NOT checked (TODO falta implementación en DBJSON (debería ser 400))
+    def test_11_notify_message_seen_to_non_existent_chat(self):
         data = {}
         data["targetID"] = "999999"
         res = client1.notify_msg_seen(data)
-        self.assertEquals(204, res.status_code) # TODO falta implementación en DBJSON (debería ser 400)
+        self.assertEquals(204, res.status_code)
 
-    def test_11_notify_message_seen_to_existent_chat(self):
+    #NOT checked (TODO falta implementación en DBJSON)
+    def test_12_notify_message_seen_to_existent_chat(self):
         data = {}
         data["targetID"] = client1.get_user_id()
         res = client2.notify_msg_seen(data)
         self.assertEquals(204, res.status_code)
 
 ### PUT
-    def test_12_update_profile(self):
+    #checked
+    def test_13_update_profile(self):
         data = {}
         data["name"] = "New Name"
         data["skills"] = ["skill1", "skill2"]
@@ -144,19 +161,22 @@ class ClientTest(unittest.TestCase):
         # esto devuelve un error porque no están todos los campos completos
         self.assertEquals(422, res.status_code)
 
-    def test_13_update_resume(self):
+    #checked
+    def test_14_update_resume(self):
         data = {}
         data = {"resume" : "new resume"}
         res = client1.update_resume(data)
         self.assertEquals(204, res.status_code)
 
-    def test_14_update_photo(self):
+    #checked
+    def test_15_update_photo(self):
         data = {}
         data = {"photo": "asd12as"}
         res = client1.update_photo(data)
         self.assertEquals(204, res.status_code)
 
-    def test_15_recommend_user(self):
+    #NOT checked (TODO falta implementación en DBJSON)
+    def test_16_recommend_user(self):
         receiverID = client2.get_user_id()
         data = {}
         data["recommended"] = client3.get_user_id()
@@ -166,139 +186,175 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(204, res.status_code)
 
 ### DELETE
-    def test_logout(self):
-        res = client3.login()
-        self.assertEquals(200, res.status_code)
+    #checked
+    def test_17_reject_contact_request(self):
+        res = client3.reject_contact_request(client1.get_user_id())
+        self.assertEquals(204, res.status_code)
+
+    #checked
+    def test_18_delete_nonexistent_contact(self):
+        res = client1.delete_contact("99999")
+        self.assertEquals(404, res.status_code)
+
+    #checked
+    def test_19_delete_existent_contact(self):
+        another_userID = client2.get_user_id()
+        res = client1.delete_contact(another_userID)
+        self.assertEquals(204, res.status_code)
+
+    #checked
+    def test_20_logout(self):
         res = client3.logout()
         self.assertEquals(204, res.status_code)
         res = client3.get_contacts()
         self.assertEquals(403, res.status_code)
 
-    def test_reject_contact_request(self):
-        res = client1.reject_contact_request(client2.get_user_id())
-        self.assertEquals(204, res.status_code)
-
-    def test_delete_nonexistent_contact(self):
-        res = client1.delete_contact("99999")
-        self.assertEquals(404, res.status_code)
-
 ### GET
-    def test_search_for_users(self):
+    #NOT checked (TODO falta implementación en DBJSON y AppServer)
+    def test_21_search_for_users(self):
         params = {} # query_string
         params["category"] = "cat"
         params["job_position"] = "job"
         res = client1.search_for_users(params)
         self.assertEquals(200, res.status_code)
 
-    def test_get_profile_from_user(self):
+    #checked
+    def test_22_get_profile_from_user(self):
         res = client1.get_profile_from(client2.get_user_id())
         data = json.loads(res.text)
         self.assertTrue('name' in data)
         self.assertTrue('city' in data)
         self.assertEquals(200, res.status_code)
 
-    def test_get_resume_from_user(self):
+    #checked
+    def test_23_get_resume_from_user(self):
         res = client1.get_resume_from(client2.get_user_id())
         data = json.loads(res.text)
         self.assertTrue('resume' in data)
         self.assertEquals(200, res.status_code)
 
-    def test_get_photo_from_user(self):
+    #checked
+    def test_24_get_photo_from_user(self):
         res = client1.get_photo_from(client2.get_user_id())
         data = json.loads(res.text)
         self.assertTrue('photo' in data)
         self.assertEquals(200, res.status_code)
 
-    def test_get_thumbnail_from_user(self):
+    #checked
+    def test_25_get_thumbnail_from_user(self):
         res = client1.get_photo_thumb_from(client2.get_user_id())
+        data = json.loads(res.text)
+        self.assertTrue('thumb' in data)
         self.assertEquals(200, res.status_code)
 
-    def test_get_info_brief_from_user(self):
+    #checked
+    def test_26_get_info_brief_from_user(self):
         res = client1.get_info_brief_from(client2.get_user_id())
+        data = json.loads(res.text)
+        self.assertTrue('name' in data)
+        self.assertTrue('thumb' in data)
         self.assertEquals(200, res.status_code)
 
-    def test_get_pending_contact_request(self):
+    #checked
+    def test_27_get_pending_contact_request(self):
         res = client1.get_pending_contact_request()
+        data = json.loads(res.text)
+        self.assertTrue('pending' in data)
         self.assertEquals(200, res.status_code)
 
-    def test_get_number_pending_requests(self):
+    #checked
+    def test_28_get_contacts_get_number_pending_requests(self):
         res = client1.get_number_pending_requests()
+        data = json.loads(res.text)
+        self.assertTrue('count' in data)
         self.assertEquals(200, res.status_code)
 
-    def test_get_particular_request(self):
+    #NOT checked (TODO ?)
+    def test_29_get_particular_request(self):
         res = client1.get_particular_request(client2.get_user_id())
-        self.assertEquals(200, res.status_code)
+        self.assertEquals(404, res.status_code)
 
-    def test_get_contacts(self):
+    #NOT checked (TODO falta implementación de DBJSON)
+    def test_30_get_contacts(self):
         res = client1.get_contacts()
         self.assertEquals(200, res.status_code)
 
-    def test_get_are_we_contacts(self):
+    #checked
+    def test_31_get_are_we_contacts(self):
         res = client1.get_are_we_contacts(client2.get_user_id())
         self.assertEquals(404, res.status_code)
 
-    def test_get_number_new_messages(self):
+    def test_32_get_number_new_messages(self):
         res = client1.get_number_new_messages()
         self.assertEquals(200, res.status_code)
 
-    def test_get_id_last_msg_from_user(self):
+    def test_33_get_id_last_msg_from_user(self):
         res = client1.get_id_last_message(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
-    def test_get_including_messages(self):
+    def test_34_get_including_messages(self):
         params = {"start":"12/2/2015", "end":"20/3/2015"}
         res = client1.get_including_messages(client2.get_user_id(), params)
         self.assertEquals(200, res.status_code)
 
-    def test_get_popular(self):
+    def test_35_get_popular(self):
         res = client1.get_popular()
         self.assertEquals(200, res.status_code)
 
-    def test_if_user_recommended_to_another_user(self):
+    def test_36_if_user_recommended_to_another_user(self):
         res = client1.get_user_recommended_to_another_user(client2.get_user_id())
         self.assertEquals(200, res.status_code)
 
-    def test_get_popular_by_position(self):
+    def test_37_get_popular_by_position(self):
         res = client1.get_popular_by_position("pos")
         self.assertEquals(200, res.status_code)
 
-    def test_get_popular_by_skill(self):
+    def test_38_get_popular_by_skill(self):
         res = client1.get_popular_by_skill("java")
         self.assertEquals(200, res.status_code)
 
-    def test_get_categories(self):
+    #checked
+    def test_39_get_categories(self):
         res = client1.get_categories()
         self.assertEquals(200, res.status_code)
 
-    def test_get_job_position_by_nonexistent_category(self):
+    #checked
+    def test_40_get_job_position_by_nonexistent_category(self):
         res = client1.get_job_position_by_category("nonexistent")
         self.assertEquals(404, res.status_code)
 
-    def test_get_job_position_by_existent_category(self):
+    #checked
+    def test_41_get_nonexistent_job_position_get_job_position_by_existent_category(self):
         res = client1.get_job_position_by_category("Musica")
         self.assertEquals(200, res.status_code)
 
-    def test_get_nonexistent_job_position(self):
+    #checked
+    def test_42_get_nonexistent_job_position(self):
         res = client1.get_job_position("nonexistent")
         self.assertEquals(404, res.status_code)
 
-    def test_get_existent_job_position(self):
+    #checked
+    def test_43_get_existent_job_position(self):
         res = client1.get_job_position("Tester")
         self.assertEquals(200, res.status_code)
 
-    def test_get_skills_by_nonexistent_category(self):
+    #checked
+    def test_44_get_skills_by_nonexistent_category(self):
         res = client1.get_skills_by_category("nonexistent")
         self.assertEquals(404, res.status_code)
 
-    def test_get_skills_by_existent_category(self):
+    #checked
+    def test_45_get_skills_by_existent_category(self):
         res = client1.get_skills_by_category("Programacion")
         self.assertEquals(200, res.status_code)
 
-    def test_get_nonexistent_skill(self):
+    #checked
+    def test_46_get_nonexistent_skill(self):
         res = client1.get_skill("nonexistent")
         self.assertEquals(404, res.status_code)
 
-    def test_get_existent_skill(self):
+    #checked
+    def test_47_get_existent_skill(self):
         res = client1.get_skill("Python")
         self.assertEquals(200, res.status_code)
 

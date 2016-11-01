@@ -230,7 +230,6 @@ void DBJSON::crearPeticion(const Json &json) {
 	uint32_t uIDOrigen = std::stoi(json["userID"].string_value());//.int_value();
 	uint32_t uIDDestino = std::stoi(json["targetID"].string_value());//.int_value();
 	string mensaje(json["message"].string_value());
-	std::cout << uIDOrigen << " " << uIDDestino<< std::endl;
 	db->solicitarContacto(uIDOrigen, uIDDestino, mensaje);
 }
 

@@ -162,7 +162,7 @@ http_response GET_Handler::handle_get_user_photo() {
 		return http_response("", STATUS_NOT_FOUND);
 	} catch (LevelDBException &e) {
 		std::cout << "[Error] User without photo. Query (Photo) failed." << std::endl;
-		return http_response("", STATUS_NO_CONTENT);
+		return http_response("{}", STATUS_NO_CONTENT);
 	}
 	return http_response(data.dump(), STATUS_OK);
 }
@@ -180,7 +180,7 @@ http_response GET_Handler::handle_get_user_thumb() {
 		return http_response("", STATUS_NOT_FOUND);
 	} catch (LevelDBException &e) {
 		std::cout << "[Error] User without thumbail photo. Query (Thumbnail) failed." << std::endl;
-		return http_response("", STATUS_NO_CONTENT);
+		return http_response("{}", STATUS_NO_CONTENT);
 	}
 	return http_response(data.dump(), STATUS_OK);
 }
@@ -362,7 +362,7 @@ http_response GET_Handler::handle_get_are_they_connected() {
 	}
 	if (!connected)
 		return http_response("", STATUS_NOT_FOUND);
-	return http_response("", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_NO_CONTENT);
 }
 
 http_response GET_Handler::handle_get_popular() {

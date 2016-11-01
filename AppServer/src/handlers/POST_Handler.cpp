@@ -153,7 +153,7 @@ http_response POST_Handler::handle_accept_contact_request() {
 	}
 
 	try {
-		db_json->aceptarPeticion(userID1, userID2);
+		db_json->aceptarPeticion(userID2, userID1);
 	} catch (NonexistentRequest &e) {
 		std::cout << "[Error] Non existent request. Accept contact request failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);

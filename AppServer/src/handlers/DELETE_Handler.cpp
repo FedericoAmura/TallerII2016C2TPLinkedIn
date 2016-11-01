@@ -59,7 +59,7 @@ http_response DELETE_Handler::handle_logout() {
 }
 
 http_response DELETE_Handler::handle_reject_contact_request() {
-	// /users/<user_id2>/notif/<user_id2>
+	// /users/<user_id1>/notif/<user_id2>
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	uint32_t userID1 = std::stoi(vec_uri[1]);
 	uint32_t userID2 = std::stoi(vec_uri[3]);
@@ -81,7 +81,7 @@ http_response DELETE_Handler::handle_reject_contact_request() {
 	}
 
 	try {
-		db_json->declinarPeticion(userID1, userID2);
+		db_json->declinarPeticion(userID2, userID1);
 	} catch (NonexistentRequest &e) {
 		std::cout << "[Error] Nonexistent Request. Reject contact request failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
