@@ -19,14 +19,14 @@ public class BusquedaContainerFragment extends BaseContainerFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("TEST", "Tab PERFIL oncreateview");
+        Log.d("TEST", "Tab BUSQUEDA oncreateview");
         return inflater.inflate(R.layout.fragment_base_container, null);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d("TEST", "Tab PERFIL container on activity created");
+        Log.d("TEST", "Tab BUSQUEDA container on activity created");
         if (!mIsViewInited) {
             mIsViewInited = true;
             initView();
@@ -34,7 +34,7 @@ public class BusquedaContainerFragment extends BaseContainerFragment {
     }
 
     private void initView() {
-        Log.d("TEST", "Tab PERFIL init view");
+        Log.d("TEST", "Tab BUSQUEDA init view");
         replaceFragment(new BusquedaFragment(), false);
     }
 

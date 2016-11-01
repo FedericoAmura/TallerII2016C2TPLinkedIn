@@ -288,14 +288,68 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class PestaniasActivity extends AppCompatActivity {
+public class PestaniasActivity extends AppCompatActivity /*implements  TabLayout.OnTabSelectedListener */{
     boolean exit = false;
     ViewPager pager;
     TabLayout tabLayout;
+
+    /*@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pestanias);
+
+        //Initializing the tablayout
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+
+        //Adding the tabs using addTab() method
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_user);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_friends);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_lupa);
+        tabLayout.getTabAt(3).setIcon(R.drawable.ic_chat);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        //Initializing viewPager
+        viewPager = (ViewPager) findViewById(R.id.pager);
+
+        //Creating our pager adapter
+        TabsPagerAdapter adapter = new TabsPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+
+        //Adding adapter to pager
+        viewPager.setAdapter(adapter);
+
+        //Adding onTabSelectedListener to swipe views
+        tabLayout.setOnTabSelectedListener(this);
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        viewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }*/
+
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -327,6 +381,9 @@ public class PestaniasActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_friends);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_lupa);
         tabLayout.getTabAt(3).setIcon(R.drawable.ic_chat);
+
+        pager.setCurrentItem(0);
+
     }
 
     @Override

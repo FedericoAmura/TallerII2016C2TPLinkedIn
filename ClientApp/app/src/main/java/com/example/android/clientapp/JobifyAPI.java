@@ -18,7 +18,8 @@ public class JobifyAPI {
     // Endpoints:
     private static final String LOGIN = "/login";
     private static final String SIGNUP = "/signup";
-    private static final String PERFIL_USER = "/users/%s";
+    //private static final String PERFIL_USER = "/users/%s";
+    private static final String PERFIL_USER = "/users/";
 
     public static String getLoginURL(){
         return APPSERVER_URL + LOGIN;
@@ -28,6 +29,6 @@ public class JobifyAPI {
         return APPSERVER_URL + SIGNUP;
     }
 
-    public static String getPerfilURL(String userID) { return APPSERVER_URL + String.format(PERFIL_USER, userID); }
+    public static String getPerfilURL(String userID) { return APPSERVER_URL + PERFIL_USER + userID; }
 
 }
