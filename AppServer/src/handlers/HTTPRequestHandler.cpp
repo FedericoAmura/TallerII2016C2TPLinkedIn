@@ -19,7 +19,7 @@ void HTTPRequestHandler::sendReply(http_response* res) {
 								   "Content-Length: %d\r\n"
 								   "\r\n"
 								   "%s",
-								   res->res_code, res->message.size(), res->message.c_str());
+								   (unsigned)res->res_code, (unsigned)res->message.size(), res->message.c_str());
 }
 
 void HTTPRequestHandler::closeConnection() {

@@ -41,4 +41,4 @@
 #define JOB_POSITION	"job_position"
 #define GEOLOCATION		"geolocation"
 #define DISTANCE		"distance"
-
+#define POPSORT         "popsort"

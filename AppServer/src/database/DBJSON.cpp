@@ -3,8 +3,7 @@
 #include "../../include/base64/base64.h"
 #include "../../include/database/JsonChecker.h"
 
-DBJSON::DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db) :
-	sharedServerHandler(sharedServerHandler), db(db) {}
+DBJSON::DBJSON(DBRaw *db) : db(db) {}
 
 DBJSON::~DBJSON() {
 	delete db;

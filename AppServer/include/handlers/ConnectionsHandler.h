@@ -8,20 +8,25 @@
 #ifndef APPSERVER_INCLUDE_HANDLERS_CONNECTIONSHANDLER_H_
 #define APPSERVER_INCLUDE_HANDLERS_CONNECTIONSHANDLER_H_
 
-#include "../common/Thread.h"
 #include "../../include/handlers/RequestHandler.h"
+#include <signal.h>
 
-class ConnectionsHandler : public Thread {
+static bool running = false;
+
+static void SIGINT_Handler(int signum) {
+    running = false;
+};
+
+class ConnectionsHandler {
  private:
 	struct mg_mgr mgr;
 	struct mg_connection* connection;
-	bool running;
+
 
  public:
 	ConnectionsHandler(DBJSON* db_json);
-	bool isRunning();
+	bool initialized();
 	void run();
-	void stop();
 	virtual ~ConnectionsHandler();
 };
 

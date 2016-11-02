@@ -13,6 +13,7 @@
 #include "../common/Exceptions.h"
 #include "../users/User.h"
 #include "../json11/json11.hpp"
+#include "../common/Utils.h"
 #include <string>
 #include <stdlib.h>
 
