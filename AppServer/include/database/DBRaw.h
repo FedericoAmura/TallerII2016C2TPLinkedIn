@@ -412,7 +412,7 @@ class DBRaw {
 	 * @return				Número del último mensaje
 	 * @exception			UserIDs inválidos
 	 */
-	uint32_t numUltMensaje(uint32_t uID1, uint32_t uID2);
+	uint32_t getNumUltMensaje(uint32_t uID1, uint32_t uID2);
 
 	/**
 	 * Devuelve los mensajes comprendidos entre #ultmensaje y #primmensaje
@@ -425,7 +425,39 @@ class DBRaw {
 	 * @return					Vector de tuplas<uIDsender,mensaje>
 	 */
 	vector<std::pair<uint32_t,string> > getMensajes(uint32_t uID1,
-			uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje);
+			uint32_t uID2, uint32_t numPrimMensaje, uint32_t numUltMensaje);
+
+	/**
+	 * Envia un mensaje
+	 * @param uIDEmisor
+	 * @param uIDReceptor
+	 * @param mensaje
+	 */
+	void enviarMensaje(uint32_t uIDEmisor, uint32_t uIDReceptor, const string &mensaje);
+
+	/**
+	 * Devuelve el #mensaje del ultimo mensaje
+	 * @param uIDLector
+	 * @param uIDEmisor
+	 * @return
+	 */
+	uint32_t getUltimoMsgNoLeido(uint32_t uIDLector, uint32_t uIDEmisor);
+
+	/**
+	 * Devuelve la lista de ids de los cuales el usuario recibio mensajes
+	 * y aun no los leyo
+	 * @param uID
+	 * @return
+	 */
+	std::vector<uint32_t> getConversacionesNoLeidas(uint32_t uID);
+
+	/**
+	 * Marca una conversacion como leida
+	 * @param uIDLector
+	 * @param uIDEmisor
+	 */
+	void marcarConversacionLeida(uint32_t uIDLector, uint32_t uIDEmisor);
+
 };
 
 #endif  /* APPSERVER_INCLUDE_DATABASE_DBRAW_H_ */

@@ -275,6 +275,48 @@ TEST_F(DBRawTest, testRecomendaciones) {
 	EXPECT_FALSE(db->esRecomendado(uid3, uid3));
 }
 
+TEST_F(DBRawTest, testChat) {
+	string userName1("TestUserName1");
+	string userName2("TestUserName2");
+	string userName3("TestUserName3");
+	uint32_t uid1 = registrarTest(userName1, 0.5, 0.7);
+	uint32_t uid2 = registrarTest(userName2, 0.4, 0.2);
+	uint32_t uid3 = registrarTest(userName3, 0.2, 0.1);
+	EXPECT_EQ(db->getConversacionesNoLeidas(uid1).size(), 0);
+	db->enviarMensaje(uid1, uid2, "Mensaje 0");
+	EXPECT_EQ(db->getConversacionesNoLeidas(uid1).size(), 1);
+	EXPECT_EQ(db->getNumUltMensaje(uid1, uid2), 1);
+	std::pair<uint32_t, string> mensaje = db->getMensajes(uid1, uid2, 0, 0)[0];
+	EXPECT_EQ(mensaje.first, uid2);
+	EXPECT_STREQ(mensaje.second.c_str(), "Mensaje 0");
+	db->marcarConversacionLeida(uid1, uid2);
+	EXPECT_EQ(db->getConversacionesNoLeidas(uid1).size(), 0);
+	EXPECT_EQ(db->getNumUltMensaje(uid1, uid2), 1);
+	db->enviarMensaje(uid1, uid2, "Mensaje 1");
+	db->enviarMensaje(uid2, uid1, "Mensaje 2");
+	db->enviarMensaje(uid1, uid2, "Mensaje 3");
+	db->enviarMensaje(uid1, uid3, "Mensaje de user 3->1");
+	vector<uint32_t> pending = db->getConversacionesNoLeidas(uid1);
+	EXPECT_EQ(pending.size(), 2);
+	mensaje = db->getMensajes(uid1, uid3, 0, 0)[0];
+	EXPECT_EQ(mensaje.first, uid3);
+	EXPECT_STREQ(mensaje.second.c_str(), "Mensaje de user 3->1");
+	db->marcarConversacionLeida(uid1, uid3);
+	pending = db->getConversacionesNoLeidas(uid1);
+	EXPECT_EQ(pending.size(), 1);
+	uint32_t uIDSender = pending[0];
+	uint32_t finConvo = db->getNumUltMensaje(uid1, uIDSender);
+	uint32_t ultimoLeido = db->getUltimoMsgNoLeido(uid1, uIDSender);
+	vector<std::pair<uint32_t, string>> mensajes
+		= db->getMensajes(uid1, uid2, ultimoLeido, finConvo);
+	EXPECT_EQ(mensajes[0].first, uid2);
+	EXPECT_EQ(mensajes[1].first, uid1);
+	EXPECT_EQ(mensajes[2].first, uid2);
+	EXPECT_STREQ(mensajes[0].second.c_str(), "Mensaje 1");
+	EXPECT_STREQ(mensajes[1].second.c_str(), "Mensaje 2");
+	EXPECT_STREQ(mensajes[2].second.c_str(), "Mensaje 3");
+}
+
 /**
  * Tests sobre tipos asociados
  */
