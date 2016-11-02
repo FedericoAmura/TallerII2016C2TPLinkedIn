@@ -4,6 +4,9 @@ import psycopg2
 import time
 import unittest
 import requests
+import subprocess
+import signal
+
 print "----- Starting python master"
 
 print "----- Creating database locally"
@@ -25,22 +28,26 @@ os.system("./Tester/SharedServerTests.py "+port)
 
 #AppServer
 print "----- Running AppServer (c++)"
-#os.system('./AppServer/server')
+proc_AppServer = subprocess.Popen(["./AppServer/AppServer"], shell=False)
 
 print "Waiting for AppServer to become active"
 time.sleep(1)	#de nuevo, puede no ser necesario pero por las dudas lo esperamos 1 segundo
 
-print "----- Running tests against AppServer"
-os.system("./AppServer/UnitTest")
 
-'''
+#print "----- Running tests against AppServer"
+#os.system("./AppServer/UnitTest")
+
+
 #ClientApp
 print "----- Running ClientApp (android)"
-#os.system('./AppServer/server')
+os.system("python Tester/ClientTest.py")
 
-print "Waiting for ClientApp to become active"
-time.sleep(1)	#de nuevo, puede no ser necesario pero por las dudas lo esperamos 1 segundo
+print "------ Shutting Down the AppServer"
+time.sleep(1)
+os.kill(proc_AppServer.pid, signal.SIGINT)
+#print "Waiting for ClientApp to become active"
+#time.sleep(1)	#de nuevo, puede no ser necesario pero por las dudas lo esperamos 1 segundo
 
-print "----- Running tests against ClientApp"
+#print "----- Running tests against ClientApp"
 #os.system("aca el comando para correr los test integradores")
-'''
+#'''

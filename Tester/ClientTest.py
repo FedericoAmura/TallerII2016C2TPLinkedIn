@@ -213,6 +213,9 @@ class ClientTest(unittest.TestCase):
         params = {} # query_string
         params["category"] = "cat"
         params["job_position"] = "job"
+        params["distance"] = 2.4
+        params["geolocation"] = "2.5;5.8"
+        params["sortpop"] = True
         res = client1.search_for_users(params)
         self.assertEquals(200, res.status_code)
 

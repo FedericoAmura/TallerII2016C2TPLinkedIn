@@ -59,6 +59,12 @@ public:
  	 copy((char*)&key1, (char*)(&key1+1), data.begin()+1);
  	 copy((char*)(&key2), (char*)(&key2+1), data.begin()+5);
  }
+ IDKey(KeyCode prefijo, uint32_t key1, uint32_t key2, uint32_t key3) : data(13) {
+ 	 data[0] = prefijo;
+ 	 copy((char*)&key1, (char*)(&key1+1), data.begin()+1);
+ 	 copy((char*)&key2, (char*)(&key2+1), data.begin()+5);
+ 	 copy((char*)&key3, (char*)(&key3+1), data.begin()+9);
+ }
  Slice toSlice() {
 	 return Slice (data.data(), data.size());
  }
@@ -257,14 +263,14 @@ vector<Puesto> DBRaw::getPuestos(uint32_t uID) {
 	return result;
 }
 
-void DBRaw::setFoto(uint32_t uID, const Foto &foto,
+void DBRaw::setFoto(uint32_t uID, const Foto &foto, const DatosUsuario *data,
 		WriteBatch *batch, bool verifUID) {
 	// TODO: Lock para evitar errores RAW con el ID
 	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),uID);
 	WriteBatch localBatch;
 	bool writeToDB = !batch;
 	if (writeToDB) batch = &localBatch;
-	DatosUsuario datos = getDatos(uID);
+	DatosUsuario datos = data ? *data : getDatos(uID);
 	if (datos.fotoID == 0)
 	{
 		datos.fotoID = contadorActual(LAST_FID,"foto ID");
@@ -316,8 +322,9 @@ void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
 	setSkills(uID, skills, &batch, false);
 	setPuestos(uID, puestos, &batch, false);
 	if(resumen) setResumen(uID, *resumen, &batch, false);
-	if(foto) setFoto(uID, *foto, &batch, false);
-	db->Write(WriteOptions(), &batch);
+	if(foto) setFoto(uID, *foto, &datos, &batch, false);
+	Status status = db->Write(WriteOptions(), &batch);
+	verificarEstadoDB(status, "Error al guardar datos de usuario.");
 }
 
 bool DBRaw::esRecomendado(uint32_t uIDRecomendador, uint32_t uIDRecomendado) {
@@ -609,14 +616,117 @@ bool DBRaw::sonContactos(uint32_t uID1, uint32_t uID2) {
 	return true;
 }
 
+void DBRaw::enviarMensaje(uint32_t uIDReceptor, uint32_t uIDEmisor, const string &mensaje) {
+	uint32_t uIDMenor = uIDEmisor < uIDReceptor ? uIDEmisor : uIDReceptor;
+	uint32_t uIDMayor = uIDEmisor >= uIDReceptor ? uIDEmisor : uIDReceptor;
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uIDMayor);
+	// Guardar mensaje, agregar a no liedos para el receptor, agregar a conteo de conv
+	WriteBatch batch;
+	ReadOptions readOptions;
+	uint32_t numUltMsg = getNumUltMensaje(uIDEmisor, uIDReceptor);
+	// Encuentro y guardo si la conversacion estaba entre las no leidas
+	vector<uint32_t> noLeidas(getConversacionesNoLeidas(uIDReceptor));
+	vector<uint32_t>::iterator it = std::find(noLeidas.begin(), noLeidas.end(), uIDEmisor);
+	if (it == noLeidas.end())
+	{
+		noLeidas.push_back(uIDEmisor);
+		IDKey keyNoLeidas(CONV_PENDING_READ, uIDReceptor);
+		Slice dataNoLeidas((char*)noLeidas.data(),
+				noLeidas.size()*sizeof(uint32_t));
+		batch.Put(keyNoLeidas.toSlice(), dataNoLeidas);
+	}
+	// Guardo el mensaje
+	IDKey keyMsg(CONV_MSG, uIDMenor, uIDMayor, numUltMsg);
+	vector<char> vecMsg(sizeof(uint32_t)+mensaje.length());
+	copy((char*)&uIDEmisor, (char*)(&uIDEmisor+1), vecMsg.begin());
+	copy(mensaje.begin(), mensaje.end(), vecMsg.begin()+sizeof(uint32_t));
+	Slice dataMsg(vecMsg.data(), vecMsg.size());
+	batch.Put(keyMsg.toSlice(), dataMsg);
+	// Agrego 1 al numero de ultimo mensaje
+	IDKey keyCount(CONV_COUNT, uIDMenor, uIDMayor);
+	++numUltMsg;
+	Slice dataCount((char*)&numUltMsg, sizeof(numUltMsg));
+	batch.Put(keyCount.toSlice(), dataCount);
+	Status status = db->Write(WriteOptions(), &batch);
+	verificarEstadoDB(status, "Error al enviar mensaje");
 
-/*
-uint32_t DBRaw::numUltMensaje(uint32_t uID1, uint32_t uID2) {
+}
+
+void DBRaw::marcarConversacionLeida(uint32_t uIDLector, uint32_t uIDEmisor) {
+	vector<uint32_t> noLeidas(getConversacionesNoLeidas(uIDLector));
+	vector<uint32_t>::iterator it = std::find(noLeidas.begin(), noLeidas.end(), uIDEmisor);
+	if (it == noLeidas.end()) return;
+	noLeidas.erase(it);
+	WriteBatch batch;
+	// Elimino al emisor de las conversaciones pendientes de leer
+	IDKey keyNoLeidos(CONV_PENDING_READ, uIDLector);
+	Slice dataSlice((char*)noLeidas.data(), noLeidas.size());
+	batch.Put(keyNoLeidos.toSlice(), dataSlice);
+	// Agrego que el ultimo mensaje que lei es el ultimo de la conversacion
+	uint32_t num = getNumUltMensaje(uIDLector, uIDEmisor);
+	IDKey keyCount(CONV_LAST_READ, uIDLector, uIDEmisor);
+	Slice dataCount((char*)&num, sizeof(num));
+	batch.Put(keyCount.toSlice(), dataCount);
+	Status status = db->Write(WriteOptions(), &batch);
+	verificarEstadoDB(status, "Error al marcar conversacion como leidoa.");
+}
+
+uint32_t DBRaw::getNumUltMensaje(uint32_t uID1, uint32_t uID2) {
+	uint32_t uIDMenor = uID1 < uID2 ? uID1 : uID2;
+	uint32_t uIDMayor = uID1 >= uID2 ? uID1 : uID2;
+	IDKey key(CONV_COUNT, uIDMenor, uIDMayor);
+	string retVal;
+	Status status = db->Get(ReadOptions(), key.toSlice(), &retVal);
+	if (status.IsNotFound()) return 0;
+	verificarEstadoDB(status, "Error al obtener numero de ultimo mensaje");
+	return retVal.data()[0];
+}
+
+uint32_t DBRaw::getUltimoMsgNoLeido(uint32_t uIDLector, uint32_t uIDEmisor) {
+	IDKey key(CONV_LAST_READ, uIDLector, uIDEmisor);
+	string retVal;
+	Status status = db->Get(ReadOptions(), key.toSlice(), &retVal);
+	if (status.IsNotFound()) return 0;
+	verificarEstadoDB(status, "Error al obtener numero de ultimo mensaje");
+	return retVal.data()[0];
+}
+
+std::vector<uint32_t> DBRaw::getConversacionesNoLeidas(uint32_t uID) {
+	IDKey key(CONV_PENDING_READ, uID);
+	string retVal;
+	vector<uint32_t> result;
+	size_t contador = 0;
+	Status status = db->Get(ReadOptions(), key.toSlice(), &retVal);
+	if (status.IsNotFound()) return result;
+	verificarEstadoDB(status, "Error al consultar conversaciones no leidas.");
+	while (contador < retVal.length())
+	{
+		result.push_back(retVal[contador]);
+		contador += sizeof(uint32_t);
+	}
+	return result;
 }
 
 std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
-		uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje) {
-}*/
+		uint32_t uID2, uint32_t numPrimMensaje, uint32_t numUltMensaje) {
+	std::vector<std::pair<uint32_t, string> > result;
+	if (numUltMensaje < numPrimMensaje) return result;
+	uint32_t uIDMenor = uID1 < uID2 ? uID1 : uID2;
+	uint32_t uIDMayor = uID1 >= uID2 ? uID1 : uID2;
+	ReadOptions options;
+	string retVal;
+	for (uint32_t i = numPrimMensaje; i <= numUltMensaje; ++i) {
+		IDKey key(CONV_MSG, uIDMenor, uIDMayor, i);
+		Status status = db->Get(options, key.toSlice(), &retVal);
+		if (status.IsNotFound()) return result;
+		verificarEstadoDB(status, "Error al consultar mensajes.");
+		uint32_t id = retVal.data()[0];
+		string msg(retVal.data()+4, retVal.length()-4);
+		std::pair<uint32_t, string> par(id, msg);
+		result.push_back(par);
+	}
+	return result;
+}
 
 /**
  * Metodos privados ------------------------------------------------

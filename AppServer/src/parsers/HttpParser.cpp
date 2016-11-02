@@ -57,13 +57,23 @@ bool HttpParser::parse_user_properties(struct http_message* msg, struct user_pro
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, GEOLOCATION, buffer, BUFFER_SIZE);
 	if (found > 0) {
-		prop.geolocation = std::string(buffer);
+		std::vector<std::string> coord = split(std::string(buffer), ";");
+		double longitude = strtof(coord[0].c_str(), 0);
+		double latitude = strtof(coord[1].c_str(), 0);
+		prop.geolocation = Geolocacion(longitude, latitude);
 		parsed = true;
 	}
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, DISTANCE, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		prop.distance = strtof(std::string(buffer).c_str(), 0);
+		parsed = true;
+	}
+	memset(buffer, 0, BUFFER_SIZE);
+	found = mg_get_http_var(&msg->query_string, POPSORT, buffer, BUFFER_SIZE);
+	if (found > 0) {
+		if (std::string(buffer) == "True")
+			prop.popsort = true;
 		parsed = true;
 	}
 	return parsed;

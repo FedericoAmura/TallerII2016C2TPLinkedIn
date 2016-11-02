@@ -3,8 +3,7 @@
 #include "../../include/base64/base64.h"
 #include "../../include/database/JsonChecker.h"
 
-DBJSON::DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db) :
-	sharedServerHandler(sharedServerHandler), db(db) {}
+DBJSON::DBJSON(DBRaw *db) : db(db) {}
 
 DBJSON::~DBJSON() {
 	delete db;
@@ -89,6 +88,8 @@ Json DBJSON::getDatos(uint32_t userID) {
 	}
 	Json data = Json::object {
 		{"name" , datos.nombre},
+		{"email" , datos.email},
+		{"birth" , datos.fechaNacimiento.toString()},
 		{"city" , datos.ciudad},
 		{"skills", skills},
 		{"job_positions", puestos},
@@ -114,10 +115,12 @@ Json DBJSON::getDatosBrief(uint32_t userID) {
 }
 
 void DBJSON::setDatos(uint32_t userID, const Json &json) {
-	camposExisten(json, "name", "skills", "job_positions", "city");
+	camposExisten(json, "name", "birth", "email", "skills", "job_positions", "city");
 	DatosUsuario datos = db->getDatos(userID);
 	datos.nombre = json["name"].string_value();
 	datos.ciudad = json["city"].string_value();
+	datos.email = json["email"].string_value();
+	datos.fechaNacimiento = Fecha(json["birth"].string_value());
 	vector<string> skills;
 	for (Json j : json["skills"].array_items())
 	{

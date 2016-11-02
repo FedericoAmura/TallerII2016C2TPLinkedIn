@@ -5,7 +5,6 @@
 #include "../leveldb/write_batch.h"
 #include "../log4cpp/Appender.hh"
 #include "../log4cpp/Category.hh"
-#include "../handlers/SharedServerHandler.h"
 #include "DBExceptions.h"
 #include "DatosUsuario.h"
 #include "Foto.h"
@@ -33,7 +32,6 @@ class DBRaw {
 	log4cpp::Appender *dbLogAppender;
 	log4cpp::Category *dbLog;
 	std::ostream *logStream;
-	SharedServerHandler* sharedServerHandler;
 
 	/**
 	 * Inicializa un contador en caso de no estar inicializado
@@ -114,12 +112,13 @@ class DBRaw {
 	 * En caso de que ya existiera una foto para este usuario, la reemplaza
 	 * @param uID						User ID del usuario
 	 * @param foto						Foto
+	 * @param data						Para el caso donde hay un batch y se cambiaron los datos
 	 * @param batch						Null para escribir a db, puntero para batchear
 	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @exception BadInputException		La foto no es un jpg
 	 */
-	void setFoto(uint32_t uID, const Foto &foto,
+	void setFoto(uint32_t uID, const Foto &foto, const DatosUsuario *data = NULL,
 			WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
@@ -413,7 +412,7 @@ class DBRaw {
 	 * @return				Número del último mensaje
 	 * @exception			UserIDs inválidos
 	 */
-	uint32_t numUltMensaje(uint32_t uID1, uint32_t uID2);
+	uint32_t getNumUltMensaje(uint32_t uID1, uint32_t uID2);
 
 	/**
 	 * Devuelve los mensajes comprendidos entre #ultmensaje y #primmensaje
@@ -426,7 +425,39 @@ class DBRaw {
 	 * @return					Vector de tuplas<uIDsender,mensaje>
 	 */
 	vector<std::pair<uint32_t,string> > getMensajes(uint32_t uID1,
-			uint32_t uID2, uint32_t numUltMensaje, uint32_t numPrimMensaje);
+			uint32_t uID2, uint32_t numPrimMensaje, uint32_t numUltMensaje);
+
+	/**
+	 * Envia un mensaje
+	 * @param uIDEmisor
+	 * @param uIDReceptor
+	 * @param mensaje
+	 */
+	void enviarMensaje(uint32_t uIDEmisor, uint32_t uIDReceptor, const string &mensaje);
+
+	/**
+	 * Devuelve el #mensaje del ultimo mensaje
+	 * @param uIDLector
+	 * @param uIDEmisor
+	 * @return
+	 */
+	uint32_t getUltimoMsgNoLeido(uint32_t uIDLector, uint32_t uIDEmisor);
+
+	/**
+	 * Devuelve la lista de ids de los cuales el usuario recibio mensajes
+	 * y aun no los leyo
+	 * @param uID
+	 * @return
+	 */
+	std::vector<uint32_t> getConversacionesNoLeidas(uint32_t uID);
+
+	/**
+	 * Marca una conversacion como leida
+	 * @param uIDLector
+	 * @param uIDEmisor
+	 */
+	void marcarConversacionLeida(uint32_t uIDLector, uint32_t uIDEmisor);
+
 };
 
 #endif  /* APPSERVER_INCLUDE_DATABASE_DBRAW_H_ */
