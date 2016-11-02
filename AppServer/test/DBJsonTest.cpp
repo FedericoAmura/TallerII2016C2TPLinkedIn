@@ -125,15 +125,20 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 	// Prueba can escases de datos
 	Json datosJson1 = Json::object {
 		{ "name" , "Nombre Test" },
+		{ "birth", "4/4/1994" },
+		{ "email", "mail1@test.com" },
 		{ "skills", Json::array { } },
-		{"job_positions",  Json::array { } },
+		{ "job_positions",  Json::array { } },
 		{ "city" , "Una ciudad" },
 	};
 	dbj->setDatos(uid, datosJson1);
 	Json result1(dbj->getDatos(uid));
 
-	EXPECT_STREQ(result1["resume"].string_value().c_str(), "");
+	EXPECT_STREQ(result1["name"].string_value().c_str(), "Nombre Test");
+	EXPECT_STREQ(result1["email"].string_value().c_str(), "mail1@test.com");
+	EXPECT_STREQ(result1["birth"].string_value().c_str(), "4/4/1994");
 	EXPECT_LT(tinyJPGBase64.length(), result1["photo"].string_value().length());
+	EXPECT_STREQ(result1["resume"].string_value().c_str(), "");
 	EXPECT_EQ(0, result1["contacts"].int_value());
 	EXPECT_EQ(0, result1["popularidad"].int_value());
 	EXPECT_TRUE(result1["skills"].array_items().empty());
@@ -141,7 +146,9 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 
 	// Prueba con abundancia de datos
 	Json datosJson2 = Json::object {
-		{ "name" , "Nombre Test" },
+		{ "name", "Nombre Test" },
+		{ "email", "nuevo@mail.com"},
+		{ "birth", "15/5/1932"},
 		{ "skills", Json::array { "Skill1", "Skill2" } },
 		{"job_positions",  Json::array { Json::object {
 			{ "name", "Puesto1"},
@@ -161,6 +168,8 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 	Json result2(dbj->getDatos(uid));
 
 	EXPECT_STREQ(result2["resume"].string_value().c_str(), "Test resumen");
+	EXPECT_STREQ(result2["email"].string_value().c_str(), "nuevo@mail.com");
+	EXPECT_STREQ(result2["birth"].string_value().c_str(), "15/5/1932");
 	EXPECT_STREQ(tinyJPGBase64.c_str(), result2["photo"].string_value().c_str());
 	EXPECT_EQ(0, result2["contacts"].int_value());
 	EXPECT_EQ(0, result1["popularidad"].int_value());

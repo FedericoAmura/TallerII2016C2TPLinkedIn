@@ -257,14 +257,14 @@ vector<Puesto> DBRaw::getPuestos(uint32_t uID) {
 	return result;
 }
 
-void DBRaw::setFoto(uint32_t uID, const Foto &foto,
+void DBRaw::setFoto(uint32_t uID, const Foto &foto, const DatosUsuario *data,
 		WriteBatch *batch, bool verifUID) {
 	// TODO: Lock para evitar errores RAW con el ID
 	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),uID);
 	WriteBatch localBatch;
 	bool writeToDB = !batch;
 	if (writeToDB) batch = &localBatch;
-	DatosUsuario datos = getDatos(uID);
+	DatosUsuario datos = data ? *data : getDatos(uID);
 	if (datos.fotoID == 0)
 	{
 		datos.fotoID = contadorActual(LAST_FID,"foto ID");
@@ -316,8 +316,9 @@ void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
 	setSkills(uID, skills, &batch, false);
 	setPuestos(uID, puestos, &batch, false);
 	if(resumen) setResumen(uID, *resumen, &batch, false);
-	if(foto) setFoto(uID, *foto, &batch, false);
-	db->Write(WriteOptions(), &batch);
+	if(foto) setFoto(uID, *foto, &datos, &batch, false);
+	Status status = db->Write(WriteOptions(), &batch);
+	verificarEstadoDB(status, "Error al guardar datos de usuario.");
 }
 
 bool DBRaw::esRecomendado(uint32_t uIDRecomendador, uint32_t uIDRecomendado) {

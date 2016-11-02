@@ -105,9 +105,13 @@ TEST_F(DBRawTest, testGetSetDatos) {
 	EXPECT_EQ(0, datos.fotoID);
 
 	datos.email = "nuevomail@dom.com";
+	datos.nombre = "Nuevo Nombre";
+	datos.fechaNacimiento = Fecha(string("3/3/1333"));
 	db->setDatos(uid, datos);
 	datos = db->getDatos(uid);
+	EXPECT_STREQ(datos.nombre.c_str(), "Nuevo Nombre");
 	EXPECT_STREQ(datos.email.c_str(), "nuevomail@dom.com");
+	EXPECT_STREQ(datos.fechaNacimiento.toString().c_str(), "3/3/1333");
 }
 
 TEST_F(DBRawTest, testGetSetResumen) {

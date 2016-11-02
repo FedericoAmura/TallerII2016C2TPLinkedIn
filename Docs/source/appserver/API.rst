@@ -88,6 +88,8 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			| 200 - OK + Siguiente JSON:
 			| {
 			|  “name “ : “<nombre>”,
+			|  “birth” : “<DD/MM/YYYY>”,
+			|  “email” : “<email>”,
 			|  "skills": ["<skillname1>", "<skillname2>"],
 			|  "job_positions": [{
 			|      "name": "<positionname1>",
@@ -117,6 +119,8 @@ PARAMETROS           	| 404 - UserID Inexistente
 			| 200 - OK + Siguiente JSON:
 			| {
 			|  “name “ : “<nombre>”,
+			|  “birth” : “<DD/MM/YYYY>”,
+			|  “email” : “<email>”,
 			|  "skills": ["<skillname1>", "<skillname2>"],
 			|  "job_positions": [{
 			|      "name": "<positionname1>",

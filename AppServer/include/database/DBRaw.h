@@ -114,12 +114,13 @@ class DBRaw {
 	 * En caso de que ya existiera una foto para este usuario, la reemplaza
 	 * @param uID						User ID del usuario
 	 * @param foto						Foto
+	 * @param data						Para el caso donde hay un batch y se cambiaron los datos
 	 * @param batch						Null para escribir a db, puntero para batchear
 	 * @param verifUID					Si debe realizarse la verificacion sobre el UID
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @exception BadInputException		La foto no es un jpg
 	 */
-	void setFoto(uint32_t uID, const Foto &foto,
+	void setFoto(uint32_t uID, const Foto &foto, const DatosUsuario *data = NULL,
 			WriteBatch *batch = NULL, bool verifUID = true);
 
 	/**
