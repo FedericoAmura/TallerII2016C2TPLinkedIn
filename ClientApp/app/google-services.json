@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "228611097508",
+    "firebase_url": "https://jobifyg2.firebaseio.com",
+    "project_id": "jobifyg2",
+    "storage_bucket": "jobifyg2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228611097508:android:e6c9b62d4dcb3de4",
+        "android_client_info": {
+          "package_name": "com.example.android.clientapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "228611097508-e9qt51mjdc4k0nskg3ph8ff030c5dots.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8CYcCHM63xvpxqkg7Phk9-yRJZfYSkPs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
