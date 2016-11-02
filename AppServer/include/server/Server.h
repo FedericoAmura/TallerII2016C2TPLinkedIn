@@ -18,7 +18,7 @@ class Server {
 
  public:
 	Server();
-	bool settting_ok();
+	bool setting_ok();
 	void run();
 	virtual ~Server();
 };

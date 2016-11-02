@@ -18,7 +18,7 @@ Server::Server() {
 	init_ok = true;
 }
 
-bool Server::settting_ok() {
+bool Server::setting_ok() {
 	return init_ok && connectionsHandler->initialized();
 }
 

@@ -10,7 +10,7 @@
 
 int main() {
 	Server* server = new Server();
-	if (server->settting_ok())
+	if (server->setting_ok())
 		server->run();
 	delete server;
 	return 0;
