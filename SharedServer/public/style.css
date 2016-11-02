@@ -20,6 +20,20 @@ html, body {
 	padding-left: 10px;
 }
 
+.middle {
+}
+
+.button {
+	padding: 0;
+}
+
+.contentdetails {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+}
+
 .visible {
 	flex-grow: 1;
 	width: 100%;
@@ -36,7 +50,7 @@ html, body {
 	align-items: center;
 }
 
-.details {
+.footerdetails {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
