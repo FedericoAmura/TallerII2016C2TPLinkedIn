@@ -38,7 +38,6 @@ import com.example.android.clientapp.Modelo.Perfil;
 import com.example.android.clientapp.PestaniasActivity;
 import com.example.android.clientapp.R;
 import com.example.android.clientapp.RegistroActivity;
-import com.example.android.clientapp.VolleyRequest;
 
 import android.view.ViewGroup.LayoutParams;
 
