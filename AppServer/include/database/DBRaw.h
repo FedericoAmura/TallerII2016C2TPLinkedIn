@@ -5,7 +5,6 @@
 #include "../leveldb/write_batch.h"
 #include "../log4cpp/Appender.hh"
 #include "../log4cpp/Category.hh"
-#include "../handlers/SharedServerHandler.h"
 #include "DBExceptions.h"
 #include "DatosUsuario.h"
 #include "Foto.h"
@@ -33,7 +32,6 @@ class DBRaw {
 	log4cpp::Appender *dbLogAppender;
 	log4cpp::Category *dbLog;
 	std::ostream *logStream;
-	SharedServerHandler* sharedServerHandler;
 
 	/**
 	 * Inicializa un contador en caso de no estar inicializado

@@ -6,21 +6,10 @@
  */
 
 #include "../../include/server/Server.h"
-#include <iostream>
-
-static void* serverHandler(void* arg) {
-	ConnectionsHandler* c = reinterpret_cast<ConnectionsHandler*>(arg);
-	char input = ' ';
-	while (input == ' ') {
-		std::cin >> input;
-	}
-	c->stop();
-	return NULL;
-}
 
 Server::Server() {
 	try {
-		db_json = new DBJSON(0, new DBRaw("/tmp/db_users", &std::cout));
+		db_json = new DBJSON(new DBRaw("/tmp/db_users", &std::cout));
 	} catch (LevelDBException &e) {
 		init_ok = false;
 		return;
@@ -30,7 +19,7 @@ Server::Server() {
 }
 
 bool Server::settting_ok() {
-	return init_ok;
+	return init_ok && connectionsHandler->initialized();
 }
 
 Server::~Server() {
@@ -41,13 +30,9 @@ Server::~Server() {
 }
 
 void Server::run() {
-	std::cout << "...starting server..." << std::endl;
-	std::cout << "...to stop the server press a key..." << std::endl;
-	connectionsHandler->start();
-	pthread_t t_handler;
-	pthread_create(&t_handler, NULL, serverHandler, connectionsHandler);
-	pthread_join(t_handler, NULL);
-	connectionsHandler->join();
+	std::cout << "...starting server on port 8888..." << std::endl;
+	std::cout << "...to stop the server press Ctrl+C ..." << std::endl;
+	connectionsHandler->run();
 	std::cout << "...shutting down server..." << std::endl;
-	sleep(3);
+	sleep(2);
 }

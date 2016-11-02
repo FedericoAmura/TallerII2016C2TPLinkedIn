@@ -19,12 +19,11 @@ using std::vector;
 class DBJSON {
  private:
 	DBRaw* db;
-	SharedServerHandler* sharedServerHandler;
     /* temporal */
     std::map<string,string> tokens;
 
  public:
-	DBJSON(SharedServerHandler* sharedServerHandler, DBRaw *db);
+	DBJSON(DBRaw *db);
 	virtual ~DBJSON();
 
     /**

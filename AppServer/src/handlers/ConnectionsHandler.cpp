@@ -30,7 +30,6 @@ static void event_handler(struct mg_connection* c, int event, void* data) {
 
 ConnectionsHandler::ConnectionsHandler(DBJSON* db_json) {
 	mg_mgr_init(&mgr, NULL);
-	running = false;
 	connection = mg_bind(&mgr, DEFAULT_PORT, event_handler);
 	if (!connection)
 		return;
@@ -38,9 +37,10 @@ ConnectionsHandler::ConnectionsHandler(DBJSON* db_json) {
 	mg_enable_multithreading(connection);
 	running = true;
 	connection->user_data = db_json;
+	signal(SIGINT, SIGINT_Handler);
 }
 
-bool ConnectionsHandler::isRunning() {
+bool ConnectionsHandler::initialized() {
 	return running;
 }
 
@@ -48,10 +48,6 @@ void ConnectionsHandler::run() {
 	while(running) {
 		mg_mgr_poll(&mgr, 500);
 	}
-}
-
-void ConnectionsHandler::stop() {
-	running = false;
 }
 
 ConnectionsHandler::~ConnectionsHandler() {
