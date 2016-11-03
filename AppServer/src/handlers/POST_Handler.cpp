@@ -242,6 +242,10 @@ http_response POST_Handler::handle_notify_message_seen() {
 	} catch (NonexistentChat &e) {
 		std::cout << "[Error] Non existent chat. Notify Message Seen failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
+	} catch (NonexistentUserID &e) {
+		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Nonexistent userID: " << e.what()<< ". Notify Message Seen failed."<< std::endl;
+		return http_response("", STATUS_NOT_FOUND);
 	} catch (BadInputException &e) {
 		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
 		std::cout << "[Error] Bad Input: " << e.what() << ". Notify Message Seen failed."<< std::endl;

@@ -120,28 +120,33 @@ class ClientTest(unittest.TestCase):
         res = client2.accept_contact_request(another_userID)
         self.assertEquals(204, res.status_code)
 
-    #NOT checked (TODO falta implementación en DBJSON (debería ser 400))
+    #checked
     def test_09_send_message_to_non_existent_user(self):
         data = {}
         data["receiverID"] = 999999
         data["message"] = "blabla"
         res = client1.send_msg(data)
-        self.assertEquals(201, res.status_code)
+        self.assertEquals(404, res.status_code)
 
-    #NOT checked (TODO falta implementación en DBJSON)
+    #checked
     def test_10_send_message_to_existent_user(self):
         data = {}
         data["receiverID"] = client2.get_user_id()
         data["message"] = "blabla"
         res = client1.send_msg(data)
         self.assertEquals(201, res.status_code)
+        res2 = client2.get_number_new_messages()
+        data = json.loads(res2.text)
+        self.assertEquals(200, res2.status_code)
+        self.assertEquals(len(data["new"]), 1)
+        self.assertEquals(data["new"][0]["senderID"], client1.get_user_id())
 
-    #NOT checked (TODO falta implementación en DBJSON (debería ser 400))
+    #checked
     def test_11_notify_message_seen_to_non_existent_chat(self):
         data = {}
-        data["targetID"] = "999999"
+        data["targetID"] = 999999
         res = client1.notify_msg_seen(data)
-        self.assertEquals(204, res.status_code)
+        self.assertEquals(404, res.status_code)
 
     #NOT checked (TODO falta implementación en DBJSON)
     def test_12_notify_message_seen_to_existent_chat(self):
@@ -178,7 +183,7 @@ class ClientTest(unittest.TestCase):
     #NOT checked (TODO falta implementación en DBJSON)
     def test_16_recommend_user(self):
         data = {}
-        data["recommended"] = int(client3.get_user_id())
+        data["recommended"] = client3.get_user_id()
         data["recommends"] = True
         res = client1.recommend_user(data)
         self.assertEquals(204, res.status_code)

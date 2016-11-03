@@ -352,7 +352,6 @@ http_response GET_Handler::handle_get_are_they_connected() {
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
-	Json data;
 	bool connected;
 	try {
 		connected = db_json->esContacto(userID1, userID2);
@@ -382,7 +381,35 @@ http_response GET_Handler::handle_get_popular_by_skill() {
 }
 
 http_response GET_Handler::handle_get_number_new_messages() {
-	return http_response("{\"chat\":\"{new chat}\"}\n", STATUS_OK);
+	// /chat/<userID>/new
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID = std::stoi(vec_uri[1]);
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Number New Messages) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Number New Messages) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Number New Messages) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	try {
+		data = db_json->getChatNuevos(userID);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Query (Number New Messages) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_id_last_message() {
