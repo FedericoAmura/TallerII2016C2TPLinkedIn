@@ -34,7 +34,7 @@
               </ul>
         </div></nav>
   </div>
-  <!-- content -->
+  <!-- body -->
   <div class="fullwidth centered middle">
   <div class="centered green darken-1 not-visible">
   	Los jobs
@@ -48,7 +48,7 @@
   	<categorylist ng-repeat="category in categoriesList.categories" category="category"></categorylist>
   	</ul>
   	<div style="position: absolute; bottom: 4%; right: 2%;">
-  		<a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+  		<button class="btn-floating btn-large waves-effect waves-light red" onClick="showNewCategory()"><i class="material-icons">add</i></button>
   	</div>
   </div>
   </div>
@@ -64,6 +64,38 @@
   	<div class="copyright fullwidth green darken-1">
   		© 2016 Made by group 2
   	</div>
+  </div>
+  <!-- modal new category -->
+  <div id="newCategoryModal" class="modal-background">
+  	<div class="modal-content">
+		<div class="modal-header">
+			<span class="close" onClick="closeNewCategory()">X</span>
+			<h5>New category</h5>
+		</div>
+		<div class="modal-body">
+			<form method="post" action="/categories" ng-submit="newCategory()" ng-controller="CategoriesController">
+				<input type="text" class="active validate" name="name" placeholder="Name" required><br>
+				<input type="text" class="validate" name="description" placeholder="Description" required><br>
+				<button type="submit" value="Add" class="btn waves-effect waves-green blue">Login</button>
+			</form>
+		</div>
+	</div>
+  </div>
+  <!-- modal edit category -->
+  <div id="editCategoryModal" class="modal-background">
+  	<div class="modal-content">
+		<div class="modal-header">
+			<span class="close" onClick="closeEditCategory()">X</span>
+			<h5>Edit category</h5>
+		</div>
+		<div class="modal-body">
+			<form method="post" action="/categories" ng-submit="editCategory()" ng-controller="CategoriesController">
+				<input type="text" class="active validate" name="name" placeholder="Name" required><br>
+				<input type="text" class="validate" name="description" placeholder="Description" required><br>
+				<button type="submit" value="Add" class="btn waves-effect waves-green blue">Login</button>
+			</form>
+		</div>
+	</div>
   </div>
 </body>
 </html>

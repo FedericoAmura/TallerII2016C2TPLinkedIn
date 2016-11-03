@@ -32,9 +32,7 @@ components.directive('categorylist', function() {
 		};
 		
 		$scope.edit = function() {
-			/*
-			aca va el edit de la categoria
-			*/
+			showEditCategory('category','descripcion');
   			console.log('frenamos el evento');
   			var e = window.event;
 			e.cancelBubble = true;
