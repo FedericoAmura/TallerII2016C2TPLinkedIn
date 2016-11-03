@@ -293,6 +293,7 @@ class DBJSON {
 
 	/**
 	 * Envia un mensaje entre usuarios
+	 * Notar que se marca la conversacion como leida para el emisor
 	 * @param json						Ver documentación API: "Enviar mensaje"
 	 * @exception NonexistentUserID		El uID destinatario es inválido
 	 * @exception BadInputException		Falta algun campo del JSON

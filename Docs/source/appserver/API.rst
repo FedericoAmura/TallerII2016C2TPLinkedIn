@@ -51,7 +51,7 @@ URL                  	| \http://<appserver>/login
 AUTH                 	| Si: username=<mi_username> password=<mi_password>
 VERB                 	| POST
 PARAMETROS           	|
-POSIBLES RESPUESTAS	| 401 - Usuario o pass incorrectos
+POSIBLES RESPUESTAS	| 403 - Usuario o pass incorrectos
 			| 200 - OK + Siguiente JSON:
 			| {
 			| “userID” : <userID>,
@@ -69,7 +69,7 @@ AUTH                 	| Si
 VERB                 	| DELETE
 PARAMETROS           	| a
 POSIBLES RESPUESTAS	| 204 - OK
-			| 401 - No autorizado
+			| 403 - No autorizado
 ======================  ===========================================
 
 --------------------------------------------------------
@@ -136,7 +136,7 @@ PARAMETROS           	| 404 - UserID Inexistente
 			|  “photo” = “ab03d7f4c80239b8…”	(Campo opcional)
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 404 - UserID Inexistente
 			| 422 - Skills o positions invalidos
 ======================  ==========================
@@ -171,7 +171,7 @@ PARAMETROS           	| {
 			| “photo” = “ab03d7f4c80239b8…”
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
-			| 401 - No aurotizado
+			| 403 - No aurotizado
 			| 404 - UserID inexistente
 			| 415 - Los datos no corresponden a un jpg
                         | 422 - Foto demasiado grande
@@ -242,7 +242,7 @@ PARAMETROS           	| {
 			| “resumen” : “Bla Bla Bla.“
 			| }
 POSIBLES RESPUESTAS	| 204 - OK
-			| 401 - No aurotizado
+			| 403 - No aurotizado
 			| 404 - UserID inexistente
 ======================  ==========================
 
@@ -281,7 +281,7 @@ AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID inexistente
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 200 - OK + Siguiente JSON:
 			| {
 			|   “pending” : [<senderuid1>, <senderuid2>, …]
@@ -297,7 +297,7 @@ AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID inexistente
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 200 - OK + Siguiente JSON:
 			| {
 			|   “count” : <numero>
@@ -313,7 +313,7 @@ AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - La peticion no existe
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 200 - OK + Siguiente JSON:
 			| {
 			|  “userID” : <userID>,
@@ -331,7 +331,7 @@ AUTH                 	| Si
 VERB                 	| POST
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - La peticion no existe
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 204 - OK
 ======================  ==========================
 
@@ -344,7 +344,7 @@ AUTH                 	| Si
 VERB                 	| DELETE
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - La peticion no existe
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 204 - OK
 ======================  ==========================
 
@@ -357,7 +357,7 @@ AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - UserID inexistente
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 200 - OK + Siguiente JSON:
 			| {
 			| “contacts” : [<userID1>, <userID2>, …]
@@ -379,7 +379,7 @@ PARAMETROS           	| {
 			|  “message” : “Bla bla bla”
 			| }
 POSIBLES RESPUESTAS	| 404 - Alguno de los usuarios no existe
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 204 - OK
 ======================  ==========================
 
@@ -392,7 +392,7 @@ AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - No son contactos
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 204 - Son contactos
 ======================  ==========================
 
@@ -405,7 +405,7 @@ AUTH                 	| Si
 VERB                 	| DELETE
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - No eran contactos
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 204 - OK
 ======================  ==========================
 
@@ -443,7 +443,7 @@ PARAMETROS           	| {
 			|  “recommends” : true/false
 			| }
 POSIBLES RESPUESTAS	| 404 - Alguno de los usuarios no existe
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 204 - OK
 ======================  ==========================
 
@@ -505,7 +505,7 @@ AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
 POSIBLES RESPUESTAS	| 404 - No existe el userID
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 200 - OK + Siguiente JSON
 			| {
 			| “new” : [{
@@ -530,7 +530,7 @@ PARAMETROS           	| {
 			|  “targetID” : <targetID>
 			| }
 POSIBLES RESPUESTAS	| 404 - No existe el chat
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 204 - OK
 ======================  ==========================
 
@@ -547,7 +547,7 @@ PARAMETROS           	| {
 			|  “message” : “Bla bla bla”
 			| }
 POSIBLES RESPUESTAS	| 404 - Usuario invalido
-			| 401 - No autorizado
+			| 403 - No autorizado
 			| 201 - OK (Creado recurso /chat/<user_id1>/<user_id2>/?ini=#&fin=#)
 ======================  ==========================
 
@@ -559,7 +559,7 @@ URL                  	| \http://<appserver>/chat/<userID>/<targetID>/last
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
-POSIBLES RESPUESTAS	| 401 - No autorizado
+POSIBLES RESPUESTAS	| 403 - No autorizado
 			| 404 - No existe algun UserID
 			| 200 - OK + Siguiente JSON:
 			| {
@@ -575,7 +575,7 @@ URL                  	| \http://<appserver>/chat/<userID>/<targetID>/?ini=a&fin=
 AUTH                 	| Si
 VERB                 	| GET
 PARAMETROS           	|
-POSIBLES RESPUESTAS	| 401 - No autorizado
+POSIBLES RESPUESTAS	| 403 - No autorizado
 			| 404 - No existe algun UserID
 			| 200 - OK + Siguiente JSON:
 			| {

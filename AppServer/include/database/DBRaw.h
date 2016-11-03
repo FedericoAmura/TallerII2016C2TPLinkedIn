@@ -455,8 +455,11 @@ class DBRaw {
 	 * Marca una conversacion como leida
 	 * @param uIDLector
 	 * @param uIDEmisor
+	 * @param ultMsgNumber				Nul para leer de db, puntero a val sino
+	 * @param batch						Null para escribir a db, puntero para batchear
 	 */
-	void marcarConversacionLeida(uint32_t uIDLector, uint32_t uIDEmisor);
+	void marcarConversacionLeida(uint32_t uIDLector, uint32_t uIDEmisor,
+			uint32_t *ultMsgNumber = NULL, WriteBatch *batch = NULL);
 
 };
 
