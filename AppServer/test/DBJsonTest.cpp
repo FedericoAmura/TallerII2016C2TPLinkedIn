@@ -306,6 +306,74 @@ TEST_F(DBJsonTest, testRecomendaciones)
 	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
 }
 
+TEST_F(DBJsonTest, testChat)
+{
+	string userName1("Username1");
+	uint32_t uid1 = registrarTest(userName1, 1.0, 0.5);
+	string userName2("Username2");
+	uint32_t uid2 = registrarTest(userName2, 2.0, 1.5);
+	string userName3("Username3");
+	uint32_t uid3 = registrarTest(userName3, 3.0, 2.5);
+
+	EXPECT_EQ(dbj->getChatNuevos(uid1)["new"].array_items().size(), 0);
+	Json mensaje = Json::object {
+		{ "senderID" , (int)uid2 },
+		{ "receiverID", (int)uid1 },
+		{ "message",  "Mensaje 0 de 1->0" },
+	};
+	dbj->enviarMensaje(mensaje);
+	mensaje = Json::object {
+		{ "senderID" , (int)uid1 },
+		{ "receiverID", (int)uid2 },
+		{ "message",  "Mensaje 1 de 0->1" },
+	};
+	dbj->enviarMensaje(mensaje);
+	mensaje = Json::object {
+		{ "senderID" , (int)uid1 },
+		{ "receiverID", (int)uid2 },
+		{ "message",  "Mensaje 2 de 0->1" },
+	};
+	dbj->enviarMensaje(mensaje);
+	mensaje = Json::object {
+		{ "senderID" , (int)uid3 },
+		{ "receiverID", (int)uid2 },
+		{ "message",  "Mensaje 1. 2->1" },
+	};
+	dbj->enviarMensaje(mensaje);
+	Json::array chatsNuevos = dbj->getChatNuevos(uid2)["new"].array_items();
+	EXPECT_EQ(chatsNuevos.size(), 2);
+	EXPECT_EQ(chatsNuevos[0]["senderID"].int_value(), uid1);
+	EXPECT_EQ(chatsNuevos[0]["count"].int_value(), 2);
+	uint32_t numUltMsg = dbj->getNumLastMensaje(uid1, uid2)["lastmsg"].int_value();
+	Json mensajes = dbj->getMensajes(uid1, uid2, 0, numUltMsg);
+	EXPECT_EQ(mensajes["messages"][0]["senderID"].int_value(), uid2);
+	EXPECT_EQ(mensajes["messages"][1]["senderID"].int_value(), uid1);
+	EXPECT_EQ(mensajes["messages"][2]["senderID"].int_value(), uid1);
+	EXPECT_EQ(mensajes["messages"][0]["receiverID"].int_value(), uid1);
+	EXPECT_EQ(mensajes["messages"][1]["receiverID"].int_value(), uid2);
+	EXPECT_EQ(mensajes["messages"][2]["receiverID"].int_value(), uid2);
+	EXPECT_STREQ(mensajes["messages"][0]["message"].string_value().c_str(),
+			"Mensaje 0 de 1->0");
+	EXPECT_STREQ(mensajes["messages"][1]["message"].string_value().c_str(),
+			"Mensaje 1 de 0->1");
+	EXPECT_STREQ(mensajes["messages"][2]["message"].string_value().c_str(),
+			"Mensaje 2 de 0->1");
+	EXPECT_EQ(mensajes["messages"][0]["msgID"].int_value(), 0);
+	EXPECT_EQ(mensajes["messages"][1]["msgID"].int_value(), 1);
+	EXPECT_EQ(mensajes["messages"][2]["msgID"].int_value(), 2);
+
+
+	mensaje = Json::object {
+		{ "senderID" , (int)uid2 },
+		{ "receiverID", (int)uid1 },
+		{ "message",  "Mensaje 3 de 1->0" },
+	};
+	dbj->enviarMensaje(mensaje);
+	chatsNuevos = dbj->getChatNuevos(uid2)["new"].array_items();
+	EXPECT_EQ(chatsNuevos.size(), 1);
+
+}
+
 TEST(JsonTest, TestJsonChecker)
 {
 	Json json = Json::object {
@@ -313,5 +381,6 @@ TEST(JsonTest, TestJsonChecker)
 				{ "password", defaultBase64PassHash },
 	};
 	camposExisten(json, "username", "password");
+	EXPECT_NO_THROW(camposExisten(json, "username", "password"));
 	EXPECT_THROW(camposExisten(json, "no"), BadInputException);
 }

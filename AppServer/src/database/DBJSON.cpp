@@ -237,6 +237,7 @@ Json DBJSON::getContactos(uint32_t userID) {
 void DBJSON::crearPeticion(const Json &json) {
 	if (json["userID"].is_string() || json["targetID"].is_string())
 		throw BadInputException("datos inválidos");
+	camposExisten(json, "userID", "targetID", "message");
 	uint32_t uIDOrigen = json["userID"].int_value();
 	uint32_t uIDDestino = json["targetID"].int_value();
 //	if (uIDOrigen == uIDDestino) throw BadInputException("datos inválidos");
@@ -263,6 +264,7 @@ Json DBJSON::esRecomendado(uint32_t userIDRecomendador, uint32_t userIDRecomenda
 }
 
 void DBJSON::actualizarRecomendacion(const Json &json) {
+	camposExisten(json, "recommender", "recommended", "recommends");
 	uint32_t recomendador = (uint32_t) json["recommender"].int_value();
 	uint32_t recomendado = (uint32_t) json["recommended"].int_value();
 	bool estado = json["recommends"].bool_value();
@@ -285,12 +287,62 @@ Json DBJSON::getPopularesPorPosition(const string &position) {
 }
 
 Json DBJSON::getChatNuevos(uint32_t userID) {
-	Json data = Json::object {};
+	vector<uint32_t> results = db->getConversacionesNoLeidas(userID);
+	Json::array array;
+	for (uint32_t i : results)
+	{
+		uint32_t mensajesNuevos = db->getNumUltMensaje(userID, i) -
+				db->getUltimoMsgNoLeido(userID, i);
+		Json convData = Json::object {
+			{ "senderID", (int)i },
+			{ "count", (int)mensajesNuevos },
+		};
+		array.push_back(convData);
+	}
+	Json data = Json::object { {"new", array} };
 	return data;
 }
 
 void DBJSON::marcarChatLeido(const Json &json) {
+	camposExisten(json, "targetID", "userID");
+	uint32_t uIDLector = json["targetID"].int_value();
+	uint32_t uIDEmisor = json["userID"].int_value();
+	db->marcarConversacionLeida(uIDLector, uIDEmisor);
 }
 
 void DBJSON::enviarMensaje(const Json &json) {
+	camposExisten(json, "receiverID", "senderID", "message");
+	uint32_t uIDReceptor = json["receiverID"].int_value();
+	uint32_t uIDEmisor = json["senderID"].int_value();
+	string mensaje = json["message"].string_value();
+	db->enviarMensaje(uIDReceptor, uIDEmisor, mensaje);
+}
+
+Json DBJSON::getNumLastMensaje(uint32_t userID1, uint32_t userID2) {
+	return Json::object {
+		{ "lastmsg", (int)db->getNumUltMensaje(userID1, userID2) }
+	};
+}
+
+
+Json DBJSON::getMensajes(uint32_t userID1, uint32_t userID2,
+		uint32_t primerMensaje, uint32_t ultMensaje) {
+	vector< std::pair<uint32_t, string> > mensajes =
+			db->getMensajes(userID1, userID2, primerMensaje, ultMensaje);
+	uint32_t contador = primerMensaje;
+	Json::array array;
+	for (std::pair<uint32_t, string> par : mensajes)
+	{
+		uint32_t sender = par.first;
+		uint32_t receiver = sender == userID1 ? userID2 : userID1;
+		Json mensaje = Json::object {
+			{ "senderID", (int)sender },
+			{ "receiverID", (int)receiver },
+			{ "message", par.second },
+			{ "msgID", (int)contador },
+		};
+		array.push_back(mensaje);
+		++contador;
+	}
+	return Json::object{ {"messages", array} };
 }

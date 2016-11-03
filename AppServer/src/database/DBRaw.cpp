@@ -647,27 +647,33 @@ void DBRaw::enviarMensaje(uint32_t uIDReceptor, uint32_t uIDEmisor, const string
 	++numUltMsg;
 	Slice dataCount((char*)&numUltMsg, sizeof(numUltMsg));
 	batch.Put(keyCount.toSlice(), dataCount);
+	// Se marca que quien envia el mensaje supuestamente ya leyo la conversacion
+	marcarConversacionLeida(uIDEmisor, uIDReceptor, &numUltMsg, &batch);
 	Status status = db->Write(WriteOptions(), &batch);
 	verificarEstadoDB(status, "Error al enviar mensaje");
-
 }
 
-void DBRaw::marcarConversacionLeida(uint32_t uIDLector, uint32_t uIDEmisor) {
+void DBRaw::marcarConversacionLeida(uint32_t uIDLector, uint32_t uIDEmisor,
+		uint32_t *ultMsg, WriteBatch *batch) {
 	vector<uint32_t> noLeidas(getConversacionesNoLeidas(uIDLector));
 	vector<uint32_t>::iterator it = std::find(noLeidas.begin(), noLeidas.end(), uIDEmisor);
-	if (it == noLeidas.end()) return;
-	noLeidas.erase(it);
-	WriteBatch batch;
+	if (it != noLeidas.end()) noLeidas.erase(it);
+	WriteBatch localBatch;
+	bool writeToDB = !batch;
+	if (writeToDB) batch = &localBatch;
 	// Elimino al emisor de las conversaciones pendientes de leer
 	IDKey keyNoLeidos(CONV_PENDING_READ, uIDLector);
+	int size = noLeidas.size();
 	Slice dataSlice((char*)noLeidas.data(), noLeidas.size());
-	batch.Put(keyNoLeidos.toSlice(), dataSlice);
+	batch->Put(keyNoLeidos.toSlice(), dataSlice);
 	// Agrego que el ultimo mensaje que lei es el ultimo de la conversacion
 	uint32_t num = getNumUltMensaje(uIDLector, uIDEmisor);
+	if (ultMsg) num = *ultMsg;
 	IDKey keyCount(CONV_LAST_READ, uIDLector, uIDEmisor);
 	Slice dataCount((char*)&num, sizeof(num));
-	batch.Put(keyCount.toSlice(), dataCount);
-	Status status = db->Write(WriteOptions(), &batch);
+	batch->Put(keyCount.toSlice(), dataCount);
+	if (!writeToDB) return;
+	Status status = db->Write(WriteOptions(), batch);
 	verificarEstadoDB(status, "Error al marcar conversacion como leidoa.");
 }
 
@@ -692,6 +698,7 @@ uint32_t DBRaw::getUltimoMsgNoLeido(uint32_t uIDLector, uint32_t uIDEmisor) {
 }
 
 std::vector<uint32_t> DBRaw::getConversacionesNoLeidas(uint32_t uID) {
+	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
 	IDKey key(CONV_PENDING_READ, uID);
 	string retVal;
 	vector<uint32_t> result;
