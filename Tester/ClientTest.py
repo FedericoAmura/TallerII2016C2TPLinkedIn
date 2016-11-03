@@ -148,7 +148,7 @@ class ClientTest(unittest.TestCase):
         res = client1.notify_msg_seen(data)
         self.assertEquals(404, res.status_code)
 
-    #NOT checked (TODO falta implementación en DBJSON)
+    #checked
     def test_12_notify_message_seen_to_existent_chat(self):
         data = {}
         data["targetID"] = client1.get_user_id()
@@ -180,13 +180,21 @@ class ClientTest(unittest.TestCase):
         res = client1.update_photo(data)
         self.assertEquals(204, res.status_code)
 
-    #NOT checked (TODO falta implementación en DBJSON)
+    #checked
     def test_16_recommend_user(self):
         data = {}
         data["recommended"] = client3.get_user_id()
         data["recommends"] = True
         res = client1.recommend_user(data)
         self.assertEquals(204, res.status_code)
+
+    #checked
+    def test_16_recommend_nonexistent_user(self):
+        data = {}
+        data["recommended"] = 10
+        data["recommends"] = True
+        res = client1.recommend_user(data)
+        self.assertEquals(404, res.status_code)
 
 ### DELETE
     #checked
@@ -196,7 +204,7 @@ class ClientTest(unittest.TestCase):
 
     #checked
     def test_18_delete_nonexistent_contact(self):
-        res = client1.delete_contact("99999")
+        res = client1.delete_contact(99999)
         self.assertEquals(404, res.status_code)
 
     #checked
@@ -220,7 +228,7 @@ class ClientTest(unittest.TestCase):
         params["job_position"] = "job"
         params["distance"] = 2.4
         params["geolocation"] = "2.5;5.8"
-        params["sortpop"] = True
+        params["popsort"] = True
         res = client1.search_for_users(params)
         self.assertEquals(200, res.status_code)
 
@@ -275,25 +283,39 @@ class ClientTest(unittest.TestCase):
         self.assertTrue('count' in data)
         self.assertEquals(200, res.status_code)
 
-    #NOT checked (TODO ?)
+    #checked
     def test_29_get_particular_request(self):
         res = client1.get_particular_request(client2.get_user_id())
         self.assertEquals(404, res.status_code)
+        data = {}
+        data["targetID"] = client2.get_user_id()
+        data["message"] = "quiero ser tu amigo"
+        res = client1.create_contact_request(data)
+        self.assertEquals(201, res.status_code)
+        res = client2.get_particular_request(client1.get_user_id())
+        self.assertEquals(200, res.status_code)
+        data = json.loads(res.text)
+        self.assertEquals(client1.get_user_id(), data["userID"])
+        self.assertEquals(data["message"], "quiero ser tu amigo")
 
-    #NOT checked (TODO falta implementación de DBJSON)
+    #checked
     def test_30_get_contacts(self):
         res = client1.get_contacts()
         self.assertEquals(200, res.status_code)
+        data = json.loads(res.text)
+        self.assertEquals(len(data["contacts"]),0)
 
     #checked
     def test_31_get_are_we_contacts(self):
         res = client1.get_are_we_contacts(client2.get_user_id())
         self.assertEquals(404, res.status_code)
 
+    #checked
     def test_32_get_number_new_messages(self):
         res = client1.get_number_new_messages()
         self.assertEquals(200, res.status_code)
 
+    #checked
     def test_33_get_id_last_msg_from_user(self):
         res = client1.get_id_last_message(client2.get_user_id())
         self.assertEquals(200, res.status_code)
