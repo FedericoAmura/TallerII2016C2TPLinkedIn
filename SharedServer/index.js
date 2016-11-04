@@ -4,15 +4,18 @@ app.use(express.static('public'));
 var pg = require('pg');
 var parser = require("body-parser");
 
-var urlencodedParser = parser.urlencoded({ extended: false })
+var urlencodedParser = parser.urlencoded({ extended: false });
 
 var pgurl = process.env.DATABASE_URL || "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
 var port = process.env.PORT || 5000;
 
+var loginUsername = "admin";
+var loginPassword = "admin";
+
 var appversion = 0.2;
 
 //Configuracion express
-app.set('port', (port));
+app.set('port', port);
 app.use(parser.json());
 
 function errPGConn(err, res) {
@@ -22,8 +25,9 @@ function errPGConn(err, res) {
 }
 
 function noContentTypeJSON(req, res) {
-	if (req.get('Content-Type') != 'application/json') {
-		res.send('{"error":"Content Type must be application/json"}');
+	//console.log(req.get('Content-Type'));
+	if (req.get('Content-Type') != 'application/x-www-form-urlencoded') {
+		res.send('{"error":"Content Type must be application/x-www-form-urlencoded"}');
 		res.status(415);
 		return true;
 	}
@@ -37,17 +41,12 @@ app.get('/', function (req, res) {
 });
 
 app.post('/login', urlencodedParser, function (req, res) {
-	response = {
-			first_name:req.body.username,
-			last_name:req.body.password
-	};
-	console.log(response);
-	res.end(JSON.stringify(response));
-});
-
-//Database Manager
-app.get('/manager', function (req, res) {
-	res.sendFile(__dirname+'/public/databaseManager/index.html');
+	if (loginUsername==req.body.username && loginPassword==req.body.password) {
+		res.sendFile(__dirname+'/public/app.html');
+	} else {
+		res.sendFile(__dirname+'/public/index.html');
+		console.log("Wrong login with: "+req.body.username+":"+req.body.password);
+	}
 });
 
 //Categorias
@@ -71,14 +70,21 @@ app.get('/categories', function (req, res) {
 });
 
 //Alta categoria segun json
-app.post('/categories', function (req, res) {
+app.post('/categories', urlencodedParser, function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
 	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
 		}
+		console.log(1);
+		console.log(req.body);
+		console.log(2);
+		console.log(req.body.category);
+		//var body = JSON.parse(req.body);
+		console.log(3);
 		client.query('INSERT INTO categories (name, description) VALUES (\''+req.body.category.name+'\',\''+req.body.category.description+'\')', function (err, result) {
+			console.log(4);
 			done();
 			if (err) {
 				errPGConn(err, res);
@@ -112,7 +118,6 @@ app.put('/categories/:categoria', function (req, res) {
 
 //Baja de categoria SIN USO
 app.delete('/categories/:categoria', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
@@ -211,7 +216,6 @@ app.put('/job_positions/categories/:categoria/:posicion', function (req, res) {
 
 //Baja de una JobPosition SIN USO
 app.delete('/job_positions/categories/:categoria/:posicion', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
@@ -308,7 +312,6 @@ app.put('/skills/categories/:categoria/:habilidad', function (req, res) {
 
 //Baja de una Skill SIN USO
 app.delete('/skills/categories/:categoria/:habilidad', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
 	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Jobify SharedServer Database Manager</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script src="app.js"></script>
+	<script src="components.js"></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body ng-app="jobify" class="fullwidth green lighten-1">
+  <!-- http://materializecss.com/ -->
+  <!-- header -->
+  <div class="fullwidth">
+        <nav class="header fullwidth green darken-3"><div class="nav-wrapper">
+              <a href="#" class="brand-logo">Jobify manager</a>
+              <ul id="nav-mobile" class="right hide-on-large-only">
+                     <li><a class="dropdown-button" data-activates="sectionDropDown"><i class="large material-icons" style="font-size: 50px;">list</i></a></li>
+              </ul>
+             <ul id="sectionDropDown" class="dropdown-content">
+                 <li><a href="#">Jobs</a></li>
+                 <li><a href="#">Skills</a></li>
+                 <li><a href="#">Categories</a></li>
+              </ul>
+              <ul id="nav-mobile" class="right hide-on-med-and-down">
+                 <li><a href="#">Jobs</a></li>
+                 <li><a href="#">Skills</a></li>
+                 <li><a href="#">Categories</a></li>
+              </ul>
+        </div></nav>
+  </div>
+  <!-- body -->
+  <div class="fullwidth centered middle">
+  <div class="centered green darken-1 not-visible">
+  	Los jobs
+  </div>
+  <div class="centered green darken-1 not-visible">
+  	Las skills
+  </div>
+  <div class="centered green darken-1 visible" style="position:relative;" ng-controller="CategoriesController as categoriesList">
+  	<span>{{categoriesList.categories.length}} categories in database</span>
+  	<ul class="collection fullwidth collapsible" data-collapsible="expandable">
+  	<categorylist ng-repeat="category in categoriesList.categories" category="category"></categorylist>
+  	</ul>
+  	<div class="fixed f-down f-rigth">
+  		<button class="btn-floating btn-large waves-effect waves-light red" onClick="showNewCategory()"><i class="material-icons">add</i></button>
+  	</div>
+  </div>
+  </div>
+  <!-- footer -->
+  <div class="footer fullwidth">
+  	<div class="footerdetails fullwidth green darken-3">
+  		<h5 class="footer-title">Jobify</h5>
+  		<div class="links">
+  			<a href="http://www.7552.fi.uba.ar" class="grey-text text-lighten-4 right">Pagina de la materia</a>
+  			<a href="https://github.com/FedericoAmura/TallerII2016C2TPLinkedIn" class="grey-text text-lighten-4 right">Github</a>
+  		</div>
+  	</div>
+  	<div class="copyright fullwidth green darken-1">
+  		© 2016 Made by group 2
+  	</div>
+  </div>
+  <!-- modal new category -->
+  <div id="newCategoryModal" class="modal-background">
+  	<div class="modal-content">
+		<div class="modal-header">
+			<span class="close" onClick="closeNewCategory()">X</span>
+			<h5>New category</h5>
+		</div>
+		<div class="modal-body">
+			<div ng-controller="CategoriesController">
+				<input type="text" class="active validate" ng-model="name" name="name" placeholder="Name" required/><br>
+				<input type="text" class="validate" ng-model="description" name="description" placeholder="Description" required/><br>
+				<input type="submit" value="Add" class="btn waves-effect waves-green blue" ng-click="newCategory()"/>
+			</div>
+		</div>
+	</div>
+  </div>
+</body>
+</html>
