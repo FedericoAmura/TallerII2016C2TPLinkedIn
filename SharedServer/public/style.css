@@ -120,3 +120,15 @@ html, body {
     text-decoration: none;
     cursor: pointer;
 }
+  
+.fixed {
+	position: absolute;
+}
+
+.f-down {
+	bottom: 4% !important;
+}
+
+.f-rigth {
+	right: 2%;
+}

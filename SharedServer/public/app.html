@@ -47,7 +47,7 @@
   	<ul class="collection fullwidth collapsible" data-collapsible="expandable">
   	<categorylist ng-repeat="category in categoriesList.categories" category="category"></categorylist>
   	</ul>
-  	<div style="position: absolute; bottom: 4%; right: 2%;">
+  	<div class="fixed f-down f-rigth">
   		<button class="btn-floating btn-large waves-effect waves-light red" onClick="showNewCategory()"><i class="material-icons">add</i></button>
   	</div>
   </div>
@@ -73,27 +73,11 @@
 			<h5>New category</h5>
 		</div>
 		<div class="modal-body">
-			<form method="post" action="/categories" ng-submit="newCategory()" ng-controller="CategoriesController">
-				<input type="text" class="active validate" name="name" placeholder="Name" required><br>
-				<input type="text" class="validate" name="description" placeholder="Description" required><br>
-				<button type="submit" value="Add" class="btn waves-effect waves-green blue">Login</button>
-			</form>
-		</div>
-	</div>
-  </div>
-  <!-- modal edit category -->
-  <div id="editCategoryModal" class="modal-background">
-  	<div class="modal-content">
-		<div class="modal-header">
-			<span class="close" onClick="closeEditCategory()">X</span>
-			<h5>Edit category</h5>
-		</div>
-		<div class="modal-body">
-			<form method="post" action="/categories" ng-submit="editCategory()" ng-controller="CategoriesController">
-				<input type="text" class="active validate" name="name" placeholder="Name" required><br>
-				<input type="text" class="validate" name="description" placeholder="Description" required><br>
-				<button type="submit" value="Add" class="btn waves-effect waves-green blue">Login</button>
-			</form>
+			<div ng-controller="CategoriesController">
+				<input type="text" class="active validate" ng-model="name" name="name" placeholder="Name" required/><br>
+				<input type="text" class="validate" ng-model="description" name="description" placeholder="Description" required/><br>
+				<input type="submit" value="Add" class="btn waves-effect waves-green blue" ng-click="newCategory()"/>
+			</div>
 		</div>
 	</div>
   </div>
