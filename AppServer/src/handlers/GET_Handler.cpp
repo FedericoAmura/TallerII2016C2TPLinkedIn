@@ -115,7 +115,29 @@ http_response GET_Handler::handleRequest() {
 }
 
 http_response GET_Handler::handle_get_search_for_users() {
-	return http_response("{\"msg\":\"Users\"}\n", STATUS_OK);
+	// /users/?category=<category>&job_position=<job>&...
+	Json features = HttpParser::parse_search_for_users(request->message);
+	Json results, error;
+	try {
+		results = db_json->busqueda_profresional(features);
+	} catch (NonexistentSkill &e) {
+		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
+		std::cout << "[Error] Nonexistent Skill. Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (NonexistentPosition &e) {
+		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_JOB}, {"description", ERR_DESC_NONEXISTENT_JOB}};
+		std::cout << "[Error] Nonexistent Job Position. Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (NonexistentCategory &e) {
+		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_CAT}, {"description", ERR_DESC_NONEXISTENT_CAT}};
+		std::cout << "[Error] Nonexistent Category. Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (BadInputException &e) {
+		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Bad Input: " << e.what() << ". Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	}
+	return http_response(results.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_profile() {

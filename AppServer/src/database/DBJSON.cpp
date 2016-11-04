@@ -180,10 +180,7 @@ void DBJSON::setFoto(uint32_t userID, const Json &json) {
 	db->setFoto(userID, foto);
 }
 
-Json DBJSON::busqueda_profresional(const vector<string>
-	*puestos, const vector<string> *skill, const vector<string>
-	*categorias, Geolocacion *geolocacion, float maxDist,
-	bool sortPopularidad) {
+Json DBJSON::busqueda_profresional(const Json &json) {
 
 	Json data = Json::object {};
 	return data;

@@ -321,7 +321,7 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
 
     def test_34_get_including_messages(self):
-        params = {"start":"12/2/2015", "end":"20/3/2015"}
+        params = {"start":1, "end":2}
         res = client1.get_including_messages(client2.get_user_id(), params)
         self.assertEquals(200, res.status_code)
 

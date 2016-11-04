@@ -30,53 +30,48 @@ bool HttpParser::parse_variable_from_authorization_header(struct http_message* m
 	return true;
 }
 
-bool HttpParser::parse_user_properties(struct http_message* msg, struct user_properties &prop) {
-	bool parsed = false;
+Json HttpParser::parse_search_for_users(struct http_message* msg) {
+	Json::object data;
 	int BUFFER_SIZE = 100;
 	char buffer[BUFFER_SIZE];
 	int found;
 
 	found = mg_get_http_var(&msg->query_string, CATEGORY, buffer, BUFFER_SIZE);
-	if (found > 0) {
-		prop.category = std::string(buffer);
-		parsed = true;
-	}
+	if (found > 0)
+		data["category"] = std::string(buffer);
 
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, SKILL, buffer, BUFFER_SIZE);
-	if (found > 0) {
-		prop.skill = std::string(buffer);
-		parsed = true;
-	}
+	if (found > 0)
+		data["skill"] = std::string(buffer);
+
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, JOB_POSITION, buffer, BUFFER_SIZE);
-	if (found > 0) {
-		prop.job_position = std::string(buffer);
-		parsed = true;
-	}
+	if (found > 0)
+		data["job_position"] = std::string(buffer);
+
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, GEOLOCATION, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		std::vector<std::string> coord = split(std::string(buffer), ";");
 		double longitude = strtof(coord[0].c_str(), 0);
 		double latitude = strtof(coord[1].c_str(), 0);
-		prop.geolocation = Geolocacion(longitude, latitude);
-		parsed = true;
+		data["longitude"] = longitude;
+		data["latitude"] = latitude;
 	}
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, DISTANCE, buffer, BUFFER_SIZE);
-	if (found > 0) {
-		prop.distance = strtof(std::string(buffer).c_str(), 0);
-		parsed = true;
-	}
+	if (found > 0)
+		data["distance"] = strtof(std::string(buffer).c_str(), 0);
+
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, POPSORT, buffer, BUFFER_SIZE);
 	if (found > 0) {
 		if (std::string(buffer) == "True")
-			prop.popsort = true;
-		parsed = true;
+			data["popsort"] = true;
 	}
-	return parsed;
+
+	return Json(data);
 }
 
 Json HttpParser::parse_json_from_body(struct http_message* msg) {
