@@ -38,7 +38,7 @@ app.get('/', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
-	noContentTypeJSON(req, res);
+	if (noContentTypeJSON(req, res)) return;
 	if (loginUsername==req.body.username && loginPassword==req.body.password) {
 		res.status(200).send({ redirect:"/dbmanager"});
 		console.log("User logged in");
@@ -77,20 +77,12 @@ app.get('/categories', function (req, res) {
 //Alta categoria segun json
 app.post('/categories', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
-	var newCategory = req.body;
 	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
 		}
-		console.log(1);
-		console.log(newCategory);
-		console.log(2);
-		console.log(newCategory.category);
-		//var body = JSON.parse(req.body);
-		console.log(3);
-		client.query('INSERT INTO categories (name, description) VALUES (\''+newCategory.category.name+'\',\''+newCategory.category.description+'\')', function (err, result) {
-			console.log(4);
+		client.query('INSERT INTO categories (name, description) VALUES (\''+req.body.category.name+'\',\''+req.body.category.description+'\')', function (err, result) {
 			done();
 			if (err) {
 				errPGConn(err, res);

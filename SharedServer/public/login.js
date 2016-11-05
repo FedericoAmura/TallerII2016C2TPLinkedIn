@@ -4,8 +4,6 @@ var jobifyLogin = angular.module('jobifyLogin', []);
 //controlador de login
 jobifyLogin.controller('LoginController', function($scope, $http, $window) {
 	$scope.login = function() {
-		console.log('hacemos el login');
-		console.log('usuario '+$scope.username);
 		data = {username:$scope.username,password:$scope.password};
 		$http.post('/login',data).
 		then(function (response) {
@@ -16,9 +14,4 @@ jobifyLogin.controller('LoginController', function($scope, $http, $window) {
 			Materialize.toast('Wrong username or password', 3000, 'rounded');
 		});
 	}
-});
-
-
-$(document).ready(function() {
-	$(".dropdown-button").dropdown();
 });
