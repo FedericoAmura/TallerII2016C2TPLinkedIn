@@ -42,10 +42,10 @@
   <div class="centered green darken-1 not-visible">
   	Las skills
   </div>
-  <div class="centered green darken-1 visible" style="position:relative;" ng-controller="CategoriesController as categoriesList">
-  	<span>{{categoriesList.categories.length}} categories in database</span>
+  <div class="centered green darken-1 visible" style="position:relative;" ng-controller="CategoriesController">
+  	<span>{{categories.length}} categories in database</span>
   	<ul class="collection fullwidth collapsible" data-collapsible="expandable">
-  	<categorylist ng-repeat="category in categoriesList.categories" category="category"></categorylist>
+  	<categorylist ng-repeat="category in categories" category="category"></categorylist>
   	</ul>
   	<div class="fixed f-down f-rigth">
   		<button class="btn-floating btn-large waves-effect waves-light red" onClick="showNewCategory()"><i class="material-icons">add</i></button>
@@ -74,8 +74,8 @@
 		</div>
 		<div class="modal-body">
 			<div ng-controller="CategoriesController">
-				<input type="text" class="active validate" ng-model="name" name="name" placeholder="Name" required/><br>
-				<input type="text" class="validate" ng-model="description" name="description" placeholder="Description" required/><br>
+				<input type="text" class="active validate" ng-model="categoryname" placeholder="Name"/><br>
+				<input type="text" class="validate" ng-model="description" placeholder="Description"/><br>
 				<input type="submit" value="Add" class="btn waves-effect waves-green blue" ng-click="newCategory()"/>
 			</div>
 		</div>
