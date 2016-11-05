@@ -30,7 +30,7 @@ bool HttpParser::parse_variable_from_authorization_header(struct http_message* m
 	return true;
 }
 
-Json HttpParser::parse_search_for_users(struct http_message* msg) {
+Json HttpParser::parse_user_search(struct http_message* msg) {
 	Json::object data;
 	int BUFFER_SIZE = 100;
 	char buffer[BUFFER_SIZE];

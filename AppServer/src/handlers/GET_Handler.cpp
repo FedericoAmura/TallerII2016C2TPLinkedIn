@@ -16,7 +16,7 @@ http_response GET_Handler::handleRequest() {
 	switch (uri){
 		case _USERS:
 			// /users/?category=...&skill=...
-			res = handle_get_search_for_users();
+			res = handle_get_user_search();
 			break;
 		case _USER_PROFILE:
 			// /users/<user_id>
@@ -114,19 +114,45 @@ http_response GET_Handler::handleRequest() {
 	return res;
 }
 
-http_response GET_Handler::handle_get_search_for_users() {
-	// /users/?category=<category>&job_position=<job>&...
-	Json features = HttpParser::parse_search_for_users(request->message);
-	bool valid_data = true;
-
-	if (!valid_data) {
-		Json error = Json::object { {"error_code", 0}, {"description", ERR_DESC_INV_DATA_FORMAT}};
-		std::cout << "[Error] Invalid data. Search for users failed."<< std::endl;
-		return http_response(error.dump(), STATUS_BAD_REQUEST);
+void GET_Handler::validate_user_features(const Json &json) {
+	if (!json["positions"].is_null()) {
+		Json data_shd = SharedServerConnector::get_job_positions();
+		std::string err;
+		bool intersected = intersect(json["positions"], data_shd["positions"], err);
+		if (!intersected)
+			throw NonexistentPosition(err);
 	}
+
+	if (!json["skills"].is_null()) {
+		Json data_shd = SharedServerConnector::get_skills();
+		std::string err;
+		bool intersected = intersect(json["skills"], data_shd["skills"], err);
+		if (!intersected)
+			throw NonexistentSkill(err);
+	}
+
+	if (!json["categories"].is_null()) {
+		Json data_shd = SharedServerConnector::get_categories();
+		std::string err;
+		bool intersected = intersect(json["categories"], data_shd["categories"], err);
+		if (!intersected)
+			throw NonexistentCategory(err);
+	}
+
+	if (!json["distance"].is_null())
+		if (json["distance"].number_value() < 0.0)
+			throw BadInputException("Invalid distance");
+}
+
+http_response GET_Handler::handle_get_user_search() {
+	// /users/?category=<category>&job_position=<job>&...
+	Json features = HttpParser::parse_user_search(request->message);
 
 	Json results, error;
 	try {
+
+		validate_user_features(features);
+
 		std::vector<std::string> positions = convert_json_array_to_vector<std::string>(features["positions"]);
 		std::vector<std::string> skills = convert_json_array_to_vector<std::string>(features["skills"]);
 		std::vector<std::string> categories = convert_json_array_to_vector<std::string>(features["categories"]);
@@ -144,20 +170,24 @@ http_response GET_Handler::handle_get_search_for_users() {
 		results = db_json->busqueda_profesional(&positions, &skills, &categories,&geoloc, distance, popsort);
 	} catch (NonexistentSkill &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
-		std::cout << "[Error] Nonexistent Skill. Search for users failed."<< std::endl;
+		std::cout << "[Error] Nonexistent Skill: " << e.what() << ". Search for users failed."<< std::endl;
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
 	} catch (NonexistentPosition &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_JOB}, {"description", ERR_DESC_NONEXISTENT_JOB}};
-		std::cout << "[Error] Nonexistent Job Position. Search for users failed."<< std::endl;
+		std::cout << "[Error] Nonexistent Job Position: " << e.what() << ". Search for users failed."<< std::endl;
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
 	} catch (NonexistentCategory &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_CAT}, {"description", ERR_DESC_NONEXISTENT_CAT}};
-		std::cout << "[Error] Nonexistent Category. Search for users failed."<< std::endl;
+		std::cout << "[Error] Nonexistent Category " << e.what() << ". Search for users failed."<< std::endl;
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
 	} catch (BadInputException &e) {
 		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
 		std::cout << "[Error] Bad Input: " << e.what() << ". Search for users failed."<< std::endl;
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (CurlGetException &e) {
+		error = Json::object { {"error_code", 8}, {"description", ERR_DESC_OPERATION_FAILED}};
+		std::cout << "[Error] Internal Server Error. " << ". Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_INT_SERVER_ERR);
 	}
 	return http_response(results.dump(), STATUS_OK);
 }

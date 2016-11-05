@@ -231,6 +231,10 @@ class ClientTest(unittest.TestCase):
         params["geolocation"] = "2.5;5.8"
         params["popsort"] = True
         res = client1.search_for_users(params)
+        self.assertEquals(400, res.status_code)
+        params.clear()
+        params["skill"] = "Android"
+        res = client1.search_for_users(params)
         self.assertEquals(200, res.status_code)
 
     #checked

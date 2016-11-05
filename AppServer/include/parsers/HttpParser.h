@@ -11,9 +11,7 @@
 #include "../mongoose/mongoose.h"
 #include "../server/API_HttpRequest.h"
 #include "../common/Exceptions.h"
-#include "../json11/json11.hpp"
 #include "../common/Utils.h"
-#include <string>
 #include <stdlib.h>
 
 using json11::Json;
@@ -28,7 +26,7 @@ public:
 
 	static bool parse_variable_from_authorization_header(struct http_message* msg, const std::string var_name, std::string &buffer);
 
-	static Json parse_search_for_users(struct http_message* msg);
+	static Json parse_user_search(struct http_message* msg);
 
 	static Json parse_json_from_body(struct http_message* msg);
 };
