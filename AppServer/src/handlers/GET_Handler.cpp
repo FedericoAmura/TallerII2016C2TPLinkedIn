@@ -117,9 +117,31 @@ http_response GET_Handler::handleRequest() {
 http_response GET_Handler::handle_get_search_for_users() {
 	// /users/?category=<category>&job_position=<job>&...
 	Json features = HttpParser::parse_search_for_users(request->message);
+	bool valid_data = true;
+
+	if (!valid_data) {
+		Json error = Json::object { {"error_code", 0}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Invalid data. Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	}
+
 	Json results, error;
 	try {
-		results = db_json->busqueda_profresional(features);
+		std::vector<std::string> positions = convert_json_array_to_vector<std::string>(features["positions"]);
+		std::vector<std::string> skills = convert_json_array_to_vector<std::string>(features["skills"]);
+		std::vector<std::string> categories = convert_json_array_to_vector<std::string>(features["categories"]);
+
+		double distance = 10000000.0;
+		bool popsort = false;
+
+		if (!features["distance"].is_null()) distance = features["distance"].number_value();
+		if (!features["popsort"].is_null()) popsort = features["popsort"].bool_value();
+
+		Geolocacion geoloc;
+		if (!features["longitude"].is_null() && !features["latitude"].is_null())
+			geoloc = Geolocacion(features["longitude"].number_value(), features["latitude"].number_value());
+
+		results = db_json->busqueda_profesional(&positions, &skills, &categories,&geoloc, distance, popsort);
 	} catch (NonexistentSkill &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
 		std::cout << "[Error] Nonexistent Skill. Search for users failed."<< std::endl;
@@ -386,12 +408,24 @@ http_response GET_Handler::handle_get_are_they_connected() {
 	return http_response("{}", STATUS_NO_CONTENT);
 }
 
-http_response GET_Handler::handle_get_popular() {
-	return http_response("{\"msg\":\"{set Popular}\"}\n", STATUS_OK);
+http_response GET_Handler::handle_get_user_recommendations() {
+	// /users/popular/<user_id1>/<user_id2>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID1 = std::stoi(vec_uri[2]);
+	uint32_t userID2 = std::stoi(vec_uri[3]);
+
+	Json data;
+	try {
+		data = db_json->esRecomendado(userID1, userID2);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Query (user recommended) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
-http_response GET_Handler::handle_get_user_recommendations() {
-	return http_response("{\"msg\":\"{set Recommended Popular}\"}\n", STATUS_OK);
+http_response GET_Handler::handle_get_popular() {
+	return http_response("{\"msg\":\"{set Popular}\"}\n", STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_popular_by_position() {

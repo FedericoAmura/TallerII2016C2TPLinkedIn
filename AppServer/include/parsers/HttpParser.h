@@ -11,7 +11,6 @@
 #include "../mongoose/mongoose.h"
 #include "../server/API_HttpRequest.h"
 #include "../common/Exceptions.h"
-#include "../users/User.h"
 #include "../json11/json11.hpp"
 #include "../common/Utils.h"
 #include <string>

@@ -37,19 +37,32 @@ Json HttpParser::parse_search_for_users(struct http_message* msg) {
 	int found;
 
 	found = mg_get_http_var(&msg->query_string, CATEGORY, buffer, BUFFER_SIZE);
-	if (found > 0)
-		data["category"] = std::string(buffer);
+	if (found > 0) {
+		std::vector<std::string> categories = split(std::string(buffer), ";");
+		Json::array array_categories;
+		for (std::string category : categories)
+			array_categories.push_back(category);
+		data["categories"] = array_categories;
+	}
 
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, SKILL, buffer, BUFFER_SIZE);
-	if (found > 0)
-		data["skill"] = std::string(buffer);
-
+	if (found > 0) {
+		std::vector<std::string> skills = split(std::string(buffer), ";");
+		Json::array array_skills;
+		for (std::string skill : skills)
+			array_skills.push_back(skill);
+		data["skills"] = array_skills;
+	}
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, JOB_POSITION, buffer, BUFFER_SIZE);
-	if (found > 0)
-		data["job_position"] = std::string(buffer);
-
+	if (found > 0) {
+		std::vector<std::string> positions = split(std::string(buffer), ";");
+		Json::array array_positions;
+		for (std::string position : positions)
+			array_positions.push_back(position);
+		data["job_positions"] = array_positions;
+	}
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, GEOLOCATION, buffer, BUFFER_SIZE);
 	if (found > 0) {
@@ -67,8 +80,10 @@ Json HttpParser::parse_search_for_users(struct http_message* msg) {
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, POPSORT, buffer, BUFFER_SIZE);
 	if (found > 0) {
-		if (std::string(buffer) == "True")
+		if (std::string(buffer) == "True" || std::string(buffer) == "true")
 			data["popsort"] = true;
+		if (std::string(buffer) == "False" || std::string(buffer) == "false")
+			data["popsort"] = false;
 	}
 
 	return Json(data);
