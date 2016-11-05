@@ -292,7 +292,7 @@ class DBRaw {
 	 * @exception NonexistentCategory	Categoria invalida
 	 * @exception BadInputException		Distancia máxima negativa
 	 */
-	vector<uint32_t> busquedaProfresional(const vector<string>
+	vector<uint32_t> busquedaProfesional(const vector<string>
 		*puestos, const vector<string> *skill, const vector<string>
 		*categorias, Geolocacion *geolocacion, float maxDist,
 		bool sortPopularidad);

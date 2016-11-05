@@ -224,11 +224,16 @@ class ClientTest(unittest.TestCase):
     #NOT checked (TODO falta implementación en DBJSON y AppServer)
     def test_21_search_for_users(self):
         params = {} # query_string
-        params["category"] = "cat"
-        params["job_position"] = "job"
+        params["category"] = "cat1;cat2;cat3"
+        params["job_position"] = "job1;job2"
+        params["skill"] = "skill1;skill2"
         params["distance"] = 2.4
         params["geolocation"] = "2.5;5.8"
         params["popsort"] = True
+        res = client1.search_for_users(params)
+        self.assertEquals(400, res.status_code)
+        params.clear()
+        params["skill"] = "Android"
         res = client1.search_for_users(params)
         self.assertEquals(200, res.status_code)
 
@@ -321,22 +326,32 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
 
     def test_34_get_including_messages(self):
-        params = {"start":"12/2/2015", "end":"20/3/2015"}
+        params = {"start":1, "end":2}
         res = client1.get_including_messages(client2.get_user_id(), params)
         self.assertEquals(200, res.status_code)
 
-    def test_35_get_popular(self):
+    #checked
+    def test_35_if_user_recommended_to_another_user(self):
+        res = client1.get_user_recommended_to_another_user(client2.get_user_id())
+        self.assertEquals(200, res.status_code)
+        data = json.loads(res.text)
+        self.assertFalse(data["recommends"])
+        res = client1.get_user_recommended_to_another_user(client3.get_user_id())
+        self.assertEquals(200, res.status_code)
+        data = json.loads(res.text)
+        self.assertTrue(data["recommends"])
+
+    #NOT checked (TODO falta implementación en DBJSON)
+    def test_36_get_popular(self):
         res = client1.get_popular()
         self.assertEquals(200, res.status_code)
 
-    def test_36_if_user_recommended_to_another_user(self):
-        res = client1.get_user_recommended_to_another_user(client2.get_user_id())
-        self.assertEquals(200, res.status_code)
-
+    #NOT checked (TODO falta implementación en DBJSON)
     def test_37_get_popular_by_position(self):
         res = client1.get_popular_by_position("pos")
         self.assertEquals(200, res.status_code)
 
+    #NOT checked (TODO falta implementación en DBJSON)
     def test_38_get_popular_by_skill(self):
         res = client1.get_popular_by_skill("java")
         self.assertEquals(200, res.status_code)

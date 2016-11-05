@@ -147,22 +147,24 @@ class DBJSON {
 	 * Realiza una búsqueda sobre los usuarios con los parametros dados.
 	 * Si se pasa una categoria, posiblemente los vectores de skills y puestos
 	 * sean modificados
-	 * @param puestos					Lista de puestos. Null si no aplica.
-	 * @param skill						Lista de skills. Null si no aplica.
-	 * @param categorias				Lista de categorias. Null si no aplica.
-	 * @param geolocacion				Punto geográfico. Null si no aplica.
-	 * @param maxDist					Máxima distancia desde el punto. Infinito si no aplica.
-	 * @param sortPopularidad			Si se debe ordernar los resultados por popularidad.
+     * @param puestos					Lista de puestos. Null si no aplica.
+     * @param skill						Lista de skills. Null si no aplica.
+     * @param categorias				Lista de categorias. Null si no aplica.
+     * @param geolocacion				Punto geográfico. Null si no aplica.
+     * @param maxDist					Máxima distancia desde el punto. Infinito si no aplica.
+     * @param sortPopularidad			Si se debe ordernar los resultados por popularidad.
 	 * @return							Ver documentación API: "Búsquedas sobre usuarios"
 	 * @exception NonexistentSkill		Algun skill es invalido
 	 * @exception NonexistentPosition	Algun puesto es invalido
 	 * @exception NonexistentCategory	Alguna categoria es invalida
 	 * @exception BadInputException		Distancia máxima negativa
 	 */
-	Json busqueda_profresional(const vector<string>
-		*puestos, const vector<string> *skill, const vector<string>
-		*categorias, Geolocacion *geolocacion, float maxDist,
-		bool sortPopularidad);
+	Json busqueda_profesional(  const std::vector<string>* puestos,
+                                const std::vector<string>* skill,
+	                            const std::vector<string>* categorias,
+                                Geolocacion* geolocacion,
+    		                    float maxDist,
+                                bool sortPopularidad );
 
 	/**
 	 * Devuelve los user ids de quienes enviaron peticiones para el usuario dado

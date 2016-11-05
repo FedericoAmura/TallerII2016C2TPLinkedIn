@@ -14,13 +14,24 @@
 class GET_Handler : public HTTPRequestHandler {
 private:
 	/*
+	 * Validación de features de usuarios
+	 * @param	json					Parámetros a validar
+	 * @throw	NonexistentPosition		Posición de trabajo no validar
+	 * @throw	NonexistentSkill		Skill no valida
+	 * @throw	NonexistentCategory		Categoría no valida
+	 * @throw	BadInputException		Distacia máxima negativa
+	 * @return	void
+	 * */
+	void validate_user_features(const Json &json);
+
+	/*
 	 * Busqueda de usuarios
 	 * @return	en caso de éxito, retorna un http_response con información
 	 * 			sobre los usuarios que cumplan con los parametros específicados
 	 * 			en la uri y el código de respuesta, sino devuelve una respuesta
 	 * 			vacía y el código de respuesta queda específicado en http_response.res_code
 	 * */
-	http_response handle_get_search_for_users();
+	http_response handle_get_user_search();
 
 	/*
 	 * Perfil de un usuario

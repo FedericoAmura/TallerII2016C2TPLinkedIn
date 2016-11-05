@@ -16,7 +16,7 @@ http_response GET_Handler::handleRequest() {
 	switch (uri){
 		case _USERS:
 			// /users/?category=...&skill=...
-			res = handle_get_search_for_users();
+			res = handle_get_user_search();
 			break;
 		case _USER_PROFILE:
 			// /users/<user_id>
@@ -114,8 +114,82 @@ http_response GET_Handler::handleRequest() {
 	return res;
 }
 
-http_response GET_Handler::handle_get_search_for_users() {
-	return http_response("{\"msg\":\"Users\"}\n", STATUS_OK);
+void GET_Handler::validate_user_features(const Json &json) {
+	if (!json["positions"].is_null()) {
+		Json data_shd = SharedServerConnector::get_job_positions();
+		std::string err;
+		bool intersected = intersect(json["positions"], data_shd["positions"], err);
+		if (!intersected)
+			throw NonexistentPosition(err);
+	}
+
+	if (!json["skills"].is_null()) {
+		Json data_shd = SharedServerConnector::get_skills();
+		std::string err;
+		bool intersected = intersect(json["skills"], data_shd["skills"], err);
+		if (!intersected)
+			throw NonexistentSkill(err);
+	}
+
+	if (!json["categories"].is_null()) {
+		Json data_shd = SharedServerConnector::get_categories();
+		std::string err;
+		bool intersected = intersect(json["categories"], data_shd["categories"], err);
+		if (!intersected)
+			throw NonexistentCategory(err);
+	}
+
+	if (!json["distance"].is_null())
+		if (json["distance"].number_value() < 0.0)
+			throw BadInputException("Invalid distance");
+}
+
+http_response GET_Handler::handle_get_user_search() {
+	// /users/?category=<category>&job_position=<job>&...
+	Json features = HttpParser::parse_user_search(request->message);
+
+	Json results, error;
+	try {
+
+		validate_user_features(features);
+
+		std::vector<std::string> positions = convert_json_array_to_vector<std::string>(features["positions"]);
+		std::vector<std::string> skills = convert_json_array_to_vector<std::string>(features["skills"]);
+		std::vector<std::string> categories = convert_json_array_to_vector<std::string>(features["categories"]);
+
+		double distance = 10000000.0;
+		bool popsort = false;
+
+		if (!features["distance"].is_null()) distance = features["distance"].number_value();
+		if (!features["popsort"].is_null()) popsort = features["popsort"].bool_value();
+
+		Geolocacion geoloc;
+		if (!features["longitude"].is_null() && !features["latitude"].is_null())
+			geoloc = Geolocacion(features["longitude"].number_value(), features["latitude"].number_value());
+
+		results = db_json->busqueda_profesional(&positions, &skills, &categories,&geoloc, distance, popsort);
+	} catch (NonexistentSkill &e) {
+		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
+		std::cout << "[Error] Nonexistent Skill: " << e.what() << ". Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (NonexistentPosition &e) {
+		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_JOB}, {"description", ERR_DESC_NONEXISTENT_JOB}};
+		std::cout << "[Error] Nonexistent Job Position: " << e.what() << ". Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (NonexistentCategory &e) {
+		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_CAT}, {"description", ERR_DESC_NONEXISTENT_CAT}};
+		std::cout << "[Error] Nonexistent Category " << e.what() << ". Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (BadInputException &e) {
+		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
+		std::cout << "[Error] Bad Input: " << e.what() << ". Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_BAD_REQUEST);
+	} catch (CurlGetException &e) {
+		error = Json::object { {"error_code", 8}, {"description", ERR_DESC_OPERATION_FAILED}};
+		std::cout << "[Error] Internal Server Error. " << ". Search for users failed."<< std::endl;
+		return http_response(error.dump(), STATUS_INT_SERVER_ERR);
+	}
+	return http_response(results.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_user_profile() {
@@ -364,12 +438,24 @@ http_response GET_Handler::handle_get_are_they_connected() {
 	return http_response("{}", STATUS_NO_CONTENT);
 }
 
-http_response GET_Handler::handle_get_popular() {
-	return http_response("{\"msg\":\"{set Popular}\"}\n", STATUS_OK);
+http_response GET_Handler::handle_get_user_recommendations() {
+	// /users/popular/<user_id1>/<user_id2>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID1 = std::stoi(vec_uri[2]);
+	uint32_t userID2 = std::stoi(vec_uri[3]);
+
+	Json data;
+	try {
+		data = db_json->esRecomendado(userID1, userID2);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Query (user recommended) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
-http_response GET_Handler::handle_get_user_recommendations() {
-	return http_response("{\"msg\":\"{set Recommended Popular}\"}\n", STATUS_OK);
+http_response GET_Handler::handle_get_popular() {
+	return http_response("{\"msg\":\"{set Popular}\"}\n", STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_popular_by_position() {

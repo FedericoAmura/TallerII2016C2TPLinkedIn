@@ -9,11 +9,13 @@
 #define APPSERVER_INCLUDE_COMMON_UTILS_H_
 
 #include "../server/API_Server.h"
-#include <string>
+#include "../json11/json11.hpp"
 #include <string.h>
 #include <vector>
 #include <regex>
 #include <time.h>
+
+using json11::Json;
 
 enum METHOD {_GET, _POST, _PUT, _DELETE, _INVALID_METHOD};
 
@@ -126,6 +128,37 @@ static double time_difference_seconds(std::string timestamp) {
 	then.tm_sec = std::stoi(times[5]);
 
 	return difftime(now, mktime(&then));
+}
+
+template <typename T>
+std::vector<T> convert_json_array_to_vector(const Json &array) {
+	std::vector<T> items;
+	for (Json j : array.array_items()) {
+		T item;
+		if (j.is_number())
+			item = j.number_value();
+		if (j.is_string())
+			item = j.string_value();
+		items.push_back(item);
+	}
+	return items;
+}
+
+static bool intersect(const Json &array1, const Json &array2, std::string &err) {
+	for (Json j1 : array1.array_items()) {
+		bool found = false;
+		for (Json j2 : array2.array_items()) {
+			if (j1.string_value() == j2["name"].string_value()) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			err = j1.string_value();
+			return false;
+		}
+	}
+	return true;
 }
 
 #endif /* APPSERVER_INCLUDE_COMMON_UTILS_H_ */

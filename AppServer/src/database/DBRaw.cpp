@@ -394,7 +394,7 @@ uint32_t DBRaw::getPopularidad(uint32_t uID) {
 
 
 /*
-std::vector<uint32_t> DBRaw::busquedaProfresional(
+std::vector<uint32_t> DBRaw::busquedaProfesional(
 		const std::vector<string>* puestos, const std::vector<string>* skill,
 		const std::vector<string>* categorias, Geolocacion* geolocacion,
 		float maxDist, bool sortPopularidad) {

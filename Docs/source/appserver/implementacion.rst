@@ -49,7 +49,7 @@ Contenidos:
 .. toctree::
     :maxdepth: 1
 
-    ./clases/SharedServerHandler
+    ./clases/SharedServerConnector
 
 .. toctree::
     :maxdepth: 1
