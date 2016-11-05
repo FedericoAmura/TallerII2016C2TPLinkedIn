@@ -129,6 +129,8 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 		{ "email", "mail1@test.com" },
 		{ "skills", Json::array { } },
 		{ "job_positions",  Json::array { } },
+		{ "longitude", 1.0},
+		{ "latitude", 0.5},
 		{ "city" , "Una ciudad" },
 	};
 	dbj->setDatos(uid, datosJson1);
@@ -141,6 +143,8 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 	EXPECT_STREQ(result1["resume"].string_value().c_str(), "");
 	EXPECT_EQ(0, result1["contacts"].int_value());
 	EXPECT_EQ(0, result1["popularidad"].int_value());
+	EXPECT_NEAR(result1["longitude"].number_value(), 1, 0.0001);
+	EXPECT_NEAR(result1["latitude"].number_value(), 0.5, 0.0001);
 	EXPECT_TRUE(result1["skills"].array_items().empty());
 	EXPECT_TRUE(result1["puestos"].array_items().empty());
 
@@ -161,6 +165,8 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 			{ "end" , "11/3/1992"}
 			} } },
 		{ "city" , "Una ciudad" },
+		{ "longitude", 4.44},
+		{ "latitude", 2.45},
 		{ "resume" , "Test resumen" },
 		{ "photo" , tinyJPGBase64 },
 	};
@@ -173,6 +179,8 @@ TEST_F(DBJsonTest, testGetSetPerfil)
 	EXPECT_STREQ(tinyJPGBase64.c_str(), result2["photo"].string_value().c_str());
 	EXPECT_EQ(0, result2["contacts"].int_value());
 	EXPECT_EQ(0, result1["popularidad"].int_value());
+	EXPECT_NEAR(result2["longitude"].number_value(), 4.44, 0.0001);
+	EXPECT_NEAR(result2["latitude"].number_value(), 2.45, 0.0001);
 	// Skills
 	char const * skillArray[] = { "Skill1", "Skill2" };
 	int contador = 0;

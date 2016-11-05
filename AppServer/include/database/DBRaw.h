@@ -25,6 +25,8 @@ enum KeyCode : uint8_t;
  * Maneja tipos de datos std o propios y devuelve tipos de datos std o propios
  * Si un input es mayor al tamaño especificado, en caso de strings se los truncara
  * En caso de datos binarios se levantara una excepción
+ * No exta anotado en cada metodo, pero todos pueden arrojar LevelDBException si la BD
+ * Falla de alguna forma inesperada
  */
 class DBRaw {
  private:
@@ -82,6 +84,34 @@ class DBRaw {
 	 * @param rutaFotoDefault			Ruta a un jpg
 	 */
 	void inicializarFID(const string &rutaFotoDefault);
+
+	/**
+	 * Dada una key devuelve el vector de UIDs guardado en la DB
+	 * Bajo esa key
+	 * @param key						Key
+	 * @param errorMsg					Mensaje de error a mostrar en caso de error
+	 * @exception NonexistentKey		No existe la key
+	 * @return
+	 */
+	vector<uint32_t> getUIDVector(const leveldb::Slice &key, const string &errorMsg);
+
+	/**
+	 * Dada una key devuelve el vector el uint32_t guardado en la DB
+	 * Bajo esa key
+	 * @param key						Key
+	 * @param errorMsg					Mensaje de error a mostrar en caso de error
+	 * @exception NonexistentKey		No existe la key
+	 * @return
+	 */
+	uint32_t getUint(const leveldb::Slice &key, const string &errorMsg);
+
+	/**
+	 * Dada una key devuelve si existe o no en la DB
+	 * @param key						Key
+	 * @param errorMsg					Mensaje de error a mostrar en caso de error de DB
+	 * @return
+	 */
+	bool getKeyExists(const leveldb::Slice &key, const string &errorMsg);
 
  public:
 	/**
@@ -297,26 +327,24 @@ class DBRaw {
 	bool esRecomendado(uint32_t uIDRecomendador, uint32_t uIDRecomendado);
 
 	/**
-	 * Realiza una busqueda sobre solo los usuarios más populares
-	 * @param conteo					Cuantos de los más populares retornar
+	 * Devuelve los 10 usuarios más populares
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	vector<uint32_t> busquedaPopular (uint conteo = 10);
+	vector<uint32_t> busquedaPopular();
 
 	/**
-	 * Realiza una busqueda sobre solo los usuarios más populares, que posean un skill
-	 * @param conteo					Cuantos de los más populares retornar
+	 * Devuelve los 10 usuarios más populares, que posean un skill
 	 * @param skill						Nombre del skill
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	vector<uint32_t> busquedaPopularSkill (const string &skill, uint conteo = 10);
+	vector<uint32_t> busquedaPopularSkill (const string &skill);
 
 	/**
-	 * Realiza una busqueda sobre solo los usuarios más populares, que posean un puesto
-	 * @param conteo					Cuantos de los más populares retornar
+	 * Devuelve los 10 usuarios más populares, que posean un puesto
+	 * @param puesto					Nombre del puesto
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	vector<uint32_t> busquedaPopularPuesto (const string &puesto, uint conteo = 10);
+	vector<uint32_t> busquedaPopularPuesto (const string &puesto);
 
 	/**
 	 * Envia un pedido de contacto

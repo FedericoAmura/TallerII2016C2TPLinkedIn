@@ -168,6 +168,14 @@ public:
 };
 
 /**
+ * No existe la key usada para consultar la DB
+ */
+class NonexistentKey: public BadInputException {
+public:
+	NonexistentKey(const std::string what_arg) : BadInputException(what_arg) {};
+};
+
+/**
  * No existe token
  */
 class NonexistentToken: public BadInputException {

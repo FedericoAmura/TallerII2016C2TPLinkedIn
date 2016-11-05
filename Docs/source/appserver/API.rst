@@ -103,6 +103,8 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			|  “city” : “<ciudad>”,
  			|  “contacts” : <numero>,
 			|  “popularidad“ : <numero>,
+			|  “longitude” : <longitud>,
+			|  “latitude” : <latitud>,
   			|  “resume” : “Bla Bla Bla.“,
   			|  “photo” = “ab03d7f4c80239b8…”
 			| }
@@ -132,6 +134,8 @@ PARAMETROS           	| 404 - UserID Inexistente
 			|      “end” :  “<DD/MM/YYYY>”
 			|      }],
 			|  “city” : “<ciudad>”,
+			|  “longitude” : <longitud>,
+			|  “latitude” : <latitud>,
  			|  “resume” : “Bla Bla Bla.“,	(Campo opcional)
 			|  “photo” = “ab03d7f4c80239b8…”	(Campo opcional)
 			| }

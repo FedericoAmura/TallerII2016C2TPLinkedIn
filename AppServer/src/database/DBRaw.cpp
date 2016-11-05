@@ -37,6 +37,8 @@ enum KeyCode : uint8_t
 	US_POP,
 	US_POP_PAIR,
 	RL_POP,
+	RL_POP_SKILL,
+	RL_POP_POS,
 	GEO_US,
 	CONV_COUNT,
 	CONV_MSG,
@@ -50,6 +52,10 @@ enum KeyCode : uint8_t
 class IDKey {
 public:
  std::vector<char> data;
+ IDKey(KeyCode prefijo, const string &key) : data() {
+	 data.push_back(prefijo);
+	 data.insert(data.begin()+1, key.begin(), key.end());
+ }
  IDKey(KeyCode prefijo, uint32_t key) : data(5) {
 	 data[0] = prefijo;
 	 copy((char*)&key, (char*)(&key+1), data.begin()+1);
@@ -65,7 +71,7 @@ public:
  	 copy((char*)&key2, (char*)(&key2+1), data.begin()+5);
  	 copy((char*)&key3, (char*)(&key3+1), data.begin()+9);
  }
- Slice toSlice() {
+ Slice toSlice() const {
 	 return Slice (data.data(), data.size());
  }
 };
@@ -328,11 +334,8 @@ void DBRaw::setPerfil(uint32_t uID, const DatosUsuario &datos,
 }
 
 bool DBRaw::esRecomendado(uint32_t uIDRecomendador, uint32_t uIDRecomendado) {
-	IDKey pairKey(US_POP_PAIR, uIDRecomendado, uIDRecomendador);
-	string retVal;
-	Status status = db->Get(ReadOptions(), pairKey.toSlice(), &retVal);
-	if (status.IsNotFound()) return false;
-	return true;
+	IDKey key(US_POP_PAIR, uIDRecomendado, uIDRecomendador);
+	return getKeyExists(key.toSlice(), "Error al consultar si es recomendado");
 }
 
 void DBRaw::setRecomendacion(uint32_t uIDRecomendador,
@@ -380,12 +383,13 @@ void DBRaw::setRecomendacion(uint32_t uIDRecomendador,
 
 uint32_t DBRaw::getPopularidad(uint32_t uID) {
 	verificarContador<NonexistentUserID> (LAST_UID, string("user ID"), uID);
-	IDKey countKey(US_POP, uID);
-	string retVal;
-	Status status = db->Get(ReadOptions(), countKey.toSlice(), &retVal);
-	if (status.IsNotFound()) return 0;
-	verificarEstadoDB(status, "Error al consultar popularidad.");
-	return retVal.data()[0];
+	IDKey key(US_POP, uID);
+	try {
+		return getUint(key.toSlice(), "Error al consultar popularidad");
+	}
+	catch (NonexistentKey &e) {
+		return 0;
+	}
 }
 
 
@@ -394,18 +398,24 @@ std::vector<uint32_t> DBRaw::busquedaProfresional(
 		const std::vector<string>* puestos, const std::vector<string>* skill,
 		const std::vector<string>* categorias, Geolocacion* geolocacion,
 		float maxDist, bool sortPopularidad) {
-}
-
-std::vector<uint32_t> DBRaw::busquedaPopular(uint conteo) {
-}
-
-std::vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill,
-		uint conteo) {
-}
-
-std::vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto,
-		uint conteo) {
 }*/
+
+vector<uint32_t> DBRaw::busquedaPopular() {
+	vector<uint32_t> result;
+	string retVal;
+}
+
+vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill) {
+	vector<uint32_t> result;
+	string retVal;
+	IDKey key(RL_POP_SKILL, skill);
+	//db->Get()
+}
+
+vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto) {
+	vector<uint32_t> result;
+	string retVal;
+}
 
 void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
 		const string& mensaje) {
@@ -439,28 +449,25 @@ void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
 }
 
 vector<uint32_t> DBRaw::getSolicitudes(uint32_t uIDConsultador) {
-	vector<uint32_t> result;
 	string retVal;
-	IDKey solicKey(SOLIC, uIDConsultador);
-	Status status = db->Get(ReadOptions(), solicKey.toSlice(), &retVal);
-	if (!status.IsNotFound())
-		verificarEstadoDB(status, "Error al obtener solicitudes.");
-	for (int i = 0; i < retVal.length(); i += sizeof(uint32_t))
-	{
-		result.push_back(retVal.data()[i]);
+	IDKey key(SOLIC, uIDConsultador);
+	try {
+		return getUIDVector(key.toSlice(), "Error al obtener solicitudes");
 	}
-	return result;
+	catch (NonexistentKey &e) {
+		return vector<uint32_t>();
+	}
 }
 
 uint16_t DBRaw::getNumSolicitudes(uint32_t uID) {
 	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
-	string retVal;
-	IDKey countKey(SOLIC_COUNT, uID);
-	Status status = db->Get(ReadOptions(), countKey.toSlice(), &retVal);
-	if (status.IsNotFound())
+	IDKey key(SOLIC_COUNT, uID);
+	try {
+		return getUint(key.toSlice(), "Error al obtener numero de solicitudes");
+	}
+	catch (NonexistentKey &e) {
 		return 0;
-	verificarEstadoDB(status, "Error al obtener numero de solicitudes.");
-	return uint16_t(retVal.data()[0]);
+	}
 }
 
 string DBRaw::getMsgSolicitud(uint32_t uIDFuente, uint32_t uIDDestino) {
@@ -579,41 +586,34 @@ void DBRaw::eliminarContacto(uint32_t uID1, uint32_t uID2) {
 	verificarEstadoDB(status, "Error al eliminar contacto.");
 }
 
-std::vector<uint32_t> DBRaw::getContactos(uint32_t uID) {
+vector<uint32_t> DBRaw::getContactos(uint32_t uID) {
 	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
-	vector<uint32_t> result;
-	string retVal;
-	IDKey solicKey(US_CONTACT, uID);
-	Status status = db->Get(ReadOptions(), solicKey.toSlice(), &retVal);
-	if (!status.IsNotFound())
-		verificarEstadoDB(status, "Error al obtener solicitudes.");
-	for (int i = 0; i < retVal.length(); i += sizeof(uint32_t))
-	{
-		result.push_back(retVal.data()[i]);
+	IDKey key(US_CONTACT, uID);
+	try {
+		return getUIDVector(key.toSlice(), "Error al obtener solicitudes.");
 	}
-	return result;
+	catch (NonexistentKey &e) {
+		return vector<uint32_t>();
+	}
 }
 
 uint16_t DBRaw::getNumContactos(uint32_t uID) {
 	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
 	string retVal;
-	IDKey countKey(US_CONTACT_COUNT, uID);
-	Status status = db->Get(ReadOptions(), countKey.toSlice(), &retVal);
-	if (status.IsNotFound())
+	IDKey key(US_CONTACT_COUNT, uID);
+	try {
+		return getUint(key.toSlice(), "Error al obtener numero de contactos");
+	}
+	catch (NonexistentKey &e) {
 		return 0;
-	verificarEstadoDB(status, "Error al obtener numero de contactos.");
-	return uint16_t(retVal.data()[0]);
+	}
 }
 
 bool DBRaw::sonContactos(uint32_t uID1, uint32_t uID2) {
 	uint32_t uIDMenor = uID1 < uID2 ? uID1 : uID2;
 	uint32_t uIDMayor = uID1 >= uID2 ? uID1 : uID2;
-	IDKey pairKey(US_CONTACT_PAIR, uIDMenor, uIDMayor);
-	string retVal;
-	Status status = db->Get(ReadOptions(), pairKey.toSlice(), &retVal);
-	if (status.IsNotFound()) return false;
-	verificarEstadoDB(status, "Error al obtener numero de contactos.");
-	return true;
+	IDKey key(US_CONTACT_PAIR, uIDMenor, uIDMayor);
+	return getKeyExists(key.toSlice(), "Error al consultar si son contactos");
 }
 
 void DBRaw::enviarMensaje(uint32_t uIDReceptor, uint32_t uIDEmisor, const string &mensaje) {
@@ -681,37 +681,33 @@ uint32_t DBRaw::getNumUltMensaje(uint32_t uID1, uint32_t uID2) {
 	uint32_t uIDMenor = uID1 < uID2 ? uID1 : uID2;
 	uint32_t uIDMayor = uID1 >= uID2 ? uID1 : uID2;
 	IDKey key(CONV_COUNT, uIDMenor, uIDMayor);
-	string retVal;
-	Status status = db->Get(ReadOptions(), key.toSlice(), &retVal);
-	if (status.IsNotFound()) return 0;
-	verificarEstadoDB(status, "Error al obtener numero de ultimo mensaje");
-	return retVal.data()[0];
+	try {
+		return getUint(key.toSlice(), "Error al obtener numero de ultimo mensaje");
+	}
+	catch (NonexistentKey &e) {
+		return 0;
+	}
 }
 
 uint32_t DBRaw::getUltimoMsgNoLeido(uint32_t uIDLector, uint32_t uIDEmisor) {
 	IDKey key(CONV_LAST_READ, uIDLector, uIDEmisor);
-	string retVal;
-	Status status = db->Get(ReadOptions(), key.toSlice(), &retVal);
-	if (status.IsNotFound()) return 0;
-	verificarEstadoDB(status, "Error al obtener numero de ultimo mensaje");
-	return retVal.data()[0];
+	try {
+		return getUint(key.toSlice(), "Error al obtener numero de mensaje no leido");
+	}
+	catch (NonexistentKey &e) {
+		return 0;
+	}
 }
 
 std::vector<uint32_t> DBRaw::getConversacionesNoLeidas(uint32_t uID) {
 	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
 	IDKey key(CONV_PENDING_READ, uID);
-	string retVal;
-	vector<uint32_t> result;
-	size_t contador = 0;
-	Status status = db->Get(ReadOptions(), key.toSlice(), &retVal);
-	if (status.IsNotFound()) return result;
-	verificarEstadoDB(status, "Error al consultar conversaciones no leidas.");
-	while (contador < retVal.length())
-	{
-		result.push_back(retVal[contador]);
-		contador += sizeof(uint32_t);
+	try {
+		return getUIDVector(key.toSlice(), "Error al consultar conversaciones no leidas");
 	}
-	return result;
+	catch (NonexistentKey &e) {
+		return vector<uint32_t>();
+	}
 }
 
 std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
@@ -809,6 +805,35 @@ void DBRaw::incrementarContador(KeyCode keyCode, const string &tipo, WriteBatch*
 		string errorMsg(string("Error al incrementar").append(tipo));
 		verificarEstadoDB(status, errorMsg.c_str(), log);
 	}
+}
+
+vector<uint32_t> DBRaw::getUIDVector(const Slice &key, const string &errorMsg) {
+	vector<uint32_t> result;
+	string retVal;
+	Status status = db->Get(ReadOptions(), key, &retVal);
+	if (status.IsNotFound()) throw NonexistentKey("Key no encontrada.");
+	verificarEstadoDB(status, errorMsg.c_str());
+	for (int i = 0; i < retVal.length(); i += sizeof(uint32_t))
+	{
+		result.push_back(retVal[i]);
+	}
+	return result;
+}
+
+uint32_t DBRaw::getUint(const Slice &key, const string &errorMsg) {
+	string retVal;
+	Status status = db->Get(ReadOptions(), key, &retVal);
+	if (status.IsNotFound()) throw NonexistentKey("Key no encontrada.");
+	verificarEstadoDB(status, errorMsg.c_str());
+	return retVal.data()[0];
+}
+
+bool DBRaw::getKeyExists(const Slice &key, const string &errorMsg) {
+	string retVal;
+	Status status = db->Get(ReadOptions(), key, &retVal);
+	if (status.IsNotFound()) return false;
+	verificarEstadoDB(status, errorMsg.c_str());
+	return true;
 }
 
 template<class TException> void DBRaw::verificarContador(KeyCode keyCode,

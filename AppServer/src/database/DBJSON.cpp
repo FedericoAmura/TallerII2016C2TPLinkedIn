@@ -95,6 +95,8 @@ Json DBJSON::getDatos(uint32_t userID) {
 		{"job_positions", puestos},
 		{"contacts", contacts },
 		{"popularidad", popularidad},
+		{"latitude", datos.geolocacion.latitud() },
+		{"longitude", datos.geolocacion.longitud() },
 		{"resume" , resumen},
 		{"photo" , foto.toBase64String()},
 	};
@@ -115,12 +117,15 @@ Json DBJSON::getDatosBrief(uint32_t userID) {
 }
 
 void DBJSON::setDatos(uint32_t userID, const Json &json) {
-	camposExisten(json, "name", "birth", "email", "skills", "job_positions", "city");
+	camposExisten(json, "name", "birth", "email", "skills", "job_positions",
+				"city", "longitude", "latitude");
 	DatosUsuario datos = db->getDatos(userID);
 	datos.nombre = json["name"].string_value();
 	datos.ciudad = json["city"].string_value();
 	datos.email = json["email"].string_value();
 	datos.fechaNacimiento = Fecha(json["birth"].string_value());
+	datos.geolocacion = Geolocacion(json["longitude"].number_value(),
+			json["latitude"].number_value());
 	vector<string> skills;
 	for (Json j : json["skills"].array_items())
 	{
