@@ -160,11 +160,15 @@ class ClientTest(unittest.TestCase):
     def test_13_update_profile(self):
         data = {}
         data["name"] = "New Name"
-        data["skills"] = ["skill1", "skill2"]
+        data["birth"] = "12/12/1992"
+        data["email"] = "emanuelcondo@gmail.com"
+        data["city"] = "ciudadBs"
+        data["job_positions"] = []
+        data["skills"] = []
+        data["latitude"] = 1.2
+        data["longitude"] = 2.2
         res = client1.update_profile(data)
-        #TODO sólo debería enviar los datos que quiero actualizar
-        # esto devuelve un error porque no están todos los campos completos
-        self.assertEquals(422, res.status_code)
+        self.assertEquals(204, res.status_code)
 
     #checked
     def test_14_update_resume(self):
