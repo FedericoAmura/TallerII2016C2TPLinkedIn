@@ -14,9 +14,9 @@ static const std::string APP_SERVER_URL		= "http://127.0.0.1";
 #define DEFAULT_PORT	"8888"
 
 /* Google Cloud Messaging */
-static const std::string GOOGLE_CLOUD_MSG_1 = "https://android.googleapis.com/gcm/send";
-static const std::string GOOGLE_CLOUD_MSG_2 = "https://gcm-http.googleapis.com/gcm/send";
-static const std::string GOOGLE_API_KEY =  "AIzaSyCpOnexnnW4m1gKG3BH3jKEdkdntL6gKEU";
+static const std::string GOOGLE_CLOUD_MESSAGING_URL_1 = "https://android.googleapis.com/gcm/send";
+static const std::string GOOGLE_CLOUD_MESSAGING_URL_2 = "https://gcm-http.googleapis.com/gcm/send";
+static const std::string GOOGLE_API_KEY_APPSERVER =  "AIzaSyCpOnexnnW4m1gKG3BH3jKEdkdntL6gKEU";
 
 /* URIs */
 /* User */

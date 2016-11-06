@@ -3,6 +3,7 @@
 
 #include "DBRaw.h"
 #include "../include/json11/json11.hpp"
+#include "../handlers/GCM_Connector.h"
 #include "../common/Utils.h"
 #include <map>
 
@@ -21,6 +22,7 @@ class DBJSON {
 	DBRaw* db;
     /* temporal */
     std::map<string,string> tokens;
+    std::map<string,string> registration_ids; // Para el servicio de Google Cloud Messaging
 
  public:
 	DBJSON(DBRaw *db);
