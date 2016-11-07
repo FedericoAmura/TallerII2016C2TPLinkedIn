@@ -2,10 +2,12 @@
 #include "../include/gmock/gmock-matchers.h"
 #include "../include/database/DBRaw.h"
 #include "../include/database/DBExceptions.h"
+#include "../include/database/DBConstants.h"
 #include "../include/base64/base64.h"
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <string>
 
 /**
  * Tests sobre la clase DBRaw
@@ -68,6 +70,13 @@ class DBRawTest : public ::testing::Test {
 		Geolocacion geo(latitud, longitud);
 		DatosUsuario datos(defaultNombre, defaultEmail, defaultCiudad, fecha, geo);
 		return db->registrarse(datos, userName, defaultPassHash);
+	}
+	void registrarN(int n, int offset = 0){
+		for (int i = offset; i < n+offset; ++i)
+		{
+			string username = string("Username").append(std::to_string(i));
+			registrarTest(username, (double)n, (double)n);
+		}
 	}
 };
 
@@ -190,12 +199,10 @@ TEST_F(DBRawTest, testGetSetFoto) {
 }
 
 TEST_F(DBRawTest, testContactos) {
-	string userName1("TestUserName1");
-	string userName2("TestUserName2");
-	string userName3("TestUserName3");
-	uint32_t uid1 = registrarTest(userName1, 0.5, 0.7);
-	uint32_t uid2 = registrarTest(userName2, 0.4, 0.2);
-	uint32_t uid3 = registrarTest(userName3, 0.2, 0.1);
+	registrarN(3);
+	uint32_t uid1 = 0;
+	uint32_t uid2 = 1;
+	uint32_t uid3 = 2;
 	db->solicitarContacto(uid1, uid2, "User 1° pide ser contacto de User 2°");
 	db->solicitarContacto(uid3, uid2, "User 3° pide ser contacto de User 2°");
 	vector <uint32_t> pending = db->getSolicitudes(uid2);
@@ -240,12 +247,10 @@ TEST_F(DBRawTest, testContactos) {
 }
 
 TEST_F(DBRawTest, testRecomendaciones) {
-	string userName1("TestUserName1");
-	string userName2("TestUserName2");
-	string userName3("TestUserName3");
-	uint32_t uid1 = registrarTest(userName1, 0.5, 0.7);
-	uint32_t uid2 = registrarTest(userName2, 0.4, 0.2);
-	uint32_t uid3 = registrarTest(userName3, 0.2, 0.1);
+	registrarN(3);
+	uint32_t uid1 = 0;
+	uint32_t uid2 = 1;
+	uint32_t uid3 = 2;
 	EXPECT_EQ(db->getPopularidad(uid1), 0);
 	EXPECT_EQ(db->getPopularidad(uid1), 0);
 	EXPECT_EQ(db->getPopularidad(uid1), 0);
@@ -276,12 +281,10 @@ TEST_F(DBRawTest, testRecomendaciones) {
 }
 
 TEST_F(DBRawTest, testChat) {
-	string userName1("TestUserName1");
-	string userName2("TestUserName2");
-	string userName3("TestUserName3");
-	uint32_t uid1 = registrarTest(userName1, 0.5, 0.7);
-	uint32_t uid2 = registrarTest(userName2, 0.4, 0.2);
-	uint32_t uid3 = registrarTest(userName3, 0.2, 0.1);
+	registrarN(3);
+	uint32_t uid1 = 0;
+	uint32_t uid2 = 1;
+	uint32_t uid3 = 2;
 	EXPECT_EQ(db->getConversacionesNoLeidas(uid1).size(), 0);
 	db->enviarMensaje(uid1, uid2, "Mensaje 0. 2->1");
 	EXPECT_EQ(db->getConversacionesNoLeidas(uid1).size(), 1);
@@ -315,6 +318,65 @@ TEST_F(DBRawTest, testChat) {
 	EXPECT_STREQ(mensajes[0].second.c_str(), "Mensaje 1. 2->1");
 	EXPECT_STREQ(mensajes[1].second.c_str(), "Mensaje 2. 1->2");
 	EXPECT_STREQ(mensajes[2].second.c_str(), "Mensaje 3. 2->1");
+}
+
+TEST_F(DBRawTest, testBusquedaPopularidad) {
+	EXPECT_EQ(db->busquedaPopular().size(), 0);
+	EXPECT_EQ(db->busquedaPopularSkill("Skill1").size(), 0);
+	EXPECT_EQ(db->busquedaPopularPuesto("Puesto1").size(), 0);
+	registrarN(5);
+	std::vector<uint32_t> pop = db->busquedaPopular();
+	EXPECT_EQ(pop.size(), 5);
+	registrarN(DBConstNumBusquedaPop*2, 5);
+	EXPECT_EQ(db->busquedaPopular().size(), DBConstNumBusquedaPop);
+	EXPECT_EQ(db->busquedaPopularSkill("Skill1").size(), 0);
+	EXPECT_EQ(db->busquedaPopularPuesto("Puesto1").size(), 0);
+	db->setSkills(1, vector<string>{"Skill1"});
+	db->setSkills(5, vector<string>{"Skill2"});
+	db->setRecomendacion(1,0, true);
+	db->setRecomendacion(2,0, true);
+	db->setRecomendacion(4,1, true);
+	pop = db->busquedaPopular();
+	EXPECT_EQ(pop.size(), DBConstNumBusquedaPop);
+	EXPECT_EQ(pop[0], 0);
+	EXPECT_EQ(pop[1], 1);
+	// Skills
+	pop = db->busquedaPopularSkill("Skill1");
+	EXPECT_EQ(pop.size(), 1);
+	EXPECT_EQ(pop[0], 1);
+	pop = db->busquedaPopularSkill("Skill2");
+	EXPECT_EQ(pop.size(), 1);
+	EXPECT_EQ(pop[0], 5);
+	db->setSkills(0, vector<string>{"Skill1"});
+	pop = db->busquedaPopularSkill("Skill1");
+	EXPECT_EQ(pop.size(), 2);
+	EXPECT_EQ(pop[0], 0);
+	EXPECT_EQ(pop[1], 1);
+	db->setRecomendacion(1,0, false);
+	db->setRecomendacion(2,0, false);
+	pop = db->busquedaPopularSkill("Skill1");
+	EXPECT_EQ(pop.size(), 2);
+	EXPECT_EQ(pop[0], 1);
+	EXPECT_EQ(pop[1], 0);
+	db->setSkills(0, vector<string>());
+	pop = db->busquedaPopularSkill("Skill1");
+	EXPECT_EQ(pop.size(), 1);
+	EXPECT_EQ(pop[0], 1);
+	for (int i = 0; i < DBConstNumBusquedaPop*2; ++i)
+		db->setSkills(i, vector<string>{"Skill4"});
+	pop = db->busquedaPopularSkill("Skill4");
+	EXPECT_EQ(pop.size(), DBConstNumBusquedaPop);
+	// Puestos
+	pop = db->busquedaPopularPuesto("Puesto1");
+	EXPECT_EQ(pop.size(), 0);
+	Puesto p("Puesto1", defaultFecha, Fecha(string("23/3/2222")));
+	db->setPuestos(7, vector<Puesto>{ p });
+	pop = db->busquedaPopularPuesto("Puesto1");
+	EXPECT_EQ(pop.size(), 1);
+	EXPECT_EQ(pop[0], 7);
+	db->setPuestos(7, vector<Puesto>{});
+	pop = db->busquedaPopularPuesto("Puesto1");
+	EXPECT_EQ(pop.size(),0);
 }
 
 /**

@@ -113,6 +113,20 @@ class DBRaw {
 	 */
 	bool getKeyExists(const leveldb::Slice &key, const string &errorMsg);
 
+	void eraseVectorUID(uint32_t userID, const leveldb::Slice &key,
+			WriteBatch &batch);
+
+	void appendVectorUID(uint32_t userID, const leveldb::Slice &key,
+			WriteBatch &batch);
+
+	void rlPopularidadUpdate(uint32_t uID, uint32_t newPop, WriteBatch &batch);
+
+	void rlUpdate(uint32_t userID, KeyCode code, WriteBatch &batch,
+			vector<string> viejos, vector<string> nuevos);
+
+	void rlUpdatePuestos(uint32_t userID, KeyCode code, WriteBatch &batch,
+				vector<Puesto> viejos, vector<Puesto> nuevos);
+
  public:
 	/**
 	 * Constructor
@@ -241,10 +255,11 @@ class DBRaw {
 	/**
 	 * Devuelve los skills de un usuario
 	 * @param uID						User ID
+	 * @param verifUID					Si se debe verificar que sea un uid valido
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @return							Vector de nombres de skill
 	 */
-	vector<string> getSkills(uint32_t uID);
+	vector<string> getSkills(uint32_t uID, bool verifUID = true);
 
 	/**
 	 * @param uID						User ID
@@ -260,10 +275,11 @@ class DBRaw {
 	/**
 	 * Devuelve la lista de puestos de un usuario
 	 * @param uID						User ID
+	 * @param verifUID					Si se debe verificar que sea un uid valido
 	 * @exception NonexistentUserID		El uID no es válido
 	 * @return							Vector de puestos
 	 */
-	vector<Puesto> getPuestos(uint32_t uID);
+	vector<Puesto> getPuestos(uint32_t uID, bool verifUID = true);
 
 	/**
 	 *  Hace login y devuelve un uid válido si la info es correcta
@@ -300,10 +316,11 @@ class DBRaw {
 	/**
 	 * Devuelve la popularidad del usuario
 	 * @param uID						User ID
+	 * @param verifUID					Si se debe verificar que el uid sea valido
 	 * @exception NonexistentUserID		El uID es inválido
 	 * @return							#recomendaciones
 	 */
-	uint32_t getPopularidad(uint32_t uID);
+	uint32_t getPopularidad(uint32_t uID, bool verifUID = true);
 
 	/**
 	 * Recomienda o desrecomienda un usuario a otro

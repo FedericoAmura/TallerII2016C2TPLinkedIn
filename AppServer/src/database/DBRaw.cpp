@@ -37,8 +37,6 @@ enum KeyCode : uint8_t
 	US_POP,
 	US_POP_PAIR,
 	RL_POP,
-	RL_POP_SKILL,
-	RL_POP_POS,
 	GEO_US,
 	CONV_COUNT,
 	CONV_MSG,
@@ -52,6 +50,9 @@ enum KeyCode : uint8_t
 class IDKey {
 public:
  std::vector<char> data;
+ IDKey(KeyCode prefijo) : data(1) {
+	 data[0] = prefijo;
+ }
  IDKey(KeyCode prefijo, const string &key) : data() {
 	 data.push_back(prefijo);
 	 data.insert(data.begin()+1, key.begin(), key.end());
@@ -126,6 +127,8 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 		setSkills(uID, std::vector<string>(), &batch, false);
 		// Escribir y aumentar el uID
 	    incrementarContador(LAST_UID, string("user ID"),&batch);
+	    // RL popularidad
+	    rlPopularidadUpdate(uID, 0, batch);
 	    status = db->Write(WriteOptions(), &batch);
 	    verificarEstadoDB(status, "Error 1 al registrar usuario");
 		return uID;
@@ -199,6 +202,9 @@ string DBRaw::getResumen(uint32_t uID) {
 void DBRaw::setSkills(uint32_t uID, std::vector<string> skills,
 		leveldb::WriteBatch *batch, bool verifUID) {
 	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	WriteBatch localBatch;
+	bool writeToDB = !batch;
+	if (writeToDB) batch = &localBatch;
 	vector<char> bytes;
 	for (string sk : skills) {
 		// TODO: Verificar contra el shared
@@ -207,21 +213,23 @@ void DBRaw::setSkills(uint32_t uID, std::vector<string> skills,
 	}
 	IDKey skillsKey(US_SKILL, uID);
 	Slice data(bytes.data(), bytes.size());
-	if (batch) batch->Put(skillsKey.toSlice(), data);
-	else {
-		Status status = db->Put(WriteOptions(), skillsKey.toSlice(), data);
+	batch->Put(skillsKey.toSlice(), data);
+	rlUpdate(uID, RL_SKILLS, *batch, getSkills(uID, false), skills);
+	if (writeToDB) {
+		Status status = db->Write(WriteOptions(), batch);
 		verificarEstadoDB(status, "Error al guardar skills");
 	}
-	// TODO: Agregar a reverse lookup
+
 }
 
-vector<string> DBRaw::getSkills(uint32_t uID) {
-	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+vector<string> DBRaw::getSkills(uint32_t uID, bool verifUID) {
+	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
 	IDKey skillsKey(US_SKILL, uID);
 	string retVal;
 	vector<string> result;
 	size_t contador = 0;
 	Status status = db->Get(ReadOptions(), skillsKey.toSlice(), &retVal);
+	if (status.IsNotFound()) return vector<string>();
 	verificarEstadoDB(status, "Error al consultar skills.");
 	while (contador < retVal.length())
 	{
@@ -236,6 +244,9 @@ vector<string> DBRaw::getSkills(uint32_t uID) {
 void DBRaw::setPuestos(uint32_t uID, std::vector<Puesto> puestos,
 		leveldb::WriteBatch *batch, bool verifUID) {
 	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+	WriteBatch localBatch;
+	bool writeToDB = !batch;
+	if (writeToDB) batch = &localBatch;
 	vector<char> bytes;
 	for (Puesto p : puestos) {
 		// TODO: Verificar contra el shared
@@ -244,21 +255,27 @@ void DBRaw::setPuestos(uint32_t uID, std::vector<Puesto> puestos,
 	}
 	IDKey puestosKey(US_POS, uID);
 	Slice data(bytes.data(), bytes.size());
-	if (batch) batch->Put(puestosKey.toSlice(), data);
-	else {
-		Status status = db->Put(WriteOptions(), puestosKey.toSlice(), data);
+	batch->Put(puestosKey.toSlice(), data);
+	// Reverse lookup
+	vector<string> nomPuestosViejos;
+	vector<string> nomPuestosNuevos;
+	for (Puesto p : getPuestos(uID, false)) nomPuestosViejos.push_back(p.puesto);
+	for (Puesto p : puestos) nomPuestosNuevos.push_back(p.puesto);
+	rlUpdate(uID, RL_POS, *batch, nomPuestosViejos, nomPuestosNuevos);
+	if (writeToDB) {
+		Status status = db->Write(WriteOptions(), batch);
 		verificarEstadoDB(status, "Error al guardar puestos");
 	}
-	// TODO: Agregar a reverse lookup
 }
 
-vector<Puesto> DBRaw::getPuestos(uint32_t uID) {
-	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
+vector<Puesto> DBRaw::getPuestos(uint32_t uID, bool verifUID) {
+	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uID);
 	IDKey puestosKey(US_POS, uID);
 	string retVal;
 	vector<Puesto> result;
 	size_t contador = 0;
 	Status status = db->Get(ReadOptions(), puestosKey.toSlice(), &retVal);
+	if (status.IsNotFound()) return vector<Puesto>();
 	verificarEstadoDB(status, "Error al consultar puestos.");
 	while (contador < retVal.length())
 	{
@@ -377,19 +394,9 @@ void DBRaw::setRecomendacion(uint32_t uIDRecomendador,
 	}
 	else batch.Delete(pairKeySlice);
 	batch.Put(countKeySlice, countData);
+	rlPopularidadUpdate(uIDRecomendado, count, batch);
 	status = db->Write(WriteOptions(), &batch);
 	verificarEstadoDB(status, mensajeError.c_str());
-}
-
-uint32_t DBRaw::getPopularidad(uint32_t uID) {
-	verificarContador<NonexistentUserID> (LAST_UID, string("user ID"), uID);
-	IDKey key(US_POP, uID);
-	try {
-		return getUint(key.toSlice(), "Error al consultar popularidad");
-	}
-	catch (NonexistentKey &e) {
-		return 0;
-	}
 }
 
 
@@ -400,21 +407,87 @@ std::vector<uint32_t> DBRaw::busquedaProfesional(
 		float maxDist, bool sortPopularidad) {
 }*/
 
+uint32_t DBRaw::getPopularidad(uint32_t uID, bool verifUID) {
+	if (verifUID) verificarContador<NonexistentUserID> (LAST_UID, string("user ID"), uID);
+	IDKey key(US_POP, uID);
+	try {
+		return getUint(key.toSlice(), "Error al consultar popularidad");
+	}
+	catch (NonexistentKey &e) {
+		return 0;
+	}
+}
+
+/**
+ * Funcion para comparar pares de tipo <userID, popularidad>
+ * En un sort de mayor a menor
+ */
+bool popCmp(std::pair<uint32_t,uint32_t> a, std::pair<uint32_t,uint32_t> b)
+{
+    return a.second > b.second;
+}
+
+
 vector<uint32_t> DBRaw::busquedaPopular() {
-	vector<uint32_t> result;
-	string retVal;
+	IDKey popKey(RL_POP);
+	vector<uint32_t> pop;
+	try {
+		pop = (getUIDVector(popKey.toSlice(),
+				"Error al consultar popularidad por puesto"));
+	}
+	catch (NonexistentKey &e) {
+		return vector<uint32_t>();
+	}
+	if (pop.size() <= DBConstNumBusquedaPop) return pop;
+	return vector<uint32_t>(pop.begin(), pop.begin()+DBConstNumBusquedaPop);
 }
 
 vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill) {
 	vector<uint32_t> result;
-	string retVal;
-	IDKey key(RL_POP_SKILL, skill);
-	//db->Get()
+	IDKey popKey(RL_POP);
+	IDKey skillsKey(RL_SKILLS, skill);
+	vector<uint32_t> pop;
+	try {
+		pop = (getUIDVector(popKey.toSlice(), "Error al consultar popularidad por skill"));
+	}
+	catch (NonexistentKey &e) { return vector<uint32_t>(); }
+	vector<uint32_t> skills;
+	try {
+		skills = getUIDVector(skillsKey.toSlice(),"Error al consultar popularidad por skill");
+	}
+	catch (NonexistentKey &e) { return vector<uint32_t>(); }
+	for (int i = 0; i < pop.size(); ++i) {
+		uint32_t id = pop[i];
+		if (std::find(skills.begin(), skills.end(), id) != skills.end()) {
+			result.push_back(id);
+		}
+		if (result.size() >= DBConstNumBusquedaPop) break;
+	}
+	return result;
 }
 
 vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto) {
 	vector<uint32_t> result;
-	string retVal;
+	IDKey popKey(RL_POP);
+	IDKey puestoKey(RL_POS, puesto);
+	vector<uint32_t> pop;
+	try {
+		pop = getUIDVector(popKey.toSlice(), "Error al consultar popularidad por puesto");
+	}
+	catch (NonexistentKey &e) { return vector<uint32_t>(); }
+	vector<uint32_t> puestos;
+	try {
+		puestos = getUIDVector(puestoKey.toSlice(), "Error al consultar popularidad por puesto");
+	}
+	catch (NonexistentKey &e) { return vector<uint32_t>(); }
+	for (int i = 0; i < pop.size(); ++i) {
+		uint32_t id = pop[i];
+		if (std::find(puestos.begin(), puestos.end(), id) != puestos.end()) {
+			result.push_back(id);
+		}
+		if (result.size() >= DBConstNumBusquedaPop) break;
+	}
+	return result;
 }
 
 void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
@@ -840,4 +913,68 @@ template<class TException> void DBRaw::verificarContador(KeyCode keyCode,
 		const string &tipo, uint32_t ID) {
 	if (ID >= contadorActual(keyCode, tipo)) throw TException(std::to_string(ID));
 	return;
+}
+
+/**
+ * Metodos privados sobre popularidad y reverse lookups
+ */
+
+void DBRaw::rlPopularidadUpdate(uint32_t uID, uint32_t newPop,
+		WriteBatch &batch) {
+	IDKey rlKey(RL_POP);
+	Slice key = rlKey.toSlice();
+	vector< std::pair<uint32_t,uint32_t> > popularidades;
+	vector<uint32_t> uids;
+	try {
+		uids = getUIDVector(key, "Error al actualizar popularidad.");
+	}
+	catch (NonexistentKey &e) {}
+	// Si ya estaba en el vector, no se hace nada, sino se agrega
+	if(std::find(uids.begin(), uids.end(), uID) == uids.end())
+		uids.push_back(uID);
+	for (uint32_t i = 0; i < uids.size(); ++i) {
+		std::pair<uint32_t,uint32_t> par(i, getPopularidad(i, false));
+		if (par.first == uID) par.second = newPop;
+		popularidades.push_back(par);
+	}
+	std::sort(popularidades.begin(), popularidades.end(), popCmp);
+	vector<uint32_t> result;
+	for (uint32_t i = 0; i < popularidades.size(); ++i)
+		result.push_back(popularidades[i].first);
+	Slice data((char*) result.data(), result.size() * sizeof(uint32_t));
+	batch.Put(key, data);
+}
+
+void DBRaw::eraseVectorUID(uint32_t userID, const Slice &key,
+		WriteBatch &batch) {
+	vector<uint32_t> result = getUIDVector(key, "Error de base de datos");
+	result.erase(std::remove(result.begin(), result.end(), userID), result.end());
+	Slice data((char*) result.data(), result.size()*sizeof(uint32_t));
+	batch.Put(key, data);
+}
+
+void DBRaw::appendVectorUID(uint32_t userID, const Slice &key,
+		WriteBatch &batch) {
+	vector<uint32_t> result;
+	try {
+		result = getUIDVector(key, "Error de base de datos");
+	}
+	catch (NonexistentKey &e) {}
+	result.push_back(userID);
+	Slice data((char*) result.data(), result.size()*sizeof(uint32_t));
+	batch.Put(key, data);
+}
+
+void DBRaw::rlUpdate(uint32_t userID, KeyCode code, WriteBatch &batch,
+		vector<string> viejos, vector<string> nuevos) {
+	for (string s : viejos) // En los viejos y no en los nuevos, borrar
+		if (std::find(viejos.begin(), viejos.end(), s) != nuevos.end()) {
+			IDKey key(code, s);
+			eraseVectorUID(userID, key.toSlice(), batch);
+		}
+	for (string s : nuevos) // En los nuevos y no en los viejos, agregar
+		if (std::find(nuevos.begin(), nuevos.end(), s) != viejos.end()) {
+			IDKey key(code, s);
+			appendVectorUID(userID, key.toSlice(), batch);
+		}
 }

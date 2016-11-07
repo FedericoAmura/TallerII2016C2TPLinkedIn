@@ -103,9 +103,7 @@ US_POP_PAIR[1] uIDreceptor[4] uIDrecomendador[4] = NULL
 
 **Reverse lookup: Popularidad** (Listas ordenada)
 
-RL_POP[1] = uID1[4] uID2[4] (...) uID10[4]
-RL_POP_SKILL[1] Skill[VAR] = uID1[4] uID2[4] (...) uID10[4]
-RL_POP_POS[1] Position[VAR] = uID1[4] uID2[4] (...) uID10[4]
+RL_POP[1] = uID1[4] uID2[4] ...
 
 **Locación geográfica**
 
