@@ -279,17 +279,37 @@ void DBJSON::actualizarRecomendacion(const Json &json) {
 }
 
 Json DBJSON::getPopulares() {
-	Json data = Json::object {};
+	vector<uint32_t> result(db->busquedaPopular());
+	Json::array array;
+	for (uint32_t uid : result)
+		array.push_back((int)uid);
+	Json data = Json::object {
+		{"users",array}
+	};
 	return data;
 }
 
 Json DBJSON::getPopularesPorSkill(const string &skill) {
-	Json data = Json::object {};
+	vector<uint32_t> result(db->busquedaPopularSkill(skill));
+	Json::array array;
+	for (uint32_t uid : result)
+		array.push_back((int)uid);
+	Json data = Json::object {
+		{"skill",skill},
+		{"users",array}
+	};
 	return data;
 }
 
 Json DBJSON::getPopularesPorPosition(const string &position) {
-	Json data = Json::object {};
+	vector<uint32_t> result(db->busquedaPopularPuesto(position));
+	Json::array array;
+	for (uint32_t uid : result)
+		array.push_back((int)uid);
+	Json data = Json::object {
+		{"skill",position},
+		{"users",array}
+	};
 	return data;
 }
 

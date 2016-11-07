@@ -1,6 +1,7 @@
 #include "../include/gtest/gtest.h"
 #include "../include/database/DBJSON.h"
 #include "../include/database/DBExceptions.h"
+#include "../include/database/DBConstants.h"
 #include "../include/database/JsonChecker.h"
 #include <iostream>
 #include <cstdio>
@@ -57,6 +58,13 @@ class DBJsonTest : public ::testing::Test {
 			{ "latitude", latitud },
 		};
 		return dbj->registrarse(json);
+	}
+	void registrarN(int n, int offset = 0){
+		for (int i = offset; i < n+offset; ++i)
+		{
+			string username = string("Username").append(std::to_string(i));
+			registrarTest(username, (double)n, (double)n);
+		}
 	}
 };
 
@@ -379,7 +387,47 @@ TEST_F(DBJsonTest, testChat)
 	dbj->enviarMensaje(mensaje);
 	chatsNuevos = dbj->getChatNuevos(uid2)["new"].array_items();
 	EXPECT_EQ(chatsNuevos.size(), 1);
+}
 
+TEST_F(DBJsonTest, testBusquedaPop)
+{
+	// Test corto porque la funcionalidad en si se teastea en dbraw
+	registrarN(20);
+	Json recomendacion = Json::object {
+		{ "recommender" , 1 },
+		{ "recommended", 0 },
+		{ "recommends",  true },
+	};
+	dbj->actualizarRecomendacion(recomendacion);
+	Json pop = dbj->getPopulares();
+	EXPECT_EQ(pop["users"].array_items().size(), DBConstNumBusquedaPop);
+	EXPECT_EQ(pop["users"].array_items()[0], 0);
+	Json datosJson = Json::object {
+		{ "name" , "Nombre Test" },
+		{ "birth", "4/4/1994" },
+		{ "email", "mail1@test.com" },
+		{ "skills", Json::array { "Skill1", "Skill2" } },
+		{"job_positions",  Json::array { Json::object {
+			{ "name", "Puesto1"},
+			{ "start", "4/11/1994"},
+			{ "end", "current"}
+			},
+			Json::object {
+			{ "name", "Puesto2"},
+			{ "start", "4/2/1990"},
+			{ "end" , "11/3/1992"}
+			} } },
+		{ "longitude", 1.0},
+		{ "latitude", 0.5},
+		{ "city", "Una ciudad" },
+	};
+	dbj->setDatos(0, datosJson);
+	pop = dbj->getPopularesPorSkill("Skill1");
+	EXPECT_EQ(pop["users"].array_items().size(), 1);
+	EXPECT_EQ(pop["users"].array_items()[0], 0);
+	pop = dbj->getPopularesPorPosition("Puesto1");
+	EXPECT_EQ(pop["users"].array_items().size(), 1);
+	EXPECT_EQ(pop["users"].array_items()[0], 0);
 }
 
 TEST(JsonTest, TestJsonChecker)
