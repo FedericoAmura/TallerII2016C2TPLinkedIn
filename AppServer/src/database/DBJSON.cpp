@@ -8,6 +8,7 @@ DBJSON::DBJSON(DBRaw *db) : db(db) {}
 DBJSON::~DBJSON() {
 	delete db;
 	tokens.clear();
+	registration_ids.clear();
 }
 
 string DBJSON::generarToken(const Json &json) {
@@ -16,6 +17,7 @@ string DBJSON::generarToken(const Json &json) {
 	string to_hash = username + "|" + current_timestamp;
 	string token_hash = base64_encode((const unsigned char*)to_hash.c_str(), to_hash.length());
 	tokens[token_hash] = current_timestamp;
+	//registration_ids[token_hash] = json["registration_id"]; TODO
 	return token_hash;
 }
 
@@ -26,6 +28,7 @@ bool DBJSON::validar_token(const string &token) {
 		double diff = time_difference_seconds(timestamp);
 		if (diff > EXPIRATION_TIME_SEC) {
 			tokens.erase(token);
+			//registration_ids.erase(token); TODO
 			throw TokenHasExpired("Token ha expirado");
 		} else
 			return true;
@@ -225,6 +228,16 @@ Json DBJSON::getPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 
 void DBJSON::aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 	db->aceptarSolicitud(uIDFuente, uIDDestino);
+	// TODO Google Cloud Messaging
+	/*
+		Json::object data;
+		Json::object notification;
+		notification["title"] = "Solicitud de Contacto";
+		notification["text"] = "Fulanito ha aceptado tu Solicitud de Contacto";
+		data["notification"] = notification;
+		data["to"] = TODO
+		GCM_Connector::notify(Json(data).dump());
+	*/
 }
 
 void DBJSON::declinarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
@@ -247,9 +260,18 @@ void DBJSON::crearPeticion(const Json &json) {
 	camposExisten(json, "userID", "targetID", "message");
 	uint32_t uIDOrigen = json["userID"].int_value();
 	uint32_t uIDDestino = json["targetID"].int_value();
-//	if (uIDOrigen == uIDDestino) throw BadInputException("datos inválidos");
 	string mensaje(json["message"].string_value());
 	db->solicitarContacto(uIDOrigen, uIDDestino, mensaje);
+	// TODO Google Cloud Messaging
+	/*
+		Json::object data;
+		Json::object notification;
+		notification["title"] = "Solicitud de Contacto";
+		notification["text"] = "Fulanito quiere agregarte como amigo";
+		data["notification"] = notification;
+		data["to"] = TODO
+		GCM_Connector::notify(Json(data).dump());
+	*/
 }
 
 bool DBJSON::esContacto(uint32_t userID1, uint32_t userID2) {
@@ -343,6 +365,16 @@ void DBJSON::enviarMensaje(const Json &json) {
 	uint32_t uIDEmisor = json["senderID"].int_value();
 	string mensaje = json["message"].string_value();
 	db->enviarMensaje(uIDReceptor, uIDEmisor, mensaje);
+	// TODO Google Cloud Messaging
+/*
+	Json::object data;
+	Json::object notification;
+	notification["title"] = "Nuevo mensaje";
+	notification["text"] = mensaje;
+	data["notification"] = notification;
+	data["to"] = TODO
+	GCM_Connector::notify(Json(data).dump());
+*/
 }
 
 Json DBJSON::getNumLastMensaje(uint32_t userID1, uint32_t userID2) {

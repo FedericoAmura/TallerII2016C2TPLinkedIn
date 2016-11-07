@@ -25,4 +25,9 @@ public:
 	CurlGetException(){};
 };
 
+class ConnectionRefused : public std::exception {
+public:
+	ConnectionRefused(){};
+};
+
 #endif /* APPSERVER_INCLUDE_COMMON_EXCEPTIONS_H_ */
