@@ -16,6 +16,6 @@ int GCM_Connector::notify(std::string data) {
     curl.add_header("Content-Type", "application/json");
     int status_code = curl.post(GOOGLE_CLOUD_MESSAGING_URL_2, data);
     if (status_code != 200)
-        throw ConnectionRefused();
+        throw RequestRejected();
     return status_code;
 }

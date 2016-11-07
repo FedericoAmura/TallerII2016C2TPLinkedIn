@@ -22,7 +22,7 @@ class DBJSON {
 	DBRaw* db;
     /* temporal */
     std::map<string,string> tokens;
-    std::map<string,string> registration_ids; // Para el servicio de Google Cloud Messaging
+    std::map<uint32_t,string> registration_ids; // Para el servicio de Google Cloud Messaging
 
  public:
 	DBJSON(DBRaw *db);

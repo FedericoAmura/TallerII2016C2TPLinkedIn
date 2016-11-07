@@ -17,7 +17,6 @@ string DBJSON::generarToken(const Json &json) {
 	string to_hash = username + "|" + current_timestamp;
 	string token_hash = base64_encode((const unsigned char*)to_hash.c_str(), to_hash.length());
 	tokens[token_hash] = current_timestamp;
-	//registration_ids[token_hash] = json["registration_id"]; TODO
 	return token_hash;
 }
 
@@ -28,7 +27,6 @@ bool DBJSON::validar_token(const string &token) {
 		double diff = time_difference_seconds(timestamp);
 		if (diff > EXPIRATION_TIME_SEC) {
 			tokens.erase(token);
-			//registration_ids.erase(token); TODO
 			throw TokenHasExpired("Token ha expirado");
 		} else
 			return true;
@@ -59,9 +57,14 @@ uint32_t DBJSON::registrarse(const Json &json) {
 
 uint32_t DBJSON::login(const Json &json) {
 	camposExisten(json, "username", "password");
+	//TODO Google Cloud Messaging
+	// camposExisten(json, "username", "password", "registration_id");
 	string userName = json["username"].string_value();
 	string passHashStr = base64_decode(json["password"].string_value());
 	vector<char> passHash(passHashStr.begin(), passHashStr.end());
+	//TODO Google Cloud Messaging
+	//uint32_t userID = db->login(userName, passHash);
+	//registration_ids[userID] = json["registration_id"].string_value();
 	return db->login(userName, passHash);
 }
 
@@ -235,7 +238,7 @@ void DBJSON::aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 		notification["title"] = "Solicitud de Contacto";
 		notification["text"] = "Fulanito ha aceptado tu Solicitud de Contacto";
 		data["notification"] = notification;
-		data["to"] = TODO
+		data["to"] = registration_ids[uIDDestino];
 		GCM_Connector::notify(Json(data).dump());
 	*/
 }
@@ -269,7 +272,7 @@ void DBJSON::crearPeticion(const Json &json) {
 		notification["title"] = "Solicitud de Contacto";
 		notification["text"] = "Fulanito quiere agregarte como amigo";
 		data["notification"] = notification;
-		data["to"] = TODO
+		data["to"] = registration_ids[uIDDestino];
 		GCM_Connector::notify(Json(data).dump());
 	*/
 }
@@ -372,7 +375,7 @@ void DBJSON::enviarMensaje(const Json &json) {
 	notification["title"] = "Nuevo mensaje";
 	notification["text"] = mensaje;
 	data["notification"] = notification;
-	data["to"] = TODO
+	data["to"] = registration_ids[uIDReceptor];
 	GCM_Connector::notify(Json(data).dump());
 */
 }

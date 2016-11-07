@@ -55,9 +55,23 @@ http_response POST_Handler::handle_login() {
 		std::cout << "[Error] username and/or password not found to parse. LogIn failed" << std::endl;
 		return http_response("", STATUS_FORBIDDEN);
 	}
-
+/*  TODO Google Cloud Messaging
+	Json body;
+	try {
+		body = HttpParser::parse_json_from_body(request->message);
+		if (body["registration_id"].is_null())
+			throw BadInputException("registration_id not found");
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid Json Format. LogIn failed" << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	} catch (BadInputException &e) {
+		std::cout << "[Error] registration_id not found to parse. LogIn failed" << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+*/
 	Json data = Json::object{ {"username", username},
 							  {"password", password} };
+							//  {"registration_id", body["registration_id"].string_value()} };
 	uint32_t user_id;
 	std::string token = "";
 	try {
