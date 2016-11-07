@@ -164,7 +164,7 @@ class ClientTest(unittest.TestCase):
         data["email"] = "emanuelcondo@gmail.com"
         data["city"] = "ciudadBs"
         data["job_positions"] = []
-        data["skills"] = []
+        data["skills"] = ["Android"]
         data["latitude"] = 1.2
         data["longitude"] = 2.2
         res = client1.update_profile(data)
@@ -345,19 +345,30 @@ class ClientTest(unittest.TestCase):
         data = json.loads(res.text)
         self.assertTrue(data["recommends"])
 
-    #NOT checked (TODO falta implementación en DBJSON)
+    #checked
     def test_36_get_popular(self):
         res = client1.get_popular()
+        data = json.loads(res.text)
+        self.assertTrue('users' in data)
+        self.assertNotEquals(len(data['users']), 0)
         self.assertEquals(200, res.status_code)
 
-    #NOT checked (TODO falta implementación en DBJSON)
+    #checked
     def test_37_get_popular_by_position(self):
         res = client1.get_popular_by_position("pos")
+        data = json.loads(res.text)
+        self.assertTrue('users' in data)
+        self.assertTrue('position' in data)
+        self.assertEquals(len(data['users']),0)
         self.assertEquals(200, res.status_code)
 
-    #NOT checked (TODO falta implementación en DBJSON)
+    #checked
     def test_38_get_popular_by_skill(self):
-        res = client1.get_popular_by_skill("java")
+        res = client1.get_popular_by_skill("Android")
+        data = json.loads(res.text)
+        self.assertTrue('users' in data)
+        self.assertTrue('skill' in data)
+        self.assertNotEquals(len(data['users']), 0)
         self.assertEquals(200, res.status_code)
 
     #checked

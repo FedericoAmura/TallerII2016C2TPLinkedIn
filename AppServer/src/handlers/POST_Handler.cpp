@@ -72,7 +72,7 @@ http_response POST_Handler::handle_login() {
 	}
 
 	std::cout << "Info: LogIn OK" << " userID: " << user_id << std::endl;
-//	std::string userID = std::to_string(user_id);
+
 	Json resp = Json::object { {"userID", (int)user_id},
  							   {"token" , token} };
 	return http_response(resp.dump(), STATUS_OK);

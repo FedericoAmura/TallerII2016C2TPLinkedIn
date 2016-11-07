@@ -307,7 +307,7 @@ Json DBJSON::getPopularesPorPosition(const string &position) {
 	for (uint32_t uid : result)
 		array.push_back((int)uid);
 	Json data = Json::object {
-		{"skill",position},
+		{"position",position},
 		{"users",array}
 	};
 	return data;

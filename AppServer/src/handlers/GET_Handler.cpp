@@ -91,7 +91,7 @@ http_response GET_Handler::handleRequest() {
 			res = handle_get_categories();
 			break;
 		case _JOB_POS_BY_CAT:
-			// /job_positions/caterories/<category>
+			// /job_positions/categories/<category>
 			res = handle_get_jobpositions_by_category();
 			break;
 		case _JOB_POSITION:
@@ -455,15 +455,25 @@ http_response GET_Handler::handle_get_user_recommendations() {
 }
 
 http_response GET_Handler::handle_get_popular() {
-	return http_response("{\"msg\":\"{set Popular}\"}\n", STATUS_OK);
+	// /users/popular
+	Json data = db_json->getPopulares();
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_popular_by_position() {
-	return http_response("{\"msg\":\"{Popular by position}\"}\n", STATUS_OK);
+	// /users/popular/position/<position>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string position = vec_uri[3];
+	Json data = db_json->getPopularesPorPosition(position);
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_popular_by_skill() {
-	return http_response("{\"msg\":\"{Popular by Skill}\"}\n", STATUS_OK);
+	// /users/popular/skill/<skill>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	std::string skill = vec_uri[3];
+	Json data = db_json->getPopularesPorSkill(skill);
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_number_new_messages() {
