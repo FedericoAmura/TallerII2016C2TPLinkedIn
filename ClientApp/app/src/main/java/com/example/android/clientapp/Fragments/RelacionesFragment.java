@@ -4,183 +4,179 @@ package com.example.android.clientapp.Fragments;
  * Created by guidonegri on 21/09/16.
  */
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.android.clientapp.LoginActivity;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.Modelo.Amigo;
+import com.example.android.clientapp.JobifyAPI;
+import com.example.android.clientapp.PerfilAmigoActivity;
 import com.example.android.clientapp.R;
+import com.example.android.clientapp.RVAdapter;
 
-/**
- * Provides UI for the view with Cards.
- */
-/*
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 public class RelacionesFragment extends Fragment {
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        RecyclerView recyclerView = (RecyclerView) inflater.inflate(
-                R.layout.recycler_view, container, false);
-        ContentAdapter adapter = new ContentAdapter(recyclerView.getContext());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        return recyclerView;
-    }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView picture;
-        public TextView name;
-        public TextView description;
-        public ViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.fragment_relaciones, parent, false));
-            picture = (ImageView) itemView.findViewById(R.id.card_image);
-            name = (TextView) itemView.findViewById(R.id.card_title);
-            description = (TextView) itemView.findViewById(R.id.card_text);
-        }
-    }*/
-    /**
-     * Adapter to display recycler view.
-     */
-    /*
-    public static class ContentAdapter extends RecyclerView.Adapter<ViewHolder> {
-        // Set numbers of List in RecyclerView.
-        private static final int LENGTH = 6;
-        private final String[] mPlaces;
-        private final String[] mPlaceDesc;
-        private final Drawable[] mPlacePictures;
-        public ContentAdapter(Context context) {
-            Resources resources = context.getResources();
-            mPlaces = resources.getStringArray(R.array.places);
-            mPlaceDesc = resources.getStringArray(R.array.place_desc);
-            TypedArray a = resources.obtainTypedArray(R.array.places_picture);
-            mPlacePictures = new Drawable[a.length()];
-            for (int i = 0; i < mPlacePictures.length; i++) {
-                mPlacePictures[i] = a.getDrawable(i);
-            }
-            a.recycle();
-        }
+    private static final String CONTACTS = "contacts";
 
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()), parent);
-        }
+    private static final String USER_ID = "userID";
+    private static final String TOKEN = "token";
 
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.picture.setImageDrawable(mPlacePictures[position % mPlacePictures.length]);
-            holder.name.setText(mPlaces[position % mPlaces.length]);
-            holder.description.setText(mPlaceDesc[position % mPlaceDesc.length]);
-        }
+    private ArrayList<Amigo> amigos;
+    private ArrayList<String> amigosID;
+    private RecyclerView rv;
 
-        @Override
-        public int getItemCount() {
-            return LENGTH;
-        }
-    }
-}
-*/
-import android.content.Context;
-        import android.content.Intent;
-        import android.content.res.Resources;
-        import android.content.res.TypedArray;
-        import android.graphics.drawable.Drawable;
-        import android.os.Bundle;
-        import android.support.v4.app.Fragment;
-        import android.support.v7.widget.LinearLayoutManager;
-        import android.support.v7.widget.RecyclerView;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.ImageView;
-        import android.widget.TextView;
-
-/**
- * Provides UI for the view with List.
- */
-public class RelacionesFragment extends Fragment {
+    private int statusCode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        RecyclerView recyclerView = (RecyclerView) inflater.inflate(
-                R.layout.recycler_view, container, false);
-        ContentAdapter adapter = new ContentAdapter(recyclerView.getContext());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        return recyclerView;
+        View view = inflater.inflate(R.layout.recycler_view, container, false);
+
+        rv = (RecyclerView) view.findViewById(R.id.rv);
+
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        rv.setLayoutManager(llm);
+        rv.setHasFixedSize(true);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final String userID = sharedPref.getString(USER_ID, "");
+        final String token = sharedPref.getString(TOKEN, "");
+
+        cargarAmigosIdDelServer(userID, token);
+        return view;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView avator;
-        public TextView name;
-        public TextView description;
-        public ViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.fragment_relaciones, parent, false));
-            avator = (ImageView) itemView.findViewById(R.id.list_avatar);
-            name = (TextView) itemView.findViewById(R.id.list_title);
-            description = (TextView) itemView.findViewById(R.id.list_desc);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, LoginActivity.class);
-                    //intent.putExtra(DetailActivity.EXTRA_POSITION, getAdapterPosition());
-                    context.startActivity(intent);
-                }
-            });
+    private void inicializarData(){
+        amigos = new ArrayList<Amigo>();
+        for (String userID : amigosID) {
+            cargarAmigosDelServer(userID);
         }
     }
 
-    /**
-     * Adapter to display recycler view.
-     */
-    public static class ContentAdapter extends RecyclerView.Adapter<ViewHolder> {
-        // Set numbers of List in RecyclerView.
-        private static final int LENGTH = 18;
+    private void inicializarAdapter(){
+        RVAdapter adapter = new RVAdapter(amigos, PerfilAmigoActivity.class);
+        rv.setAdapter(adapter);
+    }
 
-        private final String[] mPlaces;
-        private final String[] mPlaceDesc;
-        private final Drawable[] mPlaceAvators;
-
-        public ContentAdapter(Context context) {
-            Resources resources = context.getResources();
-            mPlaces = resources.getStringArray(R.array.places);
-            mPlaceDesc = resources.getStringArray(R.array.place_desc);
-            TypedArray a = resources.obtainTypedArray(R.array.place_avator);
-            mPlaceAvators = new Drawable[a.length()];
-            for (int i = 0; i < mPlaceAvators.length; i++) {
-                mPlaceAvators[i] = a.getDrawable(i);
+    private void inicializarAmigosID(JSONObject obj){
+        try {
+            amigosID = new ArrayList<String>();
+            JSONArray jsonContacts = obj.getJSONArray(CONTACTS);
+            for (int i = 0; i < jsonContacts.length(); i++) {
+                amigosID.add(jsonContacts.getString(i));
             }
-            a.recycle();
-        }
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()), parent);
-        }
+            inicializarData();
+        } catch(JSONException e) {e.printStackTrace();}
+    }
 
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.avator.setImageDrawable(mPlaceAvators[position % mPlaceAvators.length]);
-            holder.name.setText(mPlaces[position % mPlaces.length]);
-            holder.description.setText(mPlaceDesc[position % mPlaceDesc.length]);
-        }
+    private void cargarAmigosDelServer(final String userID){
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactoBriefURL(userID), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (statusCode == HttpURLConnection.HTTP_OK){
+                            Amigo amigo = new Amigo();
+                            amigo.cargarDesdeJSON(response);
+                            amigo.setUserID(userID);
+                            amigos.add(amigo);
+                            if (amigos.size() == amigosID.size()) { inicializarAdapter(); }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                            Toast.makeText(getActivity(), "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                        if ( netResp != null) {
+                            Toast.makeText(getActivity(),"ESTOY ACA 2:" + netResp.statusCode ,Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }){
 
-        @Override
-        public int getItemCount() {
-            return LENGTH;
-        }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
+                statusCode = response.statusCode;
+                return super.parseNetworkResponse(response);
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(jsonRequest);
+
+    }
+
+
+    private void cargarAmigosIdDelServer(final String userID, final String token){
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactosURL(userID), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (statusCode == HttpURLConnection.HTTP_OK){
+                            inicializarAmigosID(response);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                            Toast.makeText(getActivity(), "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                            Toast.makeText(getActivity(), "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                        if ( netResp != null) {
+                            Toast.makeText(getActivity(),"ESTOY ACA 2:" + netResp.statusCode ,Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }){
+
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
+                statusCode = response.statusCode;
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(jsonRequest);
     }
 
 }

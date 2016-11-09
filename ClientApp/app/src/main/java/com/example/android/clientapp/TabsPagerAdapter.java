@@ -21,6 +21,11 @@ import com.example.android.clientapp.Fragments.RelacionesFragment;
 
 public class TabsPagerAdapter extends FragmentPagerAdapter {
 
+    private boolean f0;
+    private boolean f1;
+    private boolean f2;
+    private boolean f3;
+
     public TabsPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -30,13 +35,17 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         Log.d("TEST", "ITEM INDEX: " + index);
         switch (index) {
             case 0:
-                return new PerfilContainerFragment();
+                Log.d("TEST", "New PerfilFragment");
+                return new PerfilFragment();
             case 1:
-                return new RelacionesContainerFragment();
+                Log.d("TEST", "New RelacionesFragment");
+                return new RelacionesFragment();
             case 2:
-                return new BusquedaContainerFragment();
+                Log.d("TEST", "New BusquedaFragment");
+                return new BusquedaFragment();
             case 3:
-                return new ChatContainerFragment();
+                Log.d("TEST", "New ChatFragment");
+                return new ChatFragment();
         }
         return null;
     }
@@ -47,40 +56,3 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         return 4;
     }
 }
-
-/*public class TabsPagerAdapter extends FragmentStatePagerAdapter {
-
-    //integer to count number of tabs
-    int tabCount;
-
-    //Constructor to the class
-    public TabsPagerAdapter(FragmentManager fm, int tabCount) {
-        super(fm);
-        //Initializing tab count
-        this.tabCount= tabCount;
-    }
-
-    //Overriding method getItem
-    @Override
-    public Fragment getItem(int position) {
-        //Returning the current tabs
-        switch (position) {
-            case 0:
-                return new PerfilContainerFragment();
-            case 1:
-                return new RelacionesContainerFragment();
-            case 2:
-                return new BusquedaContainerFragment();
-            case 3:
-                return new ChatContainerFragment();
-            default:
-                return null;
-        }
-    }
-
-    //Overriden method getCount to get the number of tabs
-    @Override
-    public int getCount() {
-        return tabCount;
-    }
-}*/

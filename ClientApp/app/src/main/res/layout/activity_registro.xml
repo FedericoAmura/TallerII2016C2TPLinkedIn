@@ -33,7 +33,7 @@
             android:textAlignment="center"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
-            android:id="@+id/tvBienvenido"
+            android:id="@+id/tvTitulo"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"/>
     </LinearLayout>

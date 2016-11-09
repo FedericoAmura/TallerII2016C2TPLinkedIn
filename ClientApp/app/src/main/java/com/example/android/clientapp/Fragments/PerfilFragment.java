@@ -4,6 +4,7 @@ package com.example.android.clientapp.Fragments;
  * Created by guidonegri on 21/09/16.
  */
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.JobifyAPI;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.PerfilEditActivity;
 import com.example.android.clientapp.PestaniasActivity;
 import com.example.android.clientapp.R;
 import com.example.android.clientapp.RegistroActivity;
@@ -68,6 +70,10 @@ public class PerfilFragment extends Fragment {
     //Resumen:
     private TextView tvResumen;
 
+    //Botones:
+    private Button botonCerrarSesion;
+    private Button botonEditar;
+
     private int statusCode;
 
     @Override
@@ -92,6 +98,25 @@ public class PerfilFragment extends Fragment {
         cargarPerfil(view, perfil);
         ////////
         */
+
+        botonEditar = (Button) view.findViewById(R.id.boton_editar_perfil);
+        botonEditar.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                apretarBotonEditar(v);
+            }
+
+        });
+
+        botonCerrarSesion = (Button) view.findViewById(R.id.boton_cerrar_sesion);
+        /*botonEditar.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                apretarCerrarSesion(v);
+            }
+
+        });*/
+
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String userID = sharedPref.getString("userID", "");
@@ -150,13 +175,17 @@ public class PerfilFragment extends Fragment {
         tvRelaciones = (TextView) view.findViewById(R.id.person_relaciones);
         tvRelaciones.setText(perfil.getCantContactos());
 
-        //tvEdad = (TextView) view.findViewById(R.id.person_age);
-        //tvEdad.setText(String.valueOf(perfil.getSizeExp()));
+        tvEdad = (TextView) view.findViewById(R.id.person_age);
+        tvEdad.setText(perfil.getNacimiento());
+
+        tvCorreo = (TextView) view.findViewById(R.id.person_email);
+        tvCorreo.setText(perfil.getCorreo());
+
 
         // Tv dinamicos de Skills:
         LinearLayout llSkills = (LinearLayout) view.findViewById(R.id.llSkills);
         for (int i = 0; i < perfil.getSizeSkills(); i++ ) {
-            TextView tvSkill = new TextView(getApplicationContext());
+            TextView tvSkill = new TextView(getContext());
             tvSkill.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT));
             tvSkill.setText(perfil.getSkills(i));
@@ -168,7 +197,7 @@ public class PerfilFragment extends Fragment {
         LinearLayout llExpLaboral = (LinearLayout) view.findViewById(R.id.llExpLaboral);
         for (int i = 0; i < perfil.getSizeExp(); i++ ) {
             for (int j = 0; j < 3; j++) {
-                TextView tvExpLaboral = new TextView(getApplicationContext());
+                TextView tvExpLaboral = new TextView(getContext());
                 tvExpLaboral.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
                         LayoutParams.WRAP_CONTENT));
                 switch (j) {
@@ -192,5 +221,19 @@ public class PerfilFragment extends Fragment {
 
         tvUbicacion = (TextView) view.findViewById(R.id.tvUbicacion);
         tvUbicacion.setText(perfil.getCiudad());
+
+        //Prueba longitud y latitud:
+        /*TextView tvUbicacion2 = (TextView) view.findViewById(R.id.tvUbicacion2);
+        tvUbicacion2.setText(String.valueOf(perfil.getLongitud()));
+
+        TextView tvUbicacion3 = (TextView) view.findViewById(R.id.tvUbicacion3);
+        tvUbicacion3.setText(String.valueOf(perfil.getLatitud()));*/
+    }
+
+    //Funcion a llamar al clickear boton Editar Perfil.
+    private void apretarBotonEditar(View view){
+        Intent intent = new Intent(getContext(), PerfilEditActivity.class);
+        intent.putExtra("perfil", perfil.crearJson().toString());
+        startActivity(intent);
     }
 }
