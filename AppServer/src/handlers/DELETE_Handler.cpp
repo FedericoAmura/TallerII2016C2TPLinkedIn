@@ -55,7 +55,7 @@ http_response DELETE_Handler::handle_logout() {
 
 	db_json->logout(token);
 
-	return http_response("{}", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_OK);
 }
 
 http_response DELETE_Handler::handle_reject_contact_request() {
@@ -87,7 +87,7 @@ http_response DELETE_Handler::handle_reject_contact_request() {
 		return http_response("", STATUS_NOT_FOUND);
 	}
 
-	return http_response("{}", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_OK);
 }
 
 http_response DELETE_Handler::handle_delete_contact() {
@@ -122,7 +122,7 @@ http_response DELETE_Handler::handle_delete_contact() {
 		return http_response("", STATUS_NOT_FOUND);
 	}
 
-	return http_response("{}", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_OK);
 }
 
 DELETE_Handler::~DELETE_Handler() {
