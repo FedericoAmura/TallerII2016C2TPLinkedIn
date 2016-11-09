@@ -2,6 +2,8 @@ package com.example.android.clientapp.Modelo;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 
@@ -11,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -21,6 +24,10 @@ public class Perfil {
     private static final String DEBUG_TAG = "PERFIL";
     private static final String NAME = "name";
     private static final String CITY = "city";
+    private static final String LONGITUDE = "longitude";
+    private static final String LATITUDE = "latitude";
+    private static final String BIRTH = "birth";
+    private static final String EMAIL = "email";
     private static final String CONTACTS = "contacts";
     private static final String POPULARIDAD = "popularidad";
     private static final String RESUME = "resume";
@@ -30,9 +37,13 @@ public class Perfil {
     private static final String START = "start";
     private static final String END = "end";
 
+
     // Info personal:
     private String nombre;
     private Bitmap foto;
+    private String strFoto;
+    private String nacimiento;
+    private String correo;
     private String cantContactos;
     private String cantRecomendaciones;
 
@@ -49,6 +60,8 @@ public class Perfil {
 
     // Ubicacion:
     private String ciudad;
+    private double longitud;
+    private double latitud;
 
 
 
@@ -57,11 +70,15 @@ public class Perfil {
             Log.d(DEBUG_TAG, "Cargando datos del Perfil desde Json");
             nombre = object.getString(NAME);
             ciudad = object.getString(CITY);
+            longitud = object.getDouble(LONGITUDE);
+            latitud = object.getDouble(LATITUDE);
             cantContactos = object.getString(CONTACTS);
             cantRecomendaciones = object.getString(POPULARIDAD);
             resumen = object.getString(RESUME);
+            nacimiento = object.getString(BIRTH);
+            correo = object.getString(EMAIL);
 
-            String strFoto = object.getString(PHOTO);
+            strFoto = object.getString(PHOTO);
             byte[] decodedString = Base64.decode(strFoto, Base64.NO_WRAP);
             InputStream is = new ByteArrayInputStream(decodedString);
             foto = BitmapFactory.decodeStream(is);
@@ -95,6 +112,37 @@ public class Perfil {
         }
     }
 
+    public JSONObject crearJson(){
+        JSONObject jsonPerfil = new JSONObject();
+        try{
+            jsonPerfil.putOpt(NAME, nombre);
+            jsonPerfil.putOpt(CITY, ciudad);
+            jsonPerfil.putOpt(LONGITUDE, longitud);
+            jsonPerfil.putOpt(LATITUDE, latitud);
+            jsonPerfil.putOpt(CONTACTS, cantContactos);
+            jsonPerfil.putOpt(POPULARIDAD, cantRecomendaciones);
+            jsonPerfil.putOpt(RESUME, resumen);
+            jsonPerfil.putOpt(PHOTO, strFoto);
+            jsonPerfil.putOpt(BIRTH, nacimiento);
+            jsonPerfil.putOpt(EMAIL, correo);
+
+            JSONArray arraySkills = new JSONArray();
+            for (int i = 0; i < skills.size(); i++ ){
+                arraySkills.put(skills.get(i));
+            }
+            jsonPerfil.putOpt(SKILLS, arraySkills);
+
+            JSONArray arrayExp = new JSONArray();
+            for (int i = 0; i < expLaboral.size(); i++ ){
+                arraySkills.put(expLaboral.get(i));
+            }
+            jsonPerfil.putOpt(JOB_POSITIONS, arrayExp);
+
+        }
+        catch (JSONException e) {e.printStackTrace();}
+        return jsonPerfil;
+    }
+
 
     public String getNombre(){
         return nombre;
@@ -102,6 +150,14 @@ public class Perfil {
 
     public Bitmap getFoto(){
         return foto;
+    }
+
+    public String getNacimiento(){
+        return nacimiento;
+    }
+
+    public String getCorreo(){
+        return correo;
     }
 
     public String getCantContactos(){
@@ -115,6 +171,12 @@ public class Perfil {
 
     public String getCiudad() {
         return ciudad; }
+
+    public double getLongitud() {
+        return longitud; }
+
+    public double getLatitud() {
+        return latitud; }
 
     public int getSizeSkills(){
         return sizeSkills;
