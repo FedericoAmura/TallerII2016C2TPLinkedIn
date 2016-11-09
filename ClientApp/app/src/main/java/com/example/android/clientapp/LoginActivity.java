@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void ingresar(){
-        Intent intent = new Intent(this, PestaniasActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
@@ -130,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this,"Login exitoso. ¡Bienvenido!",Toast.LENGTH_LONG).show();
 
                             try {
-                                String user_id = response.getString(USER_ID);
+                                int user_id = response.getInt(USER_ID);
                                 String token = response.getString(TOKEN);
                                 //Guardo las preferencias de usuario:
                                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
@@ -138,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString(USERNAME, username);
                                 editor.putString(PASSWORD, password);
-                                editor.putString(USER_ID, user_id);
+                                editor.putString(USER_ID, String.valueOf(user_id));
                                 editor.putString(TOKEN, token);
                                 editor.commit();
 

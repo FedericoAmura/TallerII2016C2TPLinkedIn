@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".JobifyApp"
@@ -18,8 +18,9 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".MainActivity" />
-
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/IntroTheme" />
         <activity
             android:name=".LoginActivity"
             android:theme="@style/IntroTheme">
@@ -29,17 +30,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".PestaniasActivity" />
-
         <activity
             android:name=".IntroActivity"
-            android:theme="@style/IntroTheme">
-        </activity>
-
+            android:theme="@style/IntroTheme" />
         <activity
             android:name=".RegistroActivity"
             android:theme="@style/IntroTheme" />
+        <activity
+            android:name=".PerfilEditActivity"
+            android:theme="@style/IntroTheme" />
+        <activity
+            android:name=".PerfilAmigoActivity"
+            android:theme="@style/PerfilTheme" />
+        <activity
+            android:name=".PerfilActivity"
+            android:theme="@style/PerfilTheme" />
+        <activity
+            android:name=".AmigosActivity"
+            android:theme="@style/PerfilTheme" />
+        <activity android:name=".ChatListActivity"></activity>
     </application>
 
 </manifest>

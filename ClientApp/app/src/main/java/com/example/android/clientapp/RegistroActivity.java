@@ -185,6 +185,12 @@ public class RegistroActivity extends AppCompatActivity {
             ok = false;
         }
 
+        // Contrasenas no coinciden:
+        if (! pass.equals(passRepetido)) {
+            Toast.makeText(RegistroActivity.this,"Passwords no coinciden.",Toast.LENGTH_LONG).show();
+            ok = false;
+        }
+
         // GPS desactivado:
         if (! gps.getIsGPSTrackingEnabled()) {
             gps.showSettingsAlert();
@@ -201,20 +207,23 @@ public class RegistroActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    //Funcion a llamar al clickear boton Cancelar.
+    //Funcion a llamar al clickear boton Enviar.
     public void apretarBotonEnviar(View view){
         final String nombre = etNombre.getText().toString();
         final String apellido = etApellido.getText().toString();
         final String edad = etEdad.getText().toString();
         final String correo = etCorreo.getText().toString();
         final String username = etNombreUsuario.getText().toString();
-        final String pass = Cripto.encodeString(etPass.getText().toString());
-        if (pass == null) {Log.d(DEBUG_TAG, "Pass null");}
+        final String pass = etPass.getText().toString();
         final String passRepetido = etPassRepetido.getText().toString();
+
+        final String passEncriptada = Cripto.encodeString(etPass.getText().toString());
+        if (passEncriptada == null) {Log.d(DEBUG_TAG, "Pass null");}
+
 
         boolean ok = validarDatos(nombre, apellido, edad, correo, username, pass, passRepetido);
         if (ok) { //TODO: descomentar validaciones
-            enviarDatosAlServer(nombre, apellido, edad, correo, username, pass);
+            enviarDatosAlServer(nombre, apellido, edad, correo, username, passEncriptada);
         }
     }
 
@@ -232,8 +241,8 @@ public class RegistroActivity extends AppCompatActivity {
 
             // Cargo datos de localizacion:
             if (gps.getIsGPSTrackingEnabled()) {
-                jsonObj.putOpt(LATITUDE, String.valueOf(gps.getLatitude()));
-                jsonObj.putOpt(LONGITUDE, String.valueOf(gps.getLongitude()));
+                jsonObj.putOpt(LATITUDE, gps.getLatitude());
+                jsonObj.putOpt(LONGITUDE, gps.getLongitude());
                 jsonObj.putOpt(CITY, gps.getLocality(this));
             }
             else {
