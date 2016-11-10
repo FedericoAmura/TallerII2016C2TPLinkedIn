@@ -1,18 +1,17 @@
-package com.example.android.clientapp.Fragments;
-
-/**
- * Created by guidonegri on 21/09/16.
- */
+package com.example.android.clientapp;
 
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -24,10 +23,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Amigo;
-import com.example.android.clientapp.JobifyAPI;
-import com.example.android.clientapp.PerfilAmigoActivity;
-import com.example.android.clientapp.R;
-import com.example.android.clientapp.RVAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +35,7 @@ import java.util.Map;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class RelacionesFragment extends Fragment {
+public class ChatListActivity extends AppCompatActivity {
 
     private static final String CONTACTS = "contacts";
 
@@ -49,38 +44,87 @@ public class RelacionesFragment extends Fragment {
 
     private ArrayList<Amigo> amigos;
     private ArrayList<String> amigosID;
+    private String userID;
+
     private RecyclerView rv;
+    private LinearLayoutManager llm;
+
+    private ArrayList<String> chatIDs = new ArrayList<>();
 
     private int statusCode;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.recycler_view, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.recycler_view);
 
-        rv = (RecyclerView) view.findViewById(R.id.rv);
+        rv = (RecyclerView) findViewById(R.id.rv);
 
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String userID = sharedPref.getString(USER_ID, "");
+        userID = sharedPref.getString(USER_ID, "");
         final String token = sharedPref.getString(TOKEN, "");
 
         cargarAmigosIdDelServer(userID, token);
-        return view;
+        setToolbar();
     }
+
+
+    private void setToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) // Habilitar up button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Chats");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_amigos, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void showSnackBar(String msg) {
+        Snackbar
+                .make(findViewById(R.id.coordinator), msg, Snackbar.LENGTH_LONG)
+                .show();
+    }
+
 
     private void inicializarData(){
         amigos = new ArrayList<Amigo>();
-        for (String userID : amigosID) {
-            cargarAmigosDelServer(userID);
+
+        SharedPreferences chatsPref = getApplicationContext().getSharedPreferences("chats_user_"+ userID, MODE_PRIVATE);
+        int chatSize = chatsPref.getInt("chatSize", 0);
+        String chatID;
+        for (String amigoUserID : amigosID) {
+            Log.d("TEST", "AmigoUserID vale: " + amigoUserID);
+            chatID = chatsPref.getString("chatID_"+ amigoUserID, null);
+            if (chatID != null) {
+                cargarAmigosDelServer(amigoUserID, chatSize);
+            }
         }
     }
 
     private void inicializarAdapter(){
-        RVAdapter adapter = new RVAdapter(amigos, PerfilAmigoActivity.class);
+        Log.d("TEST", "AmigosChat size: " +amigos.size());
+        RVAdapter adapter = new RVAdapter(amigos, ChatActivity.class);
         rv.setAdapter(adapter);
     }
 
@@ -90,22 +134,23 @@ public class RelacionesFragment extends Fragment {
             JSONArray jsonContacts = obj.getJSONArray(CONTACTS);
             for (int i = 0; i < jsonContacts.length(); i++) {
                 amigosID.add(jsonContacts.getString(i));
+                Log.d("TEST", "AmigosChat ID size: " +amigosID.size());
             }
             inicializarData();
         } catch(JSONException e) {e.printStackTrace();}
     }
 
-    private void cargarAmigosDelServer(final String userID){
+    private void cargarAmigosDelServer(final String userID, final int chatSize){
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactoBriefURL(userID), null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
                             Amigo amigo = new Amigo();
-                            amigo.cargarDatosBriefDesdeJSON(response);
+                            amigo.cargarDatosBriefDesdeJSON(response); //TODO: cambiar por el nuevo chat brief.
                             amigo.setUserID(userID);
                             amigos.add(amigo);
-                            if (amigos.size() == amigosID.size()) { inicializarAdapter(); }
+                            if (amigos.size() == chatSize) { inicializarAdapter(); }
                         }
                     }
                 },
@@ -114,10 +159,7 @@ public class RelacionesFragment extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(getActivity(), "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
-                        if ( netResp != null) {
-                            Toast.makeText(getActivity(),"ESTOY ACA 2:" + netResp.statusCode ,Toast.LENGTH_LONG).show();
+                            Toast.makeText(ChatListActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                         }
                     }
                 }){
@@ -129,7 +171,7 @@ public class RelacionesFragment extends Fragment {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonRequest);
 
     }
@@ -150,13 +192,13 @@ public class RelacionesFragment extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(getActivity(), "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            Toast.makeText(ChatListActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                         }
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
-                            Toast.makeText(getActivity(), "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            Toast.makeText(ChatListActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                         }
                         if ( netResp != null) {
-                            Toast.makeText(getActivity(),"ESTOY ACA 2:" + netResp.statusCode ,Toast.LENGTH_LONG).show();
+                            Toast.makeText(ChatListActivity.this,"ESTOY ACA 2:" + netResp.statusCode ,Toast.LENGTH_LONG).show();
                         }
                     }
                 }){
@@ -175,8 +217,10 @@ public class RelacionesFragment extends Fragment {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonRequest);
     }
+
+
 
 }

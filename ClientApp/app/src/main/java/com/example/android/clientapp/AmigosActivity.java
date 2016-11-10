@@ -47,7 +47,6 @@ public class AmigosActivity extends AppCompatActivity {
 
     private RecyclerView rv;
     private LinearLayoutManager llm;
-    private CollapsingToolbarLayout collapser;
 
     private int statusCode;
 
@@ -61,7 +60,6 @@ public class AmigosActivity extends AppCompatActivity {
         llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
-
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final String userID = sharedPref.getString(USER_ID, "");
@@ -77,6 +75,7 @@ public class AmigosActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) // Habilitar up button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Contactos");
     }
 
     @Override
@@ -136,7 +135,7 @@ public class AmigosActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
                             Amigo amigo = new Amigo();
-                            amigo.cargarDesdeJSON(response);
+                            amigo.cargarDatosBriefDesdeJSON(response);
                             amigo.setUserID(userID);
                             amigos.add(amigo);
                             if (amigos.size() == amigosID.size()) { inicializarAdapter(); }

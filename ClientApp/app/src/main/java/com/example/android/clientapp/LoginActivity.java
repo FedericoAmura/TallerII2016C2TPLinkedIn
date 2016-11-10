@@ -132,10 +132,18 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 int user_id = response.getInt(USER_ID);
                                 String token = response.getString(TOKEN);
-                                //Guardo las preferencias de usuario:
+                                //Creo preferencia para los chats del usuario:
+                                SharedPreferences chatsPref = getApplicationContext().getSharedPreferences("chats_user_"+user_id, MODE_PRIVATE);
+                                SharedPreferences.Editor chatEditor = chatsPref.edit();
+                                //chatEditor.clear();
+                                //chatEditor.commit();
+
+                                //Guardo las preferencias default de usuario:
                                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
                                         (getApplicationContext());
                                 SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.clear();
+                                editor.commit();
                                 editor.putString(USERNAME, username);
                                 editor.putString(PASSWORD, password);
                                 editor.putString(USER_ID, String.valueOf(user_id));

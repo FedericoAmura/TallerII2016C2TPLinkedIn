@@ -95,18 +95,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         botonChat = (FloatingActionButton) findViewById(R.id.boton_chat);
-        /*botonChat.setOnClickListener(new View.OnClickListener(){
+        botonChat.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View v){
-
+                verChats();
             }
 
-        });*/
+        });
     }
 
-    private void apretarBotonChat(View view) {
-        //Intent intent = new Intent(this, ChatActivity.class);
-        //startActivity(intent);
+    private void verChats() {
+        Intent intent = new Intent(this, ChatListActivity.class);
+        startActivity(intent);
     }
 
     private void verPerfil(){

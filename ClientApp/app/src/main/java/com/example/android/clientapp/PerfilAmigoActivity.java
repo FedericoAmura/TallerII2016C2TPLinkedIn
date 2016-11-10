@@ -1,5 +1,6 @@
 package com.example.android.clientapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -34,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,7 +125,7 @@ public class PerfilAmigoActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.opcionChat:
-                showSnackBar("Abrir chat");
+                abrirChat();
                 return true;
             case android.R.id.home:
                 super.onBackPressed();
@@ -133,6 +135,27 @@ public class PerfilAmigoActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private void abrirChat(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
+                (getApplicationContext());
+        String userID = sharedPref.getString("userID", "");
+
+        SharedPreferences chatsPref = getApplicationContext().getSharedPreferences("chats_user_"+ userID, MODE_PRIVATE);
+
+        int chatSize = chatsPref.getInt("chatSize", 0);
+        String chatID = chatsPref.getString("chatID_"+ amigoUserID, null);
+        if (chatID == null) {
+            SharedPreferences.Editor editor = chatsPref.edit();
+            editor.putString("chatID_" + amigoUserID, amigoUserID);
+            chatSize = chatSize + 1;
+            editor.putInt("chatSize", chatSize);
+            editor.commit();
+        }
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("userID", amigoUserID);
+        startActivity(intent);
     }
 
     private void cargarDatosDelServer(final String userID){

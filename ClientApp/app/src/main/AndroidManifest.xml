@@ -49,7 +49,10 @@
         <activity
             android:name=".AmigosActivity"
             android:theme="@style/PerfilTheme" />
-        <activity android:name=".ChatListActivity"></activity>
+        <activity android:name=".ChatListActivity"
+            android:theme="@style/PerfilTheme"/>
+        <activity android:name=".ChatActivity"
+            android:theme="@style/PerfilTheme"/>
     </application>
 
 </manifest>
