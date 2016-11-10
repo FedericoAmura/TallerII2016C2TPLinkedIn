@@ -63,9 +63,10 @@ uint32_t DBJSON::login(const Json &json) {
 	string passHashStr = base64_decode(json["password"].string_value());
 	vector<char> passHash(passHashStr.begin(), passHashStr.end());
 	//TODO Google Cloud Messaging
-	//uint32_t userID = db->login(userName, passHash);
-	//registration_ids[userID] = json["registration_id"].string_value();
-	return db->login(userName, passHash);
+	uint32_t userID = db->login(userName, passHash);
+	registration_ids[userID] = json["registration_id"].string_value();
+	//return db->login(userName, passHash);
+	return userID;
 }
 
 void DBJSON::logout(const string &token) {
@@ -266,15 +267,18 @@ void DBJSON::crearPeticion(const Json &json) {
 	string mensaje(json["message"].string_value());
 	db->solicitarContacto(uIDOrigen, uIDDestino, mensaje);
 	// TODO Google Cloud Messaging
-	/*
+
+		Json::object j;
 		Json::object data;
 		Json::object notification;
 		notification["title"] = "Solicitud de Contacto";
-		notification["text"] = "Fulanito quiere agregarte como amigo";
-		data["notification"] = notification;
-		data["to"] = registration_ids[uIDDestino];
-		GCM_Connector::notify(Json(data).dump());
-	*/
+		notification["body"] = "Fulanito quiere agregarte como amigo";
+		data["type_notif"] = 2;
+		j["notification"] = notification;
+		j["data"] = data;
+		j["to"] = registration_ids[uIDDestino];
+		GCM_Connector::notify(Json(j).dump());
+
 }
 
 bool DBJSON::esContacto(uint32_t userID1, uint32_t userID2) {
@@ -369,15 +373,18 @@ void DBJSON::enviarMensaje(const Json &json) {
 	string mensaje = json["message"].string_value();
 	db->enviarMensaje(uIDReceptor, uIDEmisor, mensaje);
 	// TODO Google Cloud Messaging
-/*
-	Json::object data;
+
+	Json::object j;
 	Json::object notification;
+	Json::object data;
 	notification["title"] = "Nuevo mensaje";
-	notification["text"] = mensaje;
-	data["notification"] = notification;
-	data["to"] = registration_ids[uIDReceptor];
-	GCM_Connector::notify(Json(data).dump());
-*/
+	notification["body"] = mensaje;
+	data["type_notif"] = 1;
+	j["notification"] = notification;
+	j["data"] = data;
+	j["to"] = registration_ids[uIDReceptor];
+	GCM_Connector::notify(Json(j).dump());
+
 }
 
 Json DBJSON::getNumLastMensaje(uint32_t userID1, uint32_t userID2) {

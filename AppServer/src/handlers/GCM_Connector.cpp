@@ -14,7 +14,7 @@ int GCM_Connector::notify(std::string data) {
 
     curl.add_header("Authorization", "key=" + GOOGLE_API_KEY_APPSERVER);
     curl.add_header("Content-Type", "application/json");
-    int status_code = curl.post(GOOGLE_CLOUD_MESSAGING_URL_2, data);
+    int status_code = curl.post(GOOGLE_CLOUD_MESSAGING_URL, data);
     if (status_code != 200)
         throw RequestRejected();
     return status_code;

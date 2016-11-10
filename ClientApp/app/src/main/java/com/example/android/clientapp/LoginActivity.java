@@ -122,6 +122,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void enviarDatosAlServer(final String username, final String password){
         JSONObject jsonObj = new JSONObject();
+
+        SharedPreferences prefs = getSharedPreferences("FCMtoken", MODE_PRIVATE);
+        String FCMtoken = prefs.getString("token", null);
+        if (FCMtoken != null)
+            try {
+                jsonObj.putOpt("registration_id", FCMtoken);
+            } catch (JSONException e) {}
+
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, JobifyAPI.getLoginURL(), jsonObj,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -180,5 +188,7 @@ public class LoginActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonRequest);
     }
+
+
 }
 
