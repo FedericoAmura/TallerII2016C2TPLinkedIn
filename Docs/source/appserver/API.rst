@@ -220,6 +220,27 @@ POSIBLES RESPUESTAS	| 404 - UserID Inexistente
 			| }
 ======================  ==========================
 
+Datos chat breves : Consulta
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Util para mostrar como en ciertas aplicaciones de chat, nombre foto y ultimo mensaje de la conversación.
+El primer userID sera el de la persona de quien estoy consultando los datos.
+El segundo el del participante del chat, que debe coincidir con quien esta haciendo el request.
+
+======================  ==========================
+URL                  	| \http://<appserver>/users/<userID>/brief/<chatWithUserID>
+AUTH                 	| Si
+VERB                 	| GET
+PARAMETROS           	|
+POSIBLES RESPUESTAS	| 404 - UserID Inexistente
+			| 200 - Ok + Siguiente JSON
+			| {
+			|  “name” : “<nombre>”,
+			|  “thumb” : “f0a4b34692d4...”
+			|  "msg" : "El mensaje"
+			| }
+======================  ==========================
+
 Resumen : Consulta
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

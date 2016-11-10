@@ -130,11 +130,11 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 	    // RL popularidad
 	    rlPopularidadUpdate(uID, 0, batch);
 	    status = db->Write(WriteOptions(), &batch);
-	    verificarEstadoDB(status, "Error 1 al registrar usuario");
+	    verificarEstadoDB(status, "Error DB1 al registrar usuario");
 		return uID;
 	}
 	else if(status.ok()) throw PreexistentUsername(userName);
-	else verificarEstadoDB(status, "Error 2 al registrar usuario");
+	else verificarEstadoDB(status, "Error DB2 al registrar usuario");
 }
 
 uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash) {
@@ -786,6 +786,7 @@ std::vector<uint32_t> DBRaw::getConversacionesNoLeidas(uint32_t uID) {
 std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		uint32_t uID2, uint32_t numPrimMensaje, uint32_t numUltMensaje) {
 	std::vector<std::pair<uint32_t, string> > result;
+	if (numPrimMensaje < 0) numPrimMensaje = 0;
 	if (numUltMensaje < numPrimMensaje) return result;
 	uint32_t uIDMenor = uID1 < uID2 ? uID1 : uID2;
 	uint32_t uIDMayor = uID1 >= uID2 ? uID1 : uID2;
@@ -797,7 +798,7 @@ std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 		if (status.IsNotFound()) return result;
 		verificarEstadoDB(status, "Error al consultar mensajes.");
 		uint32_t id = retVal.data()[0];
-		string msg(retVal.data()+4, retVal.length()-4);
+		string msg(retVal.data()+sizeof(uint32_t), retVal.length()-sizeof(uint32_t));
 		std::pair<uint32_t, string> par(id, msg);
 		result.push_back(par);
 	}

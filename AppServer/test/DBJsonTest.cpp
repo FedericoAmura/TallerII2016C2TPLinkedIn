@@ -311,6 +311,7 @@ TEST_F(DBJsonTest, testRecomendaciones)
 	};
 	dbj->actualizarRecomendacion(recomendacion);
 	EXPECT_TRUE(dbj->esRecomendado(uid1, uid2)["recommends"].bool_value());
+	EXPECT_EQ(dbj->getDatosBrief(uid2)["popularidad"].int_value(), 1);
 	EXPECT_FALSE(dbj->esRecomendado(uid2, uid1)["recommends"].bool_value());
 	recomendacion = Json::object {
 		{ "recommender" , (int)uid1 },
@@ -377,8 +378,6 @@ TEST_F(DBJsonTest, testChat)
 	EXPECT_EQ(mensajes["messages"][0]["msgID"].int_value(), 0);
 	EXPECT_EQ(mensajes["messages"][1]["msgID"].int_value(), 1);
 	EXPECT_EQ(mensajes["messages"][2]["msgID"].int_value(), 2);
-
-
 	mensaje = Json::object {
 		{ "senderID" , (int)uid2 },
 		{ "receiverID", (int)uid1 },
@@ -387,6 +386,21 @@ TEST_F(DBJsonTest, testChat)
 	dbj->enviarMensaje(mensaje);
 	chatsNuevos = dbj->getChatNuevos(uid2)["new"].array_items();
 	EXPECT_EQ(chatsNuevos.size(), 1);
+}
+
+TEST_F(DBJsonTest, testChatBrief)
+{
+	registrarN(2);
+	EXPECT_STREQ(dbj->getDatosChatBrief(0, 1)["msg"].string_value().c_str(),	"");
+	Json mensaje = Json::object {
+		{ "senderID" , 1 },
+		{ "receiverID", 0 },
+		{ "message",  "Mensaje 0 de 1->0" },
+	};
+	dbj->enviarMensaje(mensaje);
+	string test = dbj->getDatosChatBrief(0, 1)["msg"].string_value();
+	EXPECT_STREQ(dbj->getDatosChatBrief(0, 1)["msg"].string_value().c_str(),
+			"Mensaje 0 de 1->0");
 }
 
 TEST_F(DBJsonTest, testBusquedaPop)

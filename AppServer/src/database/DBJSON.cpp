@@ -122,6 +122,22 @@ Json DBJSON::getDatosBrief(uint32_t userID) {
 	return data;
 }
 
+Json DBJSON::getDatosChatBrief(uint32_t userID, uint32_t chatterUID) {
+	DatosUsuario datos = db->getDatos(userID);
+	Foto thumb = db->getFotoThumbnail(userID);
+	uint32_t num = db->getNumUltMensaje(userID, chatterUID);
+	string mensaje;
+	std::vector<std::pair<uint32_t, string> > mensajes =
+			db->getMensajes(userID, chatterUID, num-1, num);
+	if (mensajes.size() > 0) mensaje = mensajes[0].second;
+	Json data = Json::object {
+		{ "name", datos.nombre },
+		{ "thumb", thumb.toBase64String() },
+		{ "msg", mensaje},
+	};
+	return data;
+}
+
 void DBJSON::setDatos(uint32_t userID, const Json &json) {
 	camposExisten(json, "name", "birth", "email", "skills", "job_positions",
 				"city", "longitude", "latitude");

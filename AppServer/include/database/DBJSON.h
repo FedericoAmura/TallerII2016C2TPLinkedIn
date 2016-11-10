@@ -91,6 +91,14 @@ class DBJSON {
 	 */
 	Json getDatosBrief(uint32_t userID);
 
+	/**
+	 * Devuelve nombre, popularidad, ciudad, ultimo mensaje entre ambos
+	 * @param userID					Usuario de quien quiero nombre y foto
+	 * @param chatterUID				Para obtener el chat del ultimo mensaje
+	 * @return							Ver documentacion API: "Datos chat breves (...)"
+	 */
+	Json getDatosChatBrief(uint32_t userID, uint32_t chatterUID);
+
 
 	/**
 	 * Guarda nuevos datos de perfil, foto y resumen optativos
