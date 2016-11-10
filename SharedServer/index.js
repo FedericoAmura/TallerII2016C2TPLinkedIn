@@ -15,6 +15,7 @@ var appversion = 0.2;
 //Configuracion express
 app.set('port', port);
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 function errPGConn(err, res) {
 	console.log(err);
@@ -37,21 +38,13 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname+'/public/index.html');
 });
 
-app.post('/login', function (req, res) {
-	if (noContentTypeJSON(req, res)) return;
+app.post('/', function (req, res) {
 	if (loginUsername==req.body.username && loginPassword==req.body.password) {
-		res.status(200).send({ redirect:"/dbmanager"});
-		console.log("User logged in");
+		res.sendFile(__dirname+'/public/app.html');
 	} else {
-		res.status(401);
-		res.end();
+		res.sendFile(__dirname+'/public/index.html');
 		console.log("Wrong login with: "+req.body.username+":"+req.body.password);
 	}
-});
-
-//dbmanager
-app.get('/dbmanager', function (req, res) {
-	res.sendFile(__dirname+'/public/app.html');
 });
 
 //Categorias

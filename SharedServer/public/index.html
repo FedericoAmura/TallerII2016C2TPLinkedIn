@@ -2,27 +2,22 @@
 <html>
 <head>
 	<title>Jobify SharedServer Database Login</title>
-	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
-	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 	<link rel="stylesheet" href="style.css">
-	<script src="login.js"></script>
 </head>
 
-<body ng-app="jobifyLogin" class="centered container green lighten-5">
+<body class="centered container green lighten-5">
   <div class="centered card-panel green darken-1 z-depth-4">
 	<img src="logojobify.png" alt="Jobify" width="40%">
 	<h2>Welcome to Jobify</h2>
 		
-	<div class="centered form-signin" ng-controller="LoginController">
+	<form method="post" action="/" class="centered form-signin">
 		<h4 class="form-signin-heading"></h4>
-		<input type="text" class="active validate" ng-model="username" placeholder="username"><br>
-		<input type="password" class="validate" ng-model="password" placeholder="password"><br>
-		<input type="submit" value="Login" class="btn waves-effect waves-green blue" ng-click="login()"/>
-	</div>
+		<input type="text" class="active validate" name="username" placeholder="username" required><br>
+		<input type="password" class="validate" name="password" placeholder="password" required><br>
+		<button type="submit" name="login" class="btn waves-effect waves-green blue">Login</button>
+	</form>
   </div>
 </body>
 </html>
-

@@ -36,6 +36,7 @@ components.directive('categorylist', function() {
   				function (response) {
   					Materialize.toast($scope.category.name+' updated', 3000, 'rounded');
   					$scope.category.name = $scope.category.newname;
+  					$scope.category.description = $scope.category.newdescription;
   					$scope.category.newname = '';
   					$scope.category.newdescription = '';
   				}, function (rejection) {

@@ -33,6 +33,7 @@ jobify.controller('CategoriesController', function($scope, $http) {
   		$http.post('/categories',data).
   		then(function (response) {
   			Materialize.toast('Category '+$scope.categoryname+' created', 3000, 'rounded');
+  			$scope.categories.push(response.data.category);
 			$scope.categoryname = '';
 			$scope.description = '';
   		}, function () {
