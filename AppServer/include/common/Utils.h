@@ -41,6 +41,8 @@ enum URI {	_LOGIN,
 			_CHAT_LAST_MSG,
 			_CHAT_INC_MSG,
 			_CATEGORIES,
+			_JOB_POSITIONS,
+			_SKILLS,
 			_JOB_POS_BY_CAT,
 			_JOB_POSITION,
 			_SKILLS_BY_CAT,
@@ -74,6 +76,8 @@ static URI validate_uri(std::string uri){
 	if (std::regex_match(uri, std::regex(CHAT_INC_MSG_URI))) 	return _CHAT_INC_MSG;
 
 	if (std::regex_match(uri, std::regex(CATEGORIES_URI))) 		return _CATEGORIES;
+	if (std::regex_match(uri, std::regex(JOB_POSITIONS_URI)))	return _JOB_POSITIONS;
+	if (std::regex_match(uri, std::regex(SKILLS_URI)))			return _SKILLS;
 	if (std::regex_match(uri, std::regex(JOB_POS_BY_CAT_URI))) 	return _JOB_POS_BY_CAT;
 	if (std::regex_match(uri, std::regex(JOB_POS_URI))) 		return _JOB_POSITION;
 	if (std::regex_match(uri, std::regex(SKILLS_BY_CAT_URI))) 	return _SKILLS_BY_CAT;

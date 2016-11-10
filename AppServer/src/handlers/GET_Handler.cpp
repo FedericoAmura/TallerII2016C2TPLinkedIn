@@ -90,6 +90,14 @@ http_response GET_Handler::handleRequest() {
 			// /categories
 			res = handle_get_categories();
 			break;
+		case _JOB_POSITIONS:
+			// /job_positions
+			res = handle_get_jobpositions();
+			break;
+		case _SKILLS:
+			// /skills
+			res = handle_get_skills();
+			break;
 		case _JOB_POS_BY_CAT:
 			// /job_positions/categories/<category>
 			res = handle_get_jobpositions_by_category();
@@ -557,6 +565,40 @@ http_response GET_Handler::handle_get_categories() {
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
 		std::cout << "[Error] Invalid data received from Shared Server. Query (categories) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	}
+	return http_response(data.dump(), STATUS_OK);
+}
+
+http_response GET_Handler::handle_get_jobpositions() {
+	Json data;
+	try {
+		data = SharedServerConnector::get_job_positions();
+	} catch (CurlInitException &e) {
+		std::cout << "[Error] Curl: init failed. Query (job_positions) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (CurlGetException &e) {
+		std::cout << "[Error] Curl: GET failed. Query (job_positions) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid data received from Shared Server. Query (job_positions) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	}
+	return http_response(data.dump(), STATUS_OK);
+}
+
+http_response GET_Handler::handle_get_skills() {
+	Json data;
+	try {
+		data = SharedServerConnector::get_skills();
+	} catch (CurlInitException &e) {
+		std::cout << "[Error] Curl: init failed. Query (skills) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (CurlGetException &e) {
+		std::cout << "[Error] Curl: GET failed. Query (skills) failed." << std::endl;
+		return http_response("", STATUS_INT_SERVER_ERR);
+	} catch (InvalidJsonException &e) {
+		std::cout << "[Error] Invalid data received from Shared Server. Query (skills) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 	return http_response(data.dump(), STATUS_OK);

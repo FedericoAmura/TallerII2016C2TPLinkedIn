@@ -188,6 +188,18 @@ private:
 	http_response handle_get_categories();
 
 	/*
+	 * Posiciones de trabajo
+	 * @return	en caso de éxito, retorna todas los puestos disponibles.
+	 * */
+	http_response handle_get_jobpositions();
+
+	/*
+	 * Skills
+	 * @return	en caso de éxito, retorna todas las skills disponibles.
+	 * */
+	http_response handle_get_skills();
+
+	/*
 	 * Posición de trabajo por categoría
 	 * @return	en caso de éxito, retorna las posiciones de trabajo asociadas a una
 	 *			categoría.

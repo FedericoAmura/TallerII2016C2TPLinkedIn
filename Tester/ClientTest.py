@@ -191,6 +191,9 @@ class ClientTest(unittest.TestCase):
         data["recommends"] = True
         res = client1.recommend_user(data)
         self.assertEquals(204, res.status_code)
+        res = client1.get_profile_from(client3.get_user_id())
+        data = json.loads(res.text)
+        self.assertEquals(data['popularidad'], 1)
 
     #checked
     def test_16_recommend_nonexistent_user(self):
@@ -204,7 +207,7 @@ class ClientTest(unittest.TestCase):
     #checked
     def test_17_reject_contact_request(self):
         res = client3.reject_contact_request(client1.get_user_id())
-        self.assertEquals(204, res.status_code)
+        self.assertEquals(200, res.status_code)
 
     #checked
     def test_18_delete_nonexistent_contact(self):
@@ -215,12 +218,12 @@ class ClientTest(unittest.TestCase):
     def test_19_delete_existent_contact(self):
         another_userID = client2.get_user_id()
         res = client1.delete_contact(another_userID)
-        self.assertEquals(204, res.status_code)
+        self.assertEquals(200, res.status_code)
 
     #checked
     def test_20_logout(self):
         res = client3.logout()
-        self.assertEquals(204, res.status_code)
+        self.assertEquals(200, res.status_code)
         res = client3.get_contacts()
         self.assertEquals(403, res.status_code)
 
@@ -414,6 +417,14 @@ class ClientTest(unittest.TestCase):
     #checked
     def test_47_get_existent_skill(self):
         res = client1.get_skill("Python")
+        self.assertEquals(200, res.status_code)
+
+    def test_48_get_job_positions(self):
+        res = client1.get_job_positions()
+        self.assertEquals(200, res.status_code)
+
+    def test_49_get_skills(self):
+        res = client1.get_skills()
         self.assertEquals(200, res.status_code)
 
 

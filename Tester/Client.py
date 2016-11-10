@@ -218,6 +218,14 @@ class Client:
         url = self.url_base + "/categories"
         return self.makeRequest_GET(url, "", {})
 
+    def get_job_positions(self):
+        url = self.url_base + "/job_positions"
+        return self.makeRequest_GET(url, "", {})
+
+    def get_skills(self):
+        url = self.url_base + "/skills"
+        return self.makeRequest_GET(url, "", {})
+
     def get_job_position_by_category(self, category):
         url = self.url_base + "/job_positions/categories/" + category
         return self.makeRequest_GET(url, "", {})
