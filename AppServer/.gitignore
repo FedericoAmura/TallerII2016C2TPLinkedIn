@@ -11,3 +11,4 @@ UnitTest
 /.cproject
 include/jpeg/jconfig.h
 *.deb
+/bin
