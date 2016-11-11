@@ -1,15 +1,15 @@
 FROM ubuntu
 
-#RUN apt-get -y update
+RUN apt-get update
 
-#RUN apt-get install -y cpp build-essential make cmake git libcurl3 libcurl4-openssl-dev
+RUN apt-get install -y libcurl3 libcurl4-openssl-dev
 
-RUN mkdir -p /AppServer
+RUN mkdir -p /AppServer/bin
+
+WORKDIR /AppServer/bin
 
 COPY . /AppServer
 
-#RUN cd AppServer; bash ./buildServer.sh
-
 EXPOSE 8888
 
-CMD AppServer/AppServer
+CMD ./appserver
