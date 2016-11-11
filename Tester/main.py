@@ -28,7 +28,7 @@ os.system("./Tester/SharedServerTests.py "+port)
 
 #AppServer
 print "----- Running AppServer (c++)"
-proc_AppServer = subprocess.Popen(["./AppServer/AppServer"], shell=False)
+proc_AppServer = subprocess.Popen(["./AppServer/bin/AppServer"], shell=False)
 
 print "Waiting for AppServer to become active"
 time.sleep(1)	#de nuevo, puede no ser necesario pero por las dudas lo esperamos 1 segundo
