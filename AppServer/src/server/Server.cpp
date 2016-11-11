@@ -13,6 +13,10 @@ Server::Server() {
 	} catch (LevelDBException &e) {
 		init_ok = false;
 		return;
+	} catch (const std::ios_base::failure &e) {
+		std::cout << "[ERROR] Default photo for DBRaw not found. Check the path where the application is running." << std::endl;
+		init_ok = false;
+		return;
 	}
 	connectionsHandler = new ConnectionsHandler(db_json);
 	init_ok = true;
