@@ -60,7 +60,7 @@ components.directive('categorylist', function() {
   	template:
   	'<li>'+
   		'<div class="collapsible-header contentdetails"><a class="button btn-flat btn-small" ng-click="delete()"><i class="tiny material-icons">delete</i></a><a class="button btn-flat btn-small" ng-click="showEditCategory()"><i class="tiny material-icons">mode_edit</i></a>{{category.name}}</div>'+
-  		'<div class="collapsible-body">'+
+  		'<div class="collapsible-body light-green lighten-1">'+
   			'<p>Description: {{category.description}}</p>'+
   		'</div>'+
   		'<!-- modal edit category -->'+
@@ -139,7 +139,7 @@ components.directive('skilllist', function() {
   	template:
   	'<li>'+
   		'<div class="collapsible-header contentdetails"><a class="button btn-flat btn-small" ng-click="delete()"><i class="tiny material-icons">delete</i></a><a class="button btn-flat btn-small" ng-click="showEditSkill()"><i class="tiny material-icons">mode_edit</i></a>{{skill.name}}</div>'+
-  		'<div class="collapsible-body">'+
+  		'<div class="collapsible-body light-green lighten-1">'+
   			'<p>Category: {{skill.category}}</br>'+
   			'Description: {{skill.description}}</p>'+
   		'</div>'+
@@ -188,8 +188,8 @@ components.directive('joblist', function() {
 		};
 		
 		$scope.edit = function() {
-			$scope.closeEditSkill();
-			data = {skill:{name:$scope.job.newname,description:$scope.job.newdescription,category:$scope.job.newcategory}};
+			$scope.closeEditJob();
+			data = {job_position:{name:$scope.job.newname,description:$scope.job.newdescription,category:$scope.job.newcategory}};
 			$http.put('/job_positions/categories/'+escape($scope.job.category)+'/'+escape($scope.job.name),data).then(
   				function (response) {
   					Materialize.toast($scope.job.name+' updated', 3000, 'rounded');
@@ -220,7 +220,7 @@ components.directive('joblist', function() {
   	template:
   	'<li>'+
   		'<div class="collapsible-header contentdetails"><a class="button btn-flat btn-small" ng-click="delete()"><i class="tiny material-icons">delete</i></a><a class="button btn-flat btn-small" ng-click="showEditJob()"><i class="tiny material-icons">mode_edit</i></a>{{job.name}}</div>'+
-  		'<div class="collapsible-body">'+
+  		'<div class="collapsible-body light-green lighten-1">'+
   			'<p>Category: {{job.category}}</br>'+
   			'Description: {{job.description}}</p>'+
   		'</div>'+
