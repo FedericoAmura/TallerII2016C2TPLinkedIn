@@ -60,7 +60,9 @@ components.directive('categorylist', function() {
   	template:
   	'<li>'+
   		'<div class="collapsible-header contentdetails"><a class="button btn-flat btn-small" ng-click="delete()"><i class="tiny material-icons">delete</i></a><a class="button btn-flat btn-small" ng-click="showEditCategory()"><i class="tiny material-icons">mode_edit</i></a>{{category.name}}</div>'+
-  		'<div class="collapsible-body"><p>{{category.description}}</p></div>'+
+  		'<div class="collapsible-body">'+
+  			'<p>Description: {{category.description}}</p>'+
+  		'</div>'+
   		'<!-- modal edit category -->'+
   		'<div id="editCategoryModal{{category.name}}" class="modal-background">'+
   			'<div class="modal-content">'+
@@ -137,7 +139,10 @@ components.directive('skilllist', function() {
   	template:
   	'<li>'+
   		'<div class="collapsible-header contentdetails"><a class="button btn-flat btn-small" ng-click="delete()"><i class="tiny material-icons">delete</i></a><a class="button btn-flat btn-small" ng-click="showEditSkill()"><i class="tiny material-icons">mode_edit</i></a>{{skill.name}}</div>'+
-  		'<div class="collapsible-body"><p>{{skill.description}}</p></div>'+
+  		'<div class="collapsible-body">'+
+  			'<p>Category: {{skill.category}}</br>'+
+  			'Description: {{skill.description}}</p>'+
+  		'</div>'+
   		'<!-- modal edit skill -->'+
   		'<div id="editSkillModal{{skill.name}}" class="modal-background">'+
   			'<div class="modal-content">'+
@@ -215,7 +220,10 @@ components.directive('joblist', function() {
   	template:
   	'<li>'+
   		'<div class="collapsible-header contentdetails"><a class="button btn-flat btn-small" ng-click="delete()"><i class="tiny material-icons">delete</i></a><a class="button btn-flat btn-small" ng-click="showEditJob()"><i class="tiny material-icons">mode_edit</i></a>{{job.name}}</div>'+
-  		'<div class="collapsible-body"><p>{{job.description}}</p></div>'+
+  		'<div class="collapsible-body">'+
+  			'<p>Category: {{job.category}}</br>'+
+  			'Description: {{job.description}}</p>'+
+  		'</div>'+
   		'<!-- modal edit job -->'+
   		'<div id="editSkillModal{{job.name}}" class="modal-background">'+
   			'<div class="modal-content">'+
