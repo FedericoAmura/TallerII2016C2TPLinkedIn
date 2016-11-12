@@ -35,13 +35,9 @@ $ sudo dpkg -L appserver
 ```
 
 ## Ejecución de la aplicación
-Puede configurar la variable PATH, agregando la path donde se instaló la aplicación, para poder ejecutarlo desde cualquier ubicación:
+Para ejecutar la aplicación, deberá ubicarse en el directorio donde se instaló la aplicación (/usr/appserver) y ejecutar el siguiente comando:
 ```sh
-$ AppServer
-```
-sino, puede ejecutarlo ingresando la path de instalación:
-```sh
-$ /usr/appserver/AppServer
+$ ./AppServer
 ```
 
 ## Eliminación de paquete

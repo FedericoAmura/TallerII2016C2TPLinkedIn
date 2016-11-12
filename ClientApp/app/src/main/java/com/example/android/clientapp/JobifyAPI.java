@@ -11,7 +11,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class JobifyAPI {
 
-    private static final String APPSERVER_IP = "192.168.0.103";
+    private static final String APPSERVER_IP = "192.168.43.142";
     private static final String APPSERVER_PUERTO = "8888";
     private static final String APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
 

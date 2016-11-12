@@ -52,7 +52,13 @@
         <activity
             android:name=".AmigosActivity"
             android:theme="@style/PerfilTheme" />
-        <activity android:name=".ChatListActivity"></activity>
+
+        <activity android:name=".ChatListActivity"
+            android:theme="@style/PerfilTheme"/>
+
+        <activity android:name=".ChatActivity"
+            android:theme="@style/PerfilTheme"/>
+
         <service android:name=".FCM.MyFirebaseInstanceIdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"></action>

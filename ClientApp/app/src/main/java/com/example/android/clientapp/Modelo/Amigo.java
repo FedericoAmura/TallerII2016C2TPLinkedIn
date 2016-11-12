@@ -34,16 +34,20 @@ public class Amigo {
     private Bitmap foto;
     private String strFoto;
 
+    private String msg = null;
+
     public Amigo() {
     }
 
-    public void cargarDesdeJSON(JSONObject object){
+    public void cargarDatosBriefDesdeJSON(JSONObject object){
         try {
             Log.d(DEBUG_TAG, "Cargando datos brief de Amigo desde Json");
             name = object.getString(NAME);
             city = object.getString(CITY);
             popularidad = object.getInt(POPULARIDAD);
+
             strFoto = object.getString(THUMB);
+            Log.d("TEST", "STRfoto: "+ strFoto);
             byte[] decodedString = Base64.decode(strFoto, Base64.NO_WRAP);
             InputStream is = new ByteArrayInputStream(decodedString);
             foto = BitmapFactory.decodeStream(is);

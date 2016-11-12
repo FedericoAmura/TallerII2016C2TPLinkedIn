@@ -9,6 +9,9 @@ import signal
 
 print "----- Starting python master"
 
+os.environ["CC"] = "gcc-4.9"
+os.environ["CXX"] = "g++-4.9"
+
 print "----- Creating database locally"
 os.system('sudo ./Tester/initiatepostgres.sh')
 
@@ -28,7 +31,7 @@ os.system("./Tester/SharedServerTests.py "+port)
 
 #AppServer
 print "----- Running AppServer (c++)"
-proc_AppServer = subprocess.Popen(["./AppServer/AppServer"], shell=False)
+proc_AppServer = subprocess.Popen(["./AppServer/bin/AppServer"], shell=False)
 
 print "Waiting for AppServer to become active"
 time.sleep(1)	#de nuevo, puede no ser necesario pero por las dudas lo esperamos 1 segundo

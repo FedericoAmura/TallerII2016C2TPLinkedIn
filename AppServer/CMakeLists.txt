@@ -15,6 +15,7 @@ file(GLOB_RECURSE TEST "test/*.cpp")
 add_executable(AppServer ${COMMONSRC} "src/AppServer.cpp")
 #Para la generacion del paquete de instalacion
 install(TARGETS AppServer DESTINATION appserver)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/default.jpg DESTINATION appserver)
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Jobify Team")
 include(CPack)

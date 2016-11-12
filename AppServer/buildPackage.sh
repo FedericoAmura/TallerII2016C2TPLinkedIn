@@ -8,7 +8,5 @@ cmake ..
 make -j$CORES
 make package
 mv *.deb ../AppServer_1.x-Linux.deb
-mv AppServer ../AppServer
-mv UnitTest ../UnitTest
 cd ..
 rm -r ./build
