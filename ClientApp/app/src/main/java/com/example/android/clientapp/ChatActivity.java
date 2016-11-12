@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.android.clientapp.Modelo.chat.Message;
-import com.example.android.clientapp.utils.MessageArrayAdapter;
 
 public class ChatActivity extends AppCompatActivity {
     private MessageArrayAdapter messageArrayAdapter;

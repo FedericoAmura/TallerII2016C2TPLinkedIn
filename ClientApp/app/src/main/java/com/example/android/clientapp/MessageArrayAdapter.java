@@ -1,4 +1,4 @@
-package com.example.android.clientapp.utils;
+package com.example.android.clientapp;
 
 import android.content.Context;
 import android.view.LayoutInflater;
