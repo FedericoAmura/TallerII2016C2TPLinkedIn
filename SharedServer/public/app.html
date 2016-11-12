@@ -23,33 +23,95 @@
                      <li><a class="dropdown-button" data-activates="sectionDropDown"><i class="large material-icons" style="font-size: 50px;">list</i></a></li>
               </ul>
              <ul id="sectionDropDown" class="dropdown-content">
-                 <li><a href="#">Jobs</a></li>
-                 <li><a href="#">Skills</a></li>
-                 <li><a href="#">Categories</a></li>
+                 <li><a onClick="showJobs()">Jobs</a></li>
+                 <li><a onClick="showSkills()">Skills</a></li>
+                 <li><a onClick="showCategories()">Categories</a></li>
               </ul>
               <ul id="nav-mobile" class="right hide-on-med-and-down">
-                 <li><a href="#">Jobs</a></li>
-                 <li><a href="#">Skills</a></li>
-                 <li><a href="#">Categories</a></li>
+                 <li id="jobsTab"><a onClick="showJobs()">Jobs</a></li>
+                 <li id="skillsTab"><a onClick="showSkills()">Skills</a></li>
+                 <li id="categoriesTab" class="active"><a onClick="showCategories()">Categories</a></li>
               </ul>
         </div></nav>
   </div>
   <!-- body -->
   <div class="fullwidth centered middle">
-  <div class="centered green darken-1 not-visible">
-  	Los jobs
-  </div>
-  <div class="centered green darken-1 not-visible">
-  	Las skills
-  </div>
-  <div class="centered green darken-1 visible" style="position:relative;" ng-controller="CategoriesController as categoriesList">
-  	<span>{{categoriesList.categories.length}} categories in database</span>
+  <!-- jobs div -->
+  <div id="jobsDiv" class="centered green darken-1 visible" style="position:relative;display:none;" ng-controller="JobsController">
+  	<h4 class="title">Jobs</h4>
+  	<h6 class="title">{{jobs.length}} jobs in database</h6>
   	<ul class="collection fullwidth collapsible" data-collapsible="expandable">
-  	<categorylist ng-repeat="category in categoriesList.categories" category="category"></categorylist>
+  		<joblist ng-repeat="job in jobs" job="job"></joblist>
+  	</ul>
+  	<div class="fixed f-down f-rigth">
+  		<button class="btn-floating btn-large waves-effect waves-light red" onClick="showNewJob()"><i class="material-icons">add</i></button>
+  	</div>
+  	<!-- modal new job -->
+	<div id="newJobModal" class="modal-background">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="close" onClick="closeNewJob()">X</span>
+				<h5>New job</h5>
+			</div>
+			<div class="modal-body">
+				<input type="text" class="active validate" ng-model="jobname" placeholder="Name"/><br>
+				<input type="text" class="validate" ng-model="jobdescription" placeholder="Description"/><br>
+				<input type="text" class="validate" ng-model="jobcategory" placeholder="Category"/><br>
+				<input type="submit" value="Add" class="btn waves-effect waves-green blue" ng-click="newJob()"/>
+			</div>
+		</div>
+	</div>
+  </div>
+  <!-- skill div -->
+  <div id="skillsDiv" class="centered green darken-1 visible" style="position:relative;display:none;" ng-controller="SkillsController">
+  	<h4 class="title">Skills</h4>
+  	<h6 class="title">{{skills.length}} skills in database</h6>
+  	<ul class="collection fullwidth collapsible" data-collapsible="expandable">
+  		<skilllist ng-repeat="skill in skills" skill="skill"></skilllist>
+  	</ul>
+  	<div class="fixed f-down f-rigth">
+  		<button class="btn-floating btn-large waves-effect waves-light red" onClick="showNewSkill()"><i class="material-icons">add</i></button>
+  	</div>
+  	<!-- modal new skill -->
+	<div id="newSkillModal" class="modal-background">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="close" onClick="closeNewSkill()">X</span>
+				<h5>New skill</h5>
+			</div>
+			<div class="modal-body">
+				<input type="text" class="active validate" ng-model="skillname" placeholder="Name"/><br>
+				<input type="text" class="validate" ng-model="skilldescription" placeholder="Description"/><br>
+				<input type="text" class="validate" ng-model="skillcategory" placeholder="Category"/><br>
+				<input type="submit" value="Add" class="btn waves-effect waves-green blue" ng-click="newSkill()"/>
+			</div>
+		</div>
+	</div>
+  </div>
+  <!-- categories div -->
+  <div id="categoriesDiv" class="centered green darken-1 visible" style="position:relative;" ng-controller="CategoriesController">
+  	<h4 class="title">Categories</h4>
+  	<h6 class="title">{{categories.length}} categories in database</h6>
+  	<ul class="collection fullwidth collapsible" data-collapsible="expandable">
+  		<categorylist ng-repeat="category in categories" category="category"></categorylist>
   	</ul>
   	<div class="fixed f-down f-rigth">
   		<button class="btn-floating btn-large waves-effect waves-light red" onClick="showNewCategory()"><i class="material-icons">add</i></button>
   	</div>
+  	<!-- modal new category -->
+	<div id="newCategoryModal" class="modal-background">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="close" onClick="closeNewCategory()">X</span>
+				<h5>New category</h5>
+			</div>
+			<div class="modal-body">
+				<input type="text" class="active validate" ng-model="categoryname" placeholder="Name"/><br>
+				<input type="text" class="validate" ng-model="categorydescription" placeholder="Description"/><br>
+				<input type="submit" value="Add" class="btn waves-effect waves-green blue" ng-click="newCategory()"/>
+			</div>
+		</div>
+	</div>
   </div>
   </div>
   <!-- footer -->
@@ -64,22 +126,6 @@
   	<div class="copyright fullwidth green darken-1">
   		© 2016 Made by group 2
   	</div>
-  </div>
-  <!-- modal new category -->
-  <div id="newCategoryModal" class="modal-background">
-  	<div class="modal-content">
-		<div class="modal-header">
-			<span class="close" onClick="closeNewCategory()">X</span>
-			<h5>New category</h5>
-		</div>
-		<div class="modal-body">
-			<div ng-controller="CategoriesController">
-				<input type="text" class="active validate" ng-model="name" name="name" placeholder="Name" required/><br>
-				<input type="text" class="validate" ng-model="description" name="description" placeholder="Description" required/><br>
-				<input type="submit" value="Add" class="btn waves-effect waves-green blue" ng-click="newCategory()"/>
-			</div>
-		</div>
-	</div>
   </div>
 </body>
 </html>
