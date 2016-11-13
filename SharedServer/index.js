@@ -2,9 +2,7 @@ var express = require('express');
 var app = express();
 app.use(express.static('public'));
 var pg = require('pg');
-var parser = require("body-parser");
-
-var urlencodedParser = parser.urlencoded({ extended: false });
+var bodyParser = require("body-parser");
 
 var pgurl = process.env.DATABASE_URL || "postgresql://postgres_user:password@127.0.0.1:5432/jobify_db";
 var port = process.env.PORT || 5000;
@@ -16,7 +14,8 @@ var appversion = 0.2;
 
 //Configuracion express
 app.set('port', port);
-app.use(parser.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 function errPGConn(err, res) {
 	console.log(err);
@@ -25,9 +24,8 @@ function errPGConn(err, res) {
 }
 
 function noContentTypeJSON(req, res) {
-	//console.log(req.get('Content-Type'));
-	if (req.get('Content-Type') != 'application/x-www-form-urlencoded') {
-		res.send('{"error":"Content Type must be application/x-www-form-urlencoded"}');
+	if (req.get('Content-Type').search('application/json') < 0) {
+		res.send('{"error":"Content Type must be application/json"}');
 		res.status(415);
 		return true;
 	}
@@ -40,7 +38,7 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname+'/public/index.html');
 });
 
-app.post('/login', urlencodedParser, function (req, res) {
+app.post('/', function (req, res) {
 	if (loginUsername==req.body.username && loginPassword==req.body.password) {
 		res.sendFile(__dirname+'/public/app.html');
 	} else {
@@ -70,21 +68,14 @@ app.get('/categories', function (req, res) {
 });
 
 //Alta categoria segun json
-app.post('/categories', urlencodedParser, function (req, res) {
+app.post('/categories', function (req, res) {
 	if (noContentTypeJSON(req, res)) return;
 	pg.connect(pgurl, function (err, client, done) {
 		if (err) {
 			errPGConn(err, res);
 			return;
 		}
-		console.log(1);
-		console.log(req.body);
-		console.log(2);
-		console.log(req.body.category);
-		//var body = JSON.parse(req.body);
-		console.log(3);
 		client.query('INSERT INTO categories (name, description) VALUES (\''+req.body.category.name+'\',\''+req.body.category.description+'\')', function (err, result) {
-			console.log(4);
 			done();
 			if (err) {
 				errPGConn(err, res);

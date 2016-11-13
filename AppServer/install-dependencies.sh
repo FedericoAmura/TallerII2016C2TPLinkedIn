@@ -6,6 +6,9 @@ then
 	exit 1
 fi
 
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+sudo apt-get update -q
+sudo apt-get install gcc-4.9 g++-4.9 -y
 sudo apt-get install cpp build-essential cmake git libcurl3 libcurl4-openssl-dev
 
 if [ ! -d ./lib ]; then mkdir lib; fi
