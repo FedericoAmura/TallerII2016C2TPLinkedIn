@@ -24,6 +24,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.utils.Cripto;
+import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -157,6 +159,8 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString(USER_ID, String.valueOf(user_id));
                                 editor.putString(TOKEN, token);
                                 editor.commit();
+
+                                PreferenceHandler.saveUserCredentials(new UserCredentials(user_id, token), getApplicationContext());
 
                             } catch (JSONException e) { e.printStackTrace(); }
                             ingresar();

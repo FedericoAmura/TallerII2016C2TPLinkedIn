@@ -25,6 +25,16 @@ public class Chat{
         this.hour = h + ":" + m;
     }
 
+    public static Chat hidrate(int userID, String stream) {
+        String[] data = stream.split(";");
+        String name = data[0];
+        String last_msg = data[1];
+        String hour = data[2];
+        Chat chat = new Chat(userID, name, last_msg);
+        chat.hour = hour;
+        return chat;
+    }
+
     public int getSenderID() {
         return senderID;
     }

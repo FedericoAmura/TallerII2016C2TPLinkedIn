@@ -31,6 +31,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
         TextView t_name;
         TextView t_last_msg;
         TextView t_hour;
+        int senderID;
 
         ChatViewHolder(View view) {
             super(view);
@@ -45,6 +46,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ChatActivity.class);
                     intent.putExtra("name", t_name.getText().toString());
+                    intent.putExtra("receiverID", senderID);
                     view.getContext().startActivity(intent);
                 }
             });
@@ -59,6 +61,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
             chatList.remove(index);
         }
         chatList.add(0, chat);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -79,6 +82,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
         holder.t_name.setText(chatList.get(position).getName());
         holder.t_last_msg.setText(chatList.get(position).getLastMessage());
         holder.t_hour.setText(chatList.get(position).getHour());
+        holder.senderID = chatList.get(position).getSenderID();
     }
 
     @Override

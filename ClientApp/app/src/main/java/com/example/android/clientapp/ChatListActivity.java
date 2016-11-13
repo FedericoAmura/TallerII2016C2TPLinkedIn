@@ -24,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.ChatRVAdapter;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.Modelo.chat.Chat;
+import com.example.android.clientapp.utils.PreferenceHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,16 +63,6 @@ public class ChatListActivity extends AppCompatActivity {
 
         chatArrayAdapter = new ChatRVAdapter();
 
-        chatArrayAdapter.add(new Chat(0, "Mickey", "Hola"));
-        chatArrayAdapter.add(new Chat(1, "Guido", "Hola-aa"));
-        chatArrayAdapter.add(new Chat(2, "Ocavio", "Hola!!!"));
-        chatArrayAdapter.add(new Chat(3, "Martin", "Hola???"));
-        chatArrayAdapter.add(new Chat(4, "Emanuel", "Hola123"));
-        chatArrayAdapter.add(new Chat(5, "Pablo", "Hola456"));
-        chatArrayAdapter.add(new Chat(6, "Ismael", "Hola2222!!!"));
-        chatArrayAdapter.add(new Chat(7, "Leonardo", "Hola___???"));
-        chatArrayAdapter.add(new Chat(0, "Mickey", "Hola___???"));
-
         setContentView(R.layout.recycler_view);
         setToolbar();
 
@@ -82,17 +73,14 @@ public class ChatListActivity extends AppCompatActivity {
         rv.setHasFixedSize(true);
 
         rv.setAdapter(chatArrayAdapter);
-/*
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        userID = sharedPref.getString(USER_ID, "");
-        final String token = sharedPref.getString(TOKEN, "");
 
-        cargarAmigosIdDelServer(userID, token);
-        setToolbar();
+        updateChatList();
+    }
 
-        Intent i = new Intent(this, ChatActivity.class);
-        startActivity(i);
-  */
+    private void updateChatList() {
+        ArrayList<Chat> chats = PreferenceHandler.getSavedConversations(this);
+        for (Chat chat : chats)
+            chatArrayAdapter.add(chat);
     }
 
 

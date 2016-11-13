@@ -154,7 +154,8 @@ public class PerfilAmigoActivity extends AppCompatActivity {
             editor.commit();
         }
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("userID", amigoUserID);
+        intent.putExtra("receiverID", Integer.valueOf(amigoUserID));
+        intent.putExtra("name", tvNombre.getText().toString());
         startActivity(intent);
     }
 

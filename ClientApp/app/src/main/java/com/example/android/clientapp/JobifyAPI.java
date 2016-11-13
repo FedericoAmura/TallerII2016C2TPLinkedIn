@@ -40,4 +40,8 @@ public class JobifyAPI {
     public static String getRecomendarURL(String recommendedUserID, String recommenderUserID) {
         return APPSERVER_URL + USERS + POPULAR + "/" + recommendedUserID + "/" + recommenderUserID; }
 
+    public static String getSendMessageURL(int senderID, int receiverID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
+    }
+
 }
