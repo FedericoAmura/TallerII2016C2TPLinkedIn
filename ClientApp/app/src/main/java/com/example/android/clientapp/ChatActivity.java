@@ -3,12 +3,14 @@ package com.example.android.clientapp;
 import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.android.clientapp.ArrayAdapters.MessageArrayAdapter;
 import com.example.android.clientapp.Modelo.chat.Message;
 
 public class ChatActivity extends AppCompatActivity {
@@ -38,6 +40,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        setToolbar();
+
         msglist.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msglist.setAdapter(messageArrayAdapter);
 
@@ -57,6 +61,14 @@ public class ChatActivity extends AppCompatActivity {
         messageArrayAdapter.add(new Message("Hola1", true));
         messageArrayAdapter.add(new Message("Hola2", false));
         messageArrayAdapter.add(new Message("Hola4", true));
+    }
+
+    private void setToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Fulano");
     }
 
     private void sendMessage() {

@@ -1,4 +1,4 @@
-package com.example.android.clientapp;
+package com.example.android.clientapp.ArrayAdapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
