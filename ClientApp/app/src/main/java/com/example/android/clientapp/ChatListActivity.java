@@ -1,10 +1,6 @@
 package com.example.android.clientapp;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.DataSetObserver;
-import android.preference.PreferenceManager;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,9 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,7 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.android.clientapp.ArrayAdapters.ChatArrayAdapter;
+import com.example.android.clientapp.ArrayAdapters.ChatRVAdapter;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.Modelo.chat.Chat;
 
@@ -40,8 +33,6 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ChatListActivity extends AppCompatActivity {
 
@@ -61,50 +52,28 @@ public class ChatListActivity extends AppCompatActivity {
 
     private int statusCode;
 
-    private ChatArrayAdapter chatArrayAdapter;
+    private ChatRVAdapter chatArrayAdapter;
     private ListView listView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chatlist);
 
-        listView = (ListView) findViewById(R.id.chat_list);
-        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.chat_item);
-        listView.setAdapter(chatArrayAdapter);
+        chatArrayAdapter = new ChatRVAdapter();
 
-        listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        listView.setAdapter(chatArrayAdapter);
-/*
-        chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                listView.setSelection(chatArrayAdapter.getCount()-1);
-            }
-        });
-*/
-        setToolbar();
+        chatArrayAdapter.add(new Chat(0, "Mickey", "Hola"));
+        chatArrayAdapter.add(new Chat(1, "Guido", "Hola-aa"));
+        chatArrayAdapter.add(new Chat(2, "Ocavio", "Hola!!!"));
+        chatArrayAdapter.add(new Chat(3, "Martin", "Hola???"));
+        chatArrayAdapter.add(new Chat(4, "Emanuel", "Hola123"));
+        chatArrayAdapter.add(new Chat(5, "Pablo", "Hola456"));
+        chatArrayAdapter.add(new Chat(6, "Ismael", "Hola2222!!!"));
+        chatArrayAdapter.add(new Chat(7, "Leonardo", "Hola___???"));
+        chatArrayAdapter.add(new Chat(0, "Mickey", "Hola___???"));
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Chat chat = chatArrayAdapter.getItem(i);
-                Log.d("USERID", chat.getName());
-            }
-        });
-
-        chatArrayAdapter.add(new Chat(0, "Mickey", "Hola", "20:09"));
-        chatArrayAdapter.add(new Chat(1, "Guido", "Hola-aa", "20:19"));
-        chatArrayAdapter.add(new Chat(2, "Ocavio", "Hola!!!", "20:23"));
-        chatArrayAdapter.add(new Chat(3, "Martin", "Hola???", "20:30"));
-        chatArrayAdapter.add(new Chat(4, "Emanuel", "Hola123", "20:09"));
-        chatArrayAdapter.add(new Chat(5, "Pablo", "Hola456", "20:19"));
-        chatArrayAdapter.add(new Chat(6, "Ismael", "Hola2222!!!", "20:23"));
-        chatArrayAdapter.add(new Chat(7, "Leonardo", "Hola___???", "20:30"));
-/*
         setContentView(R.layout.recycler_view);
+        setToolbar();
 
         rv = (RecyclerView) findViewById(R.id.rv);
 
@@ -112,6 +81,8 @@ public class ChatListActivity extends AppCompatActivity {
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
+        rv.setAdapter(chatArrayAdapter);
+/*
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         userID = sharedPref.getString(USER_ID, "");
         final String token = sharedPref.getString(TOKEN, "");
@@ -128,9 +99,10 @@ public class ChatListActivity extends AppCompatActivity {
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) // Habilitar up button
+        if (getSupportActionBar() != null) {// Habilitar up button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Chats");
+        }
     }
 
     @Override

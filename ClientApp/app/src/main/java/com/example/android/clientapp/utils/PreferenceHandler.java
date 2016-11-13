@@ -38,7 +38,7 @@ public class PreferenceHandler {
         String name = data[0];
         String last_msg = data[1];
         String hour = data[2];
-        return new Chat(Integer.valueOf(senderID), name, last_msg, hour);
+        return new Chat(Integer.valueOf(senderID), name, last_msg);
     }
 
     public static ArrayList<Chat> getSavedConversations(Context context) {

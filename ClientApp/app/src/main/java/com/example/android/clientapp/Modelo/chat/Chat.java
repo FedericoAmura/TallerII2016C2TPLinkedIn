@@ -1,5 +1,7 @@
 package com.example.android.clientapp.Modelo.chat;
 
+import java.util.Calendar;
+
 /**
  * Created by emanuel on 11/12/16.
  */
@@ -10,11 +12,17 @@ public class Chat{
     private String last_msg;
     private String hour;
 
-    public Chat(int userID, String name, String last_msg, String hour){
+    public Chat(int userID, String name, String last_msg){
         this.senderID = userID;
         this.name = name;
         this.last_msg = last_msg;
-        this.hour = hour;
+        Calendar calendar = Calendar.getInstance();
+        String h = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        int min = calendar.get(calendar.MINUTE);
+        String m = String.valueOf(min);
+        if (min < 10)
+            m = "0" + m;
+        this.hour = h + ":" + m;
     }
 
     public int getSenderID() {
@@ -33,4 +41,10 @@ public class Chat{
         return hour;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        Chat chat = (Chat) o;
+        return this.senderID == chat.senderID;
+    }
 }

@@ -49,11 +49,16 @@ user5_data["last_name"] = "Messi"
 user5_data["username"] = "lionelmessi"
 user5_data["password"] = base64.b64encode(hashlib.sha256("messi").digest())
 
+user6_data = dict(user5_data)
+user6_data["username"] = "masche"
+user6_data["password"] = base64.b64encode(hashlib.sha256("masche").digest())
+
 client1 = Client(user1_data)
 client2 = Client(user2_data)
 client3 = Client(user3_data)
 client4 = Client(user4_data)
 client5 = Client(user5_data)
+client6 = Client(user6_data)
 
 class ClientTest(unittest.TestCase):
 
@@ -69,10 +74,12 @@ class ClientTest(unittest.TestCase):
         res2 = client2.signup()
         res3 = client3.signup()
         res5 = client5.signup()
+        res6 = client6.signup()
         self.assertEquals(201, res1.status_code)
         self.assertEquals(201, res2.status_code)
         self.assertEquals(201, res3.status_code)
         self.assertEquals(201, res5.status_code)
+        self.assertEquals(201, res6.status_code)
 
     # hacer un signup con datos inválidos (por ej, "city" con valor "None")
     #checked
@@ -92,6 +99,7 @@ class ClientTest(unittest.TestCase):
         res2 = client2.login()
         res3 = client3.login()
         res5 = client5.login()
+        res6 = client6.login()
         data = json.loads(res1.text)
         self.assertTrue('token' in data)
         self.assertTrue('userID' in data)
@@ -99,6 +107,7 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res2.status_code)
         self.assertEquals(200, res3.status_code)
         self.assertEquals(200, res5.status_code)
+        self.assertEquals(200, res6.status_code)
 
     #checked
     def test_05_accept_non_existent_contact_request(self):
@@ -124,9 +133,12 @@ class ClientTest(unittest.TestCase):
         res2 = client1.create_contact_request(data)
         data["targetID"] = client5.get_user_id()
         res5 = client1.create_contact_request(data)
+        data["targetID"] = client6.get_user_id()
+        res6 = client1.create_contact_request(data)
         self.assertEquals(201, res1.status_code)
         self.assertEquals(201, res2.status_code)
         self.assertEquals(201, res5.status_code)
+        self.assertEquals(201, res6.status_code)
 
     #checked
     def test_08_accept_existent_contact_request(self):
@@ -135,6 +147,8 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(204, res.status_code)
         res5 = client5.accept_contact_request(another_userID)
         self.assertEquals(204, res5.status_code)
+        res6 = client6.accept_contact_request(another_userID)
+        self.assertEquals(204, res6.status_code)
 
     #checked
     def test_09_send_message_to_non_existent_user(self):
@@ -331,7 +345,7 @@ class ClientTest(unittest.TestCase):
         res = client1.get_contacts()
         self.assertEquals(200, res.status_code)
         data = json.loads(res.text)
-        self.assertEquals(len(data["contacts"]),1)
+        self.assertEquals(len(data["contacts"]),2)
 
     #checked
     def test_31_get_are_we_contacts(self):

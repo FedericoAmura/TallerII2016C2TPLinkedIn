@@ -4,6 +4,7 @@ import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -19,6 +20,7 @@ public class ChatActivity extends AppCompatActivity {
     private Button buttonSend;
     private EditText editTextSend;
     private String amigoUserID;
+    private String nombreAmigo = "?";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,9 @@ public class ChatActivity extends AppCompatActivity {
                     sendMessage();
             }
         });
+
+        Bundle bundle = getIntent().getExtras();
+        nombreAmigo = bundle.getString("name");
 
         setToolbar();
 
@@ -68,12 +73,23 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Fulano");
+        getSupportActionBar().setTitle(nombreAmigo);
     }
 
     private void sendMessage() {
         messageArrayAdapter.add(new Message(editTextSend.getText().toString(), true));
         editTextSend.setText("");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
