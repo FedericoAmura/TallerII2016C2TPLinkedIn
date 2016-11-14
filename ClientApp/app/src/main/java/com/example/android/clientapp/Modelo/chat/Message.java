@@ -25,7 +25,7 @@ public class Message {
         this.hour = h + ":" + m;
     }
 
-    public static Message hidrate(String stream) {
+    public static Message hydrate(String stream) {
         String[] data = stream.split("-");
         boolean mine = ("0".equals(data[0])) ? true : false;
         String msg = data[1];

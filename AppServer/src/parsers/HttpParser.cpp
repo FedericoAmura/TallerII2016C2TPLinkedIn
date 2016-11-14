@@ -36,15 +36,6 @@ Json HttpParser::parse_user_search(struct http_message* msg) {
 	char buffer[BUFFER_SIZE];
 	int found;
 
-	found = mg_get_http_var(&msg->query_string, CATEGORY, buffer, BUFFER_SIZE);
-	if (found > 0) {
-		std::vector<std::string> categories = split(std::string(buffer), ";");
-		Json::array array_categories;
-		for (std::string category : categories)
-			array_categories.push_back(category);
-		data["categories"] = array_categories;
-	}
-
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, SKILL, buffer, BUFFER_SIZE);
 	if (found > 0) {

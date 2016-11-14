@@ -15,7 +15,7 @@ http_response GET_Handler::handleRequest() {
 	http_response res;
 	switch (uri){
 		case _USERS:
-			// /users/?category=...&skill=...
+			// /users/?job_position=...&skill=...
 			res = handle_get_user_search();
 			break;
 		case _USER_PROFILE:
@@ -139,21 +139,13 @@ void GET_Handler::validate_user_features(const Json &json) {
 			throw NonexistentSkill(err);
 	}
 
-	if (!json["categories"].is_null()) {
-		Json data_shd = SharedServerConnector::get_categories();
-		std::string err;
-		bool intersected = intersect(json["categories"], data_shd["categories"], err);
-		if (!intersected)
-			throw NonexistentCategory(err);
-	}
-
 	if (!json["distance"].is_null())
 		if (json["distance"].number_value() < 0.0)
 			throw BadInputException("Invalid distance");
 }
 
 http_response GET_Handler::handle_get_user_search() {
-	// /users/?category=<category>&job_position=<job>&...
+	// /users/?skill=<skill1>;<skill2>&job_position=<job>&...
 	Json features = HttpParser::parse_user_search(request->message);
 
 	Json results, error;
@@ -163,7 +155,6 @@ http_response GET_Handler::handle_get_user_search() {
 
 		std::vector<std::string> positions = convert_json_array_to_vector<std::string>(features["positions"]);
 		std::vector<std::string> skills = convert_json_array_to_vector<std::string>(features["skills"]);
-		std::vector<std::string> categories = convert_json_array_to_vector<std::string>(features["categories"]);
 
 		double distance = 10000000.0;
 		bool popsort = false;
@@ -171,11 +162,15 @@ http_response GET_Handler::handle_get_user_search() {
 		if (!features["distance"].is_null()) distance = features["distance"].number_value();
 		if (!features["popsort"].is_null()) popsort = features["popsort"].bool_value();
 
-		Geolocacion geoloc;
-		if (!features["longitude"].is_null() && !features["latitude"].is_null())
-			geoloc = Geolocacion(features["longitude"].number_value(), features["latitude"].number_value());
+		std::vector<std::string> *vec_skills = (skills.empty()) ? 0 : &skills;
+		std::vector<std::string> *vec_positions = (skills.empty()) ? 0 : &positions;
 
-		results = db_json->busqueda_profesional(&positions, &skills, &geoloc, distance, popsort);
+		if (!features["longitude"].is_null() && !features["latitude"].is_null()) {
+			Geolocacion geoloc = Geolocacion(features["longitude"].number_value(), features["latitude"].number_value());
+			results = db_json->busqueda_profesional(vec_positions, vec_skills, &geoloc, distance, popsort);
+		} else
+			results = db_json->busqueda_profesional(vec_positions, vec_skills, 0, distance, popsort);
+
 	} catch (NonexistentSkill &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
 		std::cout << "[Error] Nonexistent Skill: " << e.what() << ". Search for users failed."<< std::endl;
@@ -183,10 +178,6 @@ http_response GET_Handler::handle_get_user_search() {
 	} catch (NonexistentPosition &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_JOB}, {"description", ERR_DESC_NONEXISTENT_JOB}};
 		std::cout << "[Error] Nonexistent Job Position: " << e.what() << ". Search for users failed."<< std::endl;
-		return http_response(error.dump(), STATUS_BAD_REQUEST);
-	} catch (NonexistentCategory &e) {
-		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_CAT}, {"description", ERR_DESC_NONEXISTENT_CAT}};
-		std::cout << "[Error] Nonexistent Category " << e.what() << ". Search for users failed."<< std::endl;
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
 	} catch (BadInputException &e) {
 		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
@@ -557,9 +548,6 @@ http_response GET_Handler::handle_get_categories() {
 	Json data;
 	try {
 		data = SharedServerConnector::get_categories();
-	} catch (CurlInitException &e) {
-		std::cout << "[Error] Curl: init failed. Query (categories) failed." << std::endl;
-		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (CurlGetException &e) {
 		std::cout << "[Error] Curl: GET failed. Query (categories) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);
@@ -574,9 +562,6 @@ http_response GET_Handler::handle_get_jobpositions() {
 	Json data;
 	try {
 		data = SharedServerConnector::get_job_positions();
-	} catch (CurlInitException &e) {
-		std::cout << "[Error] Curl: init failed. Query (job_positions) failed." << std::endl;
-		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (CurlGetException &e) {
 		std::cout << "[Error] Curl: GET failed. Query (job_positions) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);
@@ -591,9 +576,6 @@ http_response GET_Handler::handle_get_skills() {
 	Json data;
 	try {
 		data = SharedServerConnector::get_skills();
-	} catch (CurlInitException &e) {
-		std::cout << "[Error] Curl: init failed. Query (skills) failed." << std::endl;
-		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (CurlGetException &e) {
 		std::cout << "[Error] Curl: GET failed. Query (skills) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);
@@ -611,9 +593,6 @@ http_response GET_Handler::handle_get_jobpositions_by_category() {
 	Json data;
 	try {
 		data = SharedServerConnector::get_job_positions();
-	} catch (CurlInitException &e) {
-		std::cout << "[Error] Curl: init failed. Query (particular job position) failed." << std::endl;
-		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (CurlGetException &e) {
 		std::cout << "[Error] Curl: GET failed. Query (particular job position) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);
@@ -640,9 +619,6 @@ http_response GET_Handler::handle_get_jobposition() {
 	Json data;
 	try {
 		data = SharedServerConnector::get_job_positions();
-	} catch (CurlInitException &e) {
-		std::cout << "[Error] Curl: init failed. Query (particular job position) failed." << std::endl;
-		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (CurlGetException &e) {
 		std::cout << "[Error] Curl: GET failed. Query (job position) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);
@@ -665,9 +641,6 @@ http_response GET_Handler::handle_get_skills_by_category() {
 	Json data;
 	try {
 		data = SharedServerConnector::get_skills();
-	} catch (CurlInitException &e) {
-		std::cout << "[Error] Curl: init failed. Query (particular skill) failed." << std::endl;
-		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (CurlGetException &e) {
 		std::cout << "[Error] Curl: GET failed. Query (particular skill) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);
@@ -694,9 +667,6 @@ http_response GET_Handler::handle_get_skill() {
 	Json data;
 	try {
 		data = SharedServerConnector::get_skills();
-	} catch (CurlInitException &e) {
-		std::cout << "[Error] Curl: init failed. Query (particular skill) failed." << std::endl;
-		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (CurlGetException &e) {
 		std::cout << "[Error] Curl: GET failed. Query (particular skill) failed." << std::endl;
 		return http_response("", STATUS_INT_SERVER_ERR);

@@ -20,10 +20,6 @@ Curl::Curl() {
 	buffer = "";
 }
 
-bool Curl::init() {
-	return (curl != 0);
-}
-
 int Curl::response_code(CURLcode res_code) {
 	long http_code = 0;
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);

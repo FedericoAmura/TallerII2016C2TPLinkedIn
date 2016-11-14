@@ -2,16 +2,13 @@ package com.example.android.clientapp.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.example.android.clientapp.Modelo.chat.Chat;
 import com.example.android.clientapp.Modelo.chat.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by emanuel on 11/12/16.
@@ -65,7 +62,7 @@ public class PreferenceHandler {
             return messages;
         ArrayList<String> msgs = new ArrayList<String>(Arrays.asList(conv.split(";")));
         for (String msg : msgs)
-            messages.add(Message.hidrate(msg));
+            messages.add(Message.hydrate(msg));
         return messages;
     }
 
@@ -86,7 +83,7 @@ public class PreferenceHandler {
         String dataChat = sharedPref.getString(senderID, "");
         if (dataChat.isEmpty())
             return null;
-        return Chat.hidrate(Integer.valueOf(senderID), dataChat);
+        return Chat.hydrate(Integer.valueOf(senderID), dataChat);
     }
 
     /** Devuelve los chats (últimos) de cada usuario **/

@@ -25,7 +25,7 @@ public class Chat{
         this.hour = h + ":" + m;
     }
 
-    public static Chat hidrate(int userID, String stream) {
+    public static Chat hydrate(int userID, String stream) {
         String[] data = stream.split(";");
         String name = data[0];
         String last_msg = data[1];

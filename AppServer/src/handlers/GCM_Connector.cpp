@@ -9,8 +9,6 @@
 
 int GCM_Connector::notify(std::string data) {
     Curl curl;
-    if (!curl.init())
-        throw CurlInitException();
 
     curl.add_header("Authorization", "key=" + GOOGLE_API_KEY_APPSERVER);
     curl.add_header("Content-Type", "application/json");

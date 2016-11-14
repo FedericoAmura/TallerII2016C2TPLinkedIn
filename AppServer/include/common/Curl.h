@@ -16,8 +16,6 @@ private:
 public:
 	Curl();
 
-	bool init();
-
 	std::string get_buffer();
 
 	void add_header(std::string header, std::string value);

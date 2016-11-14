@@ -196,10 +196,23 @@ class ClientTest(unittest.TestCase):
         data["email"] = "emanuelcondo@gmail.com"
         data["city"] = "ciudadBs"
         data["job_positions"] = []
-        data["skills"] = ["Android"]
+        data["skills"] = ["Android", "Python"]
         data["latitude"] = 1.2
         data["longitude"] = 2.2
         res = client1.update_profile(data)
+        self.assertEquals(204, res.status_code)
+
+        data = {}
+        data["name"] = "Francisco Marin"
+        data["birth"] = "12/12/1900"
+        data["email"] = "francisco@gmail.com"
+        data["city"] = "ciudadBs"
+        data["job_positions"] = [{"name":"Android developer", "start":"12/12/2010", "end":"13/12/2010"},
+                                 {"name":"Tester", "start":"20/2/2011", "end":"current"}]
+        data["skills"] = ["Android"]
+        data["latitude"] = 1.2
+        data["longitude"] = 2.2
+        res = client6.update_profile(data)
         self.assertEquals(204, res.status_code)
 
     #checked
@@ -260,10 +273,9 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(403, res.status_code)
 
 ### GET
-    #NOT checked (TODO falta implementación en DBJSON y AppServer)
+    #checked
     def test_21_search_for_users(self):
         params = {} # query_string
-        params["category"] = "cat1;cat2;cat3"
         params["job_position"] = "job1;job2"
         params["skill"] = "skill1;skill2"
         params["distance"] = 2.4
@@ -272,9 +284,20 @@ class ClientTest(unittest.TestCase):
         res = client1.search_for_users(params)
         self.assertEquals(400, res.status_code)
         params.clear()
+        params["job_position"] = "Tester"
         params["skill"] = "Android"
         res = client1.search_for_users(params)
         self.assertEquals(200, res.status_code)
+        data = json.loads(res.text)
+        print res.text
+        self.assertEquals(len(data['users']), 2)
+
+    #checked
+    def test_210_search_all_users(self):
+        res = client1.search_for_users({})
+        data = json.loads(res.text)
+        self.assertEquals(200, res.status_code)
+        self.assertEquals(len(data['users']), 5)
 
     #checked
     def test_22_get_profile_from_user(self):

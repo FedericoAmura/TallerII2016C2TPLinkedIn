@@ -1,10 +1,7 @@
 #include "../../include/handlers/SharedServerConnector.h"
-#include <iostream>
 
 Json SharedServerConnector::get(std::string url) {
     Curl curl;
-    if (!curl.init())
-        throw CurlInitException();
 
     int res_code = curl.get(url);
     if (res_code != 200)
