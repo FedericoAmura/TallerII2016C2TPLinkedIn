@@ -380,7 +380,7 @@ TEST_F(DBRawTest, testBusquedaPopularidad) {
 }
 
 TEST_F(DBRawTest, testBusquedaProfesional) {
-	registrarN(10);
+	registrarN(20);
 	db->setRecomendacion(0, 6, true);
 	db->setRecomendacion(1, 6, true);
 	db->setRecomendacion(2, 6, true);
@@ -392,7 +392,7 @@ TEST_F(DBRawTest, testBusquedaProfesional) {
 	db->setRecomendacion(7, 8, true);
 	// Todos los usuarios del sistema
 	vector<uint32_t> result = db->busquedaProfesional(NULL, NULL, NULL, 0, true);
-	EXPECT_EQ(result.size(), 10);
+	EXPECT_EQ(result.size(), 20);
 	EXPECT_EQ(result[0], 6);
 	EXPECT_EQ(result[1], 7);
 	EXPECT_EQ(result[2], 8);

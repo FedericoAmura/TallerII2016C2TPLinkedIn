@@ -38,7 +38,7 @@ std::vector<char> Geolocacion::toBytes() const {
 }
 
 bool Geolocacion::operator==(const Geolocacion &otro) {
-	// TODO: Reducir la igualdad a rango sensato
+	// TODO: Reducir la igualdad a rango con un epsilon de tolerancia = 1m?
 	return (_latitud==otro._latitud && _longitud==otro._longitud);
 }
 

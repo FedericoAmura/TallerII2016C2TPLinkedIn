@@ -444,6 +444,38 @@ TEST_F(DBJsonTest, testBusquedaPop)
 	EXPECT_EQ(pop["users"].array_items()[0], 0);
 }
 
+TEST_F(DBJsonTest, testBusquedaProf)
+{
+	// Test corto porque la funcionalidad en si se teastea en dbraw
+	registrarN(20);
+	Json result = dbj->busqueda_profesional(NULL, NULL, NULL, 0, true);
+	EXPECT_EQ(result["users"].array_items().size(), 20);
+	Json datosJson = Json::object {
+			{ "name" , "Nombre Test" },
+			{ "birth", "4/4/1994" },
+			{ "email", "mail1@test.com" },
+			{ "skills", Json::array { "Skill1", "Skill2" } },
+			{"job_positions",  Json::array { Json::object {
+				{ "name", "Puesto1"},
+				{ "start", "4/11/1994"},
+				{ "end", "current"}
+				},
+				Json::object {
+				{ "name", "Puesto2"},
+				{ "start", "4/2/1990"},
+				{ "end" , "11/3/1992"}
+				} } },
+			{ "longitude", 1.0},
+			{ "latitude", 0.5},
+			{ "city", "Una ciudad" },
+		};
+	dbj->setDatos(5, datosJson);
+	vector<string> skill12Vec = {"Skill1","Skill2"};
+	result = dbj->busqueda_profesional(NULL, &skill12Vec, NULL, 0, true);
+	EXPECT_EQ(result["users"].array_items().size(), 1);
+	EXPECT_EQ(result["users"].array_items()[0], 5);
+}
+
 TEST(JsonTest, TestJsonChecker)
 {
 	Json json = Json::object {

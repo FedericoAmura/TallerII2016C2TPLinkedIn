@@ -159,19 +159,16 @@ class DBJSON {
 	 * sean modificados
      * @param puestos					Lista de puestos. Null si no aplica.
      * @param skill						Lista de skills. Null si no aplica.
-     * @param categorias				Lista de categorias. Null si no aplica.
      * @param geolocacion				Punto geográfico. Null si no aplica.
      * @param maxDist					Máxima distancia desde el punto. Infinito si no aplica.
      * @param sortPopularidad			Si se debe ordernar los resultados por popularidad.
 	 * @return							Ver documentación API: "Búsquedas sobre usuarios"
 	 * @exception NonexistentSkill		Algun skill es invalido
 	 * @exception NonexistentPosition	Algun puesto es invalido
-	 * @exception NonexistentCategory	Alguna categoria es invalida
 	 * @exception BadInputException		Distancia máxima negativa
 	 */
 	Json busqueda_profesional(  const std::vector<string>* puestos,
                                 const std::vector<string>* skill,
-	                            const std::vector<string>* categorias,
                                 Geolocacion* geolocacion,
     		                    float maxDist,
                                 bool sortPopularidad );

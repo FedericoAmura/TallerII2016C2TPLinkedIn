@@ -175,7 +175,7 @@ http_response GET_Handler::handle_get_user_search() {
 		if (!features["longitude"].is_null() && !features["latitude"].is_null())
 			geoloc = Geolocacion(features["longitude"].number_value(), features["latitude"].number_value());
 
-		results = db_json->busqueda_profesional(&positions, &skills, &categories,&geoloc, distance, popsort);
+		results = db_json->busqueda_profesional(&positions, &skills, &geoloc, distance, popsort);
 	} catch (NonexistentSkill &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
 		std::cout << "[Error] Nonexistent Skill: " << e.what() << ". Search for users failed."<< std::endl;

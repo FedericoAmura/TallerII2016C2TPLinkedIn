@@ -210,12 +210,17 @@ void DBJSON::setFoto(uint32_t userID, const Json &json) {
 
 Json DBJSON::busqueda_profesional(	const std::vector<string>* puestos,
 									const std::vector<string>* skill,
-									const std::vector<string>* categorias,
 									Geolocacion* geolocacion,
 									float maxDist,
 									bool sortPopularidad ) {
-
-	Json data = Json::object {};
+	vector<uint32_t> result(db->busquedaProfesional(puestos,
+			skill, geolocacion, maxDist, sortPopularidad));
+	Json::array array;
+	for (uint32_t uid : result)
+		array.push_back((int)uid);
+	Json data = Json::object {
+		{"users",array}
+	};
 	return data;
 }
 
