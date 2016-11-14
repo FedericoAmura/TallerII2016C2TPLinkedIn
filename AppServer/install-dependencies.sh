@@ -59,23 +59,6 @@ then
 	rm -f -r ./log4cppsrc	
 fi
 
-#curl for people
-if [ ! -r ./lib/libcpr.a ]
-then
-	if [ ! -d ./cprsrc ]; then mkdir cprsrc; fi
-	cd cprsrc
-	git clone --depth=1 https://github.com/whoshuu/cpr.git cpr
-	cd cpr
-	git submodule update --init --recursive #Falla si se hace un shallow update
-	mkdir build
-	cd build
-	cmake -BUILD_CPR_TESTS=OFF ..
-	make cpr
-	mv ./lib/libcpr.a ../../../lib/libcpr.a
-	cd ../../..
-	rm -f -r ./cprsrc
-fi
-
 #libjpeg
 if [ ! -r ./lib/libjpeg.a ]  || [ ! -r ./include/jpeg/jconfig.h ]
 then
