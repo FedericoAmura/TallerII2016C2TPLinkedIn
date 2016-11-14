@@ -46,6 +46,14 @@ public:
 	 * Devuelve el vector de bytes que representa una geolocacioón
 	 */
 	std::vector<char> toBytes() const;
+	/**
+	 * Igualdad a nivel de bits
+	 */
+	bool operator==(const Geolocacion &otro);
+	/**
+	 * Distancia euclidea
+	 */
+	double distancia(const Geolocacion &otro);
 private:
 	double _longitud;
 	double _latitud;

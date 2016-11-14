@@ -75,7 +75,7 @@ class DBRawTest : public ::testing::Test {
 		for (int i = offset; i < n+offset; ++i)
 		{
 			string username = string("Username").append(std::to_string(i));
-			registrarTest(username, (double)n, (double)n);
+			registrarTest(username, (double)i, (double)i);
 		}
 	}
 };
@@ -377,6 +377,84 @@ TEST_F(DBRawTest, testBusquedaPopularidad) {
 	db->setPuestos(7, vector<Puesto>{});
 	pop = db->busquedaPopularPuesto("Puesto1");
 	EXPECT_EQ(pop.size(),0);
+}
+
+TEST_F(DBRawTest, testBusquedaProfesional) {
+	registrarN(10);
+	db->setRecomendacion(0, 6, true);
+	db->setRecomendacion(1, 6, true);
+	db->setRecomendacion(2, 6, true);
+	db->setRecomendacion(3, 6, true);
+	db->setRecomendacion(4, 6, true);
+	db->setRecomendacion(0, 7, true);
+	db->setRecomendacion(1, 7, true);
+	db->setRecomendacion(2, 7, true);
+	db->setRecomendacion(7, 8, true);
+	// Todos los usuarios del sistema
+	vector<uint32_t> result = db->busquedaProfesional(NULL, NULL, NULL, 0, true);
+	EXPECT_EQ(result.size(), 10);
+	EXPECT_EQ(result[0], 6);
+	EXPECT_EQ(result[1], 7);
+	EXPECT_EQ(result[2], 8);
+	// Por skillss
+	vector<string> skill1Vec = {"Skill1"};
+	vector<string> skill2Vec = {"Skill2"};
+	vector<string> skill12Vec = {"Skill1","Skill2"};
+	db->setSkills(6, skill12Vec);
+	db->setSkills(7, skill1Vec);
+	db->setSkills(8, skill2Vec);
+	db->setSkills(0, skill12Vec);
+	result = db->busquedaProfesional(NULL, &skill1Vec, NULL, 0, true);
+	EXPECT_EQ(result.size(), 3);
+	EXPECT_EQ(result[0], 6);
+	EXPECT_EQ(result[1], 7);
+	EXPECT_EQ(result[2], 0);
+	result = db->busquedaProfesional(NULL, &skill2Vec, NULL, 0, true);
+	EXPECT_EQ(result.size(), 3);
+	EXPECT_EQ(result[0], 6);
+	EXPECT_EQ(result[1], 8);
+	EXPECT_EQ(result[2], 0);
+	result = db->busquedaProfesional(NULL, &skill12Vec, NULL, 0, true);
+	EXPECT_EQ(result.size(), 2);
+	EXPECT_EQ(result[0], 6);
+	EXPECT_EQ(result[1], 0);
+	// Por puestos
+	vector<string> puesto1Vec = {"Puesto1"};
+	vector<string> puesto2Vec = {"Puesto2"};
+	vector<string> puesto12Vec = {"Puesto1","Puesto2"};
+	Fecha f1(string("21/12/2000"));
+	Fecha f2(string("22/12/2000"));
+	db->setPuestos(6, vector<Puesto> {Puesto("Puesto1",f1,f2), Puesto("Puesto2",f1,f2)});
+	db->setPuestos(7, vector<Puesto> {Puesto("Puesto1",f1,f2)} );
+	db->setPuestos(0, vector<Puesto> {Puesto("Puesto1",f1,f2), Puesto("Puesto2",f1,f2)});
+	result = db->busquedaProfesional(&puesto1Vec, NULL, NULL, 0, true);
+	EXPECT_EQ(result.size(), 3);
+	EXPECT_EQ(result[0], 6);
+	EXPECT_EQ(result[1], 7);
+	EXPECT_EQ(result[2], 0);
+	result = db->busquedaProfesional(&puesto12Vec, NULL, NULL, 0, true);
+	EXPECT_EQ(result.size(), 2);
+	EXPECT_EQ(result[0], 6);
+	EXPECT_EQ(result[1], 0);
+	result = db->busquedaProfesional(&puesto1Vec, &skill2Vec, NULL, 0, true);
+	EXPECT_EQ(result.size(), 2);
+	EXPECT_EQ(result[0], 6);
+	EXPECT_EQ(result[1], 0);
+	// Locacion geografica
+	Geolocacion geo0(0.0, 0.0);
+	Geolocacion geo5(5.0, 5.0);
+	Geolocacion geo6(6.0, 6.0);
+	result = db->busquedaProfesional(&puesto1Vec, &skill2Vec, &geo5, 2, true);
+	EXPECT_EQ(result.size(), 1);
+	EXPECT_EQ(result[0], 6);
+	result = db->busquedaProfesional(NULL, NULL, &geo0, 0, false);
+	EXPECT_EQ(result.size(), 1);
+	result = db->busquedaProfesional(NULL, NULL, &geo0, 1.5, false);
+	EXPECT_EQ(result.size(), 2);
+	result = db->busquedaProfesional(NULL, NULL, &geo5, 0.01, false);
+	EXPECT_EQ(result.size(), 1);
+	result = db->busquedaProfesional(NULL, NULL, &geo5, 5, false);
+	EXPECT_EQ(result.size(), 7);
 }
 
 /**

@@ -1,6 +1,5 @@
 #include "../../include/database/DBRaw.h"
 #include "../../include/database/DBExceptions.h"
-#include "../../include/database/DBConstants.h"
 #include "../../include/log4cpp/OstreamAppender.hh"
 #include "../../include/log4cpp/BasicLayout.hh"
 #include <fstream>
@@ -72,12 +71,17 @@ public:
  	 copy((char*)&key2, (char*)(&key2+1), data.begin()+5);
  	 copy((char*)&key3, (char*)(&key3+1), data.begin()+9);
  }
+ IDKey(KeyCode prefijo, double key1, double key2) : data(17) {
+  	 data[0] = prefijo;
+  	 copy((char*)&key1, (char*)(&key1+1), data.begin()+1);
+  	 copy((char*)&key2, (char*)(&key2+1), data.begin()+1+8);
+  }
  Slice toSlice() const {
 	 return Slice (data.data(), data.size());
  }
 };
 
-DBRaw::DBRaw(const string& rutaArchivo, std::ostream *logStream)
+DBRaw::DBRaw(const string &rutaArchivo, std::ostream *logStream)
 	: logStream(logStream) {
 	/*TODO es temporal el siguiente Destroy */
 	leveldb::DestroyDB(rutaArchivo, leveldb::Options());
@@ -92,6 +96,7 @@ DBRaw::DBRaw(const string& rutaArchivo, std::ostream *logStream)
 	verificarEstadoDB(status,  "Error al abrir la base de datos");
 	inicializarContador(LAST_UID, string("user ID"));
 	inicializarFID(defaultFotoPath);
+	inicializarGeo();
 }
 
 DBRaw::~DBRaw() {
@@ -129,6 +134,7 @@ uint32_t DBRaw::registrarse(const DatosUsuario &datos, const string &userName,
 	    incrementarContador(LAST_UID, string("user ID"),&batch);
 	    // RL popularidad
 	    rlPopularidadUpdate(uID, 0, batch);
+	    // Write
 	    status = db->Write(WriteOptions(), &batch);
 	    verificarEstadoDB(status, "Error DB1 al registrar usuario");
 		return uID;
@@ -156,15 +162,27 @@ uint32_t DBRaw::login(const string &userName, const std::vector<char> &passHash)
 	else throw BadPassword("Password incorrecto.");
 }
 
-void DBRaw::setDatos(uint32_t uID, const DatosUsuario& datos, WriteBatch *batch, bool verifUID) {
-	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),	uID);
+void DBRaw::setDatos(uint32_t uID, const DatosUsuario &datos, WriteBatch *batch, bool verifUID) {
+	WriteBatch localBatch;
+	bool writeToDB = !batch;
+	if (writeToDB) batch = &localBatch;
+	try {
+		verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),	uID);
+		DatosUsuario datosViejos = getDatos(uID);
+		rlGeolocacionUpdate(uID, datosViejos.geolocacion, datos.geolocacion, *batch);
+	}
+	catch (NonexistentUserID &e) {
+		if (verifUID) throw e;
+		IDKey nuevaKey(GEO_US, datos.geolocacion.longitud(),
+					datos.geolocacion.latitud());
+		orderedAppendVectorUID(uID, nuevaKey.toSlice(), *batch);
+	}
 	vector<char> dataValue = datos.toBytes();
 	Slice dataValueSlice(dataValue.data(), dataValue.size());
 	IDKey dataKey(USER_DATA, uID);
-	// TODO : Reverse lookup geoloc
-	if (batch) batch->Put(dataKey.toSlice(), dataValueSlice);
-	else {
-		Status status = db->Put(WriteOptions(), dataKey.toSlice(), dataValueSlice);
+	batch->Put(dataKey.toSlice(), dataValueSlice);
+	if (writeToDB) {
+		Status status = db->Write(WriteOptions(), batch);
 		verificarEstadoDB(status, "Error al guardar datos de usuario");
 	}
 }
@@ -179,7 +197,7 @@ DatosUsuario DBRaw::getDatos(uint32_t uID) {
 	return DatosUsuario(retVal.data());
 }
 
-void DBRaw::setResumen(uint32_t uID, const string& resumen,
+void DBRaw::setResumen(uint32_t uID, const string &resumen,
 		WriteBatch *batch, bool verifUID) {
 	if (verifUID) verificarContador<NonexistentUserID>(LAST_UID, string("user ID"),uID);
 	IDKey resumenKey(US_RESUMEN, uID);
@@ -399,13 +417,92 @@ void DBRaw::setRecomendacion(uint32_t uIDRecomendador,
 	verificarEstadoDB(status, mensajeError.c_str());
 }
 
+vector<uint32_t> sortedIntersect(const vector<uint32_t> &vector1,
+		const vector<uint32_t> &vector2) {
+	std::vector<uint32_t> result;
+	std::set_intersection(vector1.begin(), vector1.end(), vector2.begin(),
+			vector2.end(), std::back_inserter(result));
+	return result;
+}
 
-/*
+/**
+ * Agarra algun vector y luego hace sucesivas intersecciones
+ */
 std::vector<uint32_t> DBRaw::busquedaProfesional(
 		const std::vector<string>* puestos, const std::vector<string>* skill,
-		const std::vector<string>* categorias, Geolocacion* geolocacion,
-		float maxDist, bool sortPopularidad) {
-}*/
+		Geolocacion* geolocacion, float maxDist, bool sortPopularidad) {
+	if (maxDist < 0) throw BadInputException("Distancia de busqueda negativa");
+	bool vacio = true;
+	std::vector<uint32_t> result;
+	if (!puestos && !skill && !geolocacion) // todos nulls, devuelvo todos usuario
+	{
+		result = busquedaPopular(std::numeric_limits<std::size_t>::max());
+	}
+	if (skill) {
+		for (string s : *skill)
+		{
+			IDKey skillsKey(RL_SKILLS, s);
+			vector<uint32_t> rlUsers;
+			try {
+				rlUsers = getUIDVector(skillsKey.toSlice(),"Error al realizar busqueda");
+			}
+			catch (NonexistentKey &e) {}
+			if (vacio) {
+				result = rlUsers;
+				vacio = false;
+			}
+			else {
+				result = sortedIntersect(result, rlUsers);
+			}
+			if (result.empty()) return result;
+		}
+	}
+	if (puestos) {
+		for (string p : *puestos)
+		{
+			IDKey skillsKey(RL_POS, p);
+			vector<uint32_t> rlUsers;
+			try {
+				rlUsers = getUIDVector(skillsKey.toSlice(),"Error al realizar busqueda");
+			}
+			catch (NonexistentKey &e) {}
+			if (vacio) {
+				result = rlUsers;
+				vacio = false;
+			}
+			else {
+				result = sortedIntersect(result, rlUsers);
+			}
+			if (result.empty()) return result;
+		}
+	}
+	if (geolocacion && maxDist < std::numeric_limits<float>::infinity()) {
+		if (puestos || skill) {
+			for (uint32_t uid : result) {
+				DatosUsuario datos = getDatos(uid);
+				if (datos.geolocacion.distancia(*geolocacion) > maxDist)
+					result.erase(std::remove(result.begin(),
+							result.end(), uid), result.end());
+			}
+		}
+		else { // No tenemos lista para descartar, buscamos
+			leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
+			IDKey key(GEO_US, 0.0, 0.0);
+			for (it->Seek(key.toSlice()); it->Valid() &&
+				it->key().data()[0] == GEO_US; it->Next()) {
+				Geolocacion geo(it->key().data()+1);
+				if (geo.distancia(*geolocacion) <= maxDist) {
+					for (size_t i = 0; i < it->value().size(); i += 4)
+							result.push_back(it->value().data()[i]);
+				}
+			}
+			verificarEstadoDB(it->status(), "Error al buscar por distancia geografica.");
+			delete it;
+		}
+	}
+	if (sortPopularidad) return popSort(result);
+	return result;
+}
 
 uint32_t DBRaw::getPopularidad(uint32_t uID, bool verifUID) {
 	if (verifUID) verificarContador<NonexistentUserID> (LAST_UID, string("user ID"), uID);
@@ -418,17 +515,7 @@ uint32_t DBRaw::getPopularidad(uint32_t uID, bool verifUID) {
 	}
 }
 
-/**
- * Funcion para comparar pares de tipo <userID, popularidad>
- * En un sort de mayor a menor
- */
-bool popCmp(std::pair<uint32_t,uint32_t> a, std::pair<uint32_t,uint32_t> b)
-{
-    return a.second > b.second;
-}
-
-
-vector<uint32_t> DBRaw::busquedaPopular() {
+vector<uint32_t> DBRaw::busquedaPopular(size_t count) {
 	IDKey popKey(RL_POP);
 	vector<uint32_t> pop;
 	try {
@@ -438,11 +525,11 @@ vector<uint32_t> DBRaw::busquedaPopular() {
 	catch (NonexistentKey &e) {
 		return vector<uint32_t>();
 	}
-	if (pop.size() <= DBConstNumBusquedaPop) return pop;
-	return vector<uint32_t>(pop.begin(), pop.begin()+DBConstNumBusquedaPop);
+	if (pop.size() <= count) return pop;
+	return vector<uint32_t>(pop.begin(), pop.begin()+count);
 }
 
-vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill) {
+vector<uint32_t> DBRaw::busquedaPopularSkill(const string &skill, size_t count) {
 	vector<uint32_t> result;
 	IDKey popKey(RL_POP);
 	IDKey skillsKey(RL_SKILLS, skill);
@@ -461,12 +548,12 @@ vector<uint32_t> DBRaw::busquedaPopularSkill(const string& skill) {
 		if (std::find(skills.begin(), skills.end(), id) != skills.end()) {
 			result.push_back(id);
 		}
-		if (result.size() >= DBConstNumBusquedaPop) break;
+		if (result.size() >= count) break;
 	}
 	return result;
 }
 
-vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto) {
+vector<uint32_t> DBRaw::busquedaPopularPuesto(const string &puesto, size_t count) {
 	vector<uint32_t> result;
 	IDKey popKey(RL_POP);
 	IDKey puestoKey(RL_POS, puesto);
@@ -485,13 +572,13 @@ vector<uint32_t> DBRaw::busquedaPopularPuesto(const string& puesto) {
 		if (std::find(puestos.begin(), puestos.end(), id) != puestos.end()) {
 			result.push_back(id);
 		}
-		if (result.size() >= DBConstNumBusquedaPop) break;
+		if (result.size() >= count) break;
 	}
 	return result;
 }
 
 void DBRaw::solicitarContacto(uint32_t uIDFuente, uint32_t uIDDestino,
-		const string& mensaje) {
+		const string &mensaje) {
 	if (uIDFuente == uIDDestino) throw AlreadyContacts("Contacto con si mismo");
 	// No hace falta LOCK porque no es relevante si si pisa la misma solicitud
 	verificarContador<NonexistentUserID>(LAST_UID, string("user ID"), uIDFuente);
@@ -817,6 +904,17 @@ void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 	}
 }
 
+void DBRaw::inicializarGeo() {
+	IDKey key(GEO_US, 0.0, 0.0);
+	Slice sliceKey = key.toSlice();
+	string retVal;
+	Status status = db->Get(ReadOptions(), sliceKey, &retVal);
+	if (status.IsNotFound()) {
+		db->Put(WriteOptions(), sliceKey, Slice());
+	}
+	else verificarEstadoDB(status, "Error al inicializar key de geolocacion");
+}
+
 void DBRaw::inicializarFID(const string &rutaFotoDefault)
 {
 	if (!inicializarContador(LAST_FID, "foto ID")) return;
@@ -828,7 +926,8 @@ void DBRaw::inicializarFID(const string &rutaFotoDefault)
 	IDKey fotoKey(FOTO,0);
 	IDKey thumbKey(FOTO_THUMB,0);
 	Slice fotoSlice(content.data(), content.length());
-	Slice thumbSlice = Foto(content.data(), content.length()).resize().toSlice();
+	Foto resized = Foto(content.data(), content.length()).resize();
+	Slice thumbSlice = resized.toSlice();
 	WriteOptions options;
 	db->Put(options, fotoKey.toSlice(), fotoSlice);
 	db->Put(options, thumbKey.toSlice(), thumbSlice);
@@ -885,7 +984,9 @@ vector<uint32_t> DBRaw::getUIDVector(const Slice &key, const string &errorMsg) {
 	vector<uint32_t> result;
 	string retVal;
 	Status status = db->Get(ReadOptions(), key, &retVal);
-	if (status.IsNotFound()) throw NonexistentKey("Key no encontrada.");
+	if (status.IsNotFound()) {
+		throw NonexistentKey("Key no encontrada.");
+	}
 	verificarEstadoDB(status, errorMsg.c_str());
 	for (int i = 0; i < retVal.length(); i += sizeof(uint32_t))
 	{
@@ -920,11 +1021,46 @@ template<class TException> void DBRaw::verificarContador(KeyCode keyCode,
  * Metodos privados sobre popularidad y reverse lookups
  */
 
+/**
+ * Funcion para comparar pares de tipo <userID, popularidad>
+ * En un sort de mayor a menor
+ */
+bool popCmp(std::pair<uint32_t,uint32_t> a, std::pair<uint32_t,uint32_t> b)
+{
+    return a.second > b.second;
+}
+
+vector<uint32_t> DBRaw::popSort(const vector <uint32_t> &uIDs,
+		uint32_t *newUID, uint32_t *newPop) {
+	vector< std::pair<uint32_t,uint32_t> > popularidades;
+	vector<uint32_t> result;
+	for (uint32_t i = 0; i < uIDs.size(); ++i) {
+		uint32_t id = uIDs[i];
+		std::pair<uint32_t,uint32_t> par(id, getPopularidad(id, false));
+		if (newUID && par.first == *newUID) par.second = *newPop;
+		popularidades.push_back(par);
+	}
+	std::sort(popularidades.begin(), popularidades.end(), popCmp);
+	for (uint32_t i = 0; i < popularidades.size(); ++i)
+		result.push_back(popularidades[i].first);
+	return result;
+}
+
+void DBRaw::rlGeolocacionUpdate(uint32_t uID, Geolocacion viejaLocacion,
+		Geolocacion nuevaLocacion, WriteBatch &batch) {
+	if (viejaLocacion == nuevaLocacion) return;
+	IDKey viejaKey(GEO_US, viejaLocacion.longitud(), viejaLocacion.latitud());
+	Slice viejaKeySlice = viejaKey.toSlice();
+	IDKey nuevaKey(GEO_US, nuevaLocacion.longitud(), nuevaLocacion.latitud());
+	Slice nuevaKeySlice = nuevaKey.toSlice();
+	eraseVectorUID(uID, viejaKeySlice, batch);
+	orderedAppendVectorUID(uID, nuevaKeySlice, batch);
+}
+
 void DBRaw::rlPopularidadUpdate(uint32_t uID, uint32_t newPop,
 		WriteBatch &batch) {
 	IDKey rlKey(RL_POP);
 	Slice key = rlKey.toSlice();
-	vector< std::pair<uint32_t,uint32_t> > popularidades;
 	vector<uint32_t> uids;
 	try {
 		uids = getUIDVector(key, "Error al actualizar popularidad.");
@@ -933,15 +1069,7 @@ void DBRaw::rlPopularidadUpdate(uint32_t uID, uint32_t newPop,
 	// Si ya estaba en el vector, no se hace nada, sino se agrega
 	if(std::find(uids.begin(), uids.end(), uID) == uids.end())
 		uids.push_back(uID);
-	for (uint32_t i = 0; i < uids.size(); ++i) {
-		std::pair<uint32_t,uint32_t> par(i, getPopularidad(i, false));
-		if (par.first == uID) par.second = newPop;
-		popularidades.push_back(par);
-	}
-	std::sort(popularidades.begin(), popularidades.end(), popCmp);
-	vector<uint32_t> result;
-	for (uint32_t i = 0; i < popularidades.size(); ++i)
-		result.push_back(popularidades[i].first);
+	vector<uint32_t> result = popSort(uids, &uID, &newPop);
 	Slice data((char*) result.data(), result.size() * sizeof(uint32_t));
 	batch.Put(key, data);
 }
@@ -954,14 +1082,14 @@ void DBRaw::eraseVectorUID(uint32_t userID, const Slice &key,
 	batch.Put(key, data);
 }
 
-void DBRaw::appendVectorUID(uint32_t userID, const Slice &key,
+void DBRaw::orderedAppendVectorUID(uint32_t userID, const Slice &key,
 		WriteBatch &batch) {
 	vector<uint32_t> result;
 	try {
 		result = getUIDVector(key, "Error de base de datos");
 	}
 	catch (NonexistentKey &e) {}
-	result.push_back(userID);
+	result.insert(std::upper_bound(result.begin(), result.end(), userID), userID);
 	Slice data((char*) result.data(), result.size()*sizeof(uint32_t));
 	batch.Put(key, data);
 }
@@ -976,6 +1104,6 @@ void DBRaw::rlUpdate(uint32_t userID, KeyCode code, WriteBatch &batch,
 	for (string s : nuevos) // En los nuevos y no en los viejos, agregar
 		if (std::find(nuevos.begin(), nuevos.end(), s) != viejos.end()) {
 			IDKey key(code, s);
-			appendVectorUID(userID, key.toSlice(), batch);
+			orderedAppendVectorUID(userID, key.toSlice(), batch);
 		}
 }

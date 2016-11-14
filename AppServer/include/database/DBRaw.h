@@ -11,6 +11,7 @@
 #include "Fecha.h"
 #include "Geolocacion.h"
 #include "Puesto.h"
+#include "DBConstants.h"
 
 using std::string;
 using std::vector;
@@ -113,19 +114,83 @@ class DBRaw {
 	 */
 	bool getKeyExists(const leveldb::Slice &key, const string &errorMsg);
 
+	/**
+	 * Dado un Slice que es key de un array de uint32_t
+	 * Eliminar el uint32_t del mismo si existe y vuelve a
+	 * guardar el vector con la key dada en el batch
+	 * @param userID				User ID a eliminar
+	 * @param key					Key al array en db
+	 * @param batch					Batch a usar
+	 */
 	void eraseVectorUID(uint32_t userID, const leveldb::Slice &key,
 			WriteBatch &batch);
 
-	void appendVectorUID(uint32_t userID, const leveldb::Slice &key,
+	/**
+	 * Dado un Slice que es key de un array de uint32_t
+	 * Agrega el uint32_t al vector (no chequea no repetirse)
+	 * y vuelve a guardar el vector con la key dada en el batch
+	 * @param userID				User ID a agregar
+	 * @param key					Key al array en db
+	 * @param batch					Batch a usar
+	 */
+	void orderedAppendVectorUID(uint32_t userID, const leveldb::Slice &key,
 			WriteBatch &batch);
 
+	/**
+	 * Actualiza la locacion geografica de un usuario para reverse lookups
+	 * @param uID					User ID
+	 * @param viejaLocacion			Vieja locacion
+	 * @param nuevaLocacion			Nueva locacion
+	 * @param batch					Batch al cual escribir
+	 */
+	void rlGeolocacionUpdate(uint32_t uID, Geolocacion viejaLocacion,
+			Geolocacion nuevaLocacion, WriteBatch &batch);
+
+	/**
+	 * Actualiza la entrada de la db utilizada para lookups de popularidad
+	 * @param uID						User ID
+	 * @param newPop					Nuevo valor de popularidad
+	 * @param batch						Batch al cual escribir
+	 */
 	void rlPopularidadUpdate(uint32_t uID, uint32_t newPop, WriteBatch &batch);
 
+	/**
+	 * Actualiza la entrada de la db utilizada para lookups de strings
+	 * @param userID			User ID
+	 * @param code				KeyCode de key de DB
+	 * @param batch				Batch a usar
+	 * @param viejos			Strings viejos (los de la DB)
+	 * @param nuevos			Strings nuevos del usuario que reeemplazarn a los viejos
+	 */
 	void rlUpdate(uint32_t userID, KeyCode code, WriteBatch &batch,
 			vector<string> viejos, vector<string> nuevos);
 
+	/**
+	 * Actualiza la entrada de la db utilizada para lookups de puestos
+	 * @param userID			User ID
+	 * @param code				KeyCode de key de DB
+	 * @param batch				Batch a usar
+	 * @param viejos			Puestos viejos (los de la DB)
+	 * @param nuevos			Puestos nuevos del usuario que reeemplazarn a los viejos
+	 */
 	void rlUpdatePuestos(uint32_t userID, KeyCode code, WriteBatch &batch,
 				vector<Puesto> viejos, vector<Puesto> nuevos);
+
+	/**
+	 * Dado un vector de IDs y opcionalmente un nuevo valor de popularidad
+	 * para algun uID, devuelve los uIDs ordenados por popularidad de mayor a menor
+	 * @param uIDs				Vector de UIDs
+	 * @param newUID			Null o UID con valor de popularidad no guardado en DB
+	 * @param newPop			Null o Nuevo valor de popularidad
+	 * @return
+	 */
+	vector<uint32_t> popSort(const vector <uint32_t> &uIDs,
+			uint32_t *newUID = NULL, uint32_t *newPop = NULL);
+
+	/**
+	 * Inicializa la key para poder hacer busquedas por geolocacion
+	 */
+	void inicializarGeo();
 
  public:
 	/**
@@ -298,19 +363,16 @@ class DBRaw {
 	 * sean modificados
 	 * @param puestos					Lista de puestos. Null si no aplica.
 	 * @param skill						Lista de skills. Null si no aplica.
-	 * @param categorias				Lista de categorias. Null si no aplica.
 	 * @param geolocacion				Punto geográfico. Null si no aplica.
 	 * @param maxDist					Máxima distancia desde el punto. Infinito vale.
 	 * @param sortPopularidad			Si se debe ordernar los resultados por popularidad.
 	 * @return							Vector con todos los uIDs matcheantes
 	 * @exception NonexistentSkill		Skill invalido
 	 * @exception NonexistentPosition	Puesto invalido
-	 * @exception NonexistentCategory	Categoria invalida
 	 * @exception BadInputException		Distancia máxima negativa
 	 */
 	vector<uint32_t> busquedaProfesional(const vector<string>
-		*puestos, const vector<string> *skill, const vector<string>
-		*categorias, Geolocacion *geolocacion, float maxDist,
+		*puestos, const vector<string> *skill, Geolocacion *geolocacion, float maxDist,
 		bool sortPopularidad);
 
 	/**
@@ -347,21 +409,23 @@ class DBRaw {
 	 * Devuelve los 10 usuarios más populares
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	vector<uint32_t> busquedaPopular();
+	vector<uint32_t> busquedaPopular(size_t count = DBConstNumBusquedaPop);
 
 	/**
 	 * Devuelve los 10 usuarios más populares, que posean un skill
 	 * @param skill						Nombre del skill
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	vector<uint32_t> busquedaPopularSkill (const string &skill);
+	vector<uint32_t> busquedaPopularSkill (const string &skill,
+			size_t count = DBConstNumBusquedaPop);
 
 	/**
 	 * Devuelve los 10 usuarios más populares, que posean un puesto
 	 * @param puesto					Nombre del puesto
 	 * @return							Vector con todos los uIDs matcheantes
 	 */
-	vector<uint32_t> busquedaPopularPuesto (const string &puesto);
+	vector<uint32_t> busquedaPopularPuesto (const string &puesto,
+			size_t count = DBConstNumBusquedaPop);
 
 	/**
 	 * Envia un pedido de contacto

@@ -1,4 +1,5 @@
 #include "../../include/database/Geolocacion.h"
+#include <cmath>
 
 Geolocacion::Geolocacion(double longitud, double latitud) {
 	_longitud = longitud;
@@ -34,4 +35,15 @@ std::vector<char> Geolocacion::toBytes() const {
 	std::vector<char>::iterator it = std::copy((char*)&_longitud, (char*)(&_longitud+1), result.begin());
 	std::copy((char*)&_latitud, (char*)(&_latitud+1), it);
 	return result;
+}
+
+bool Geolocacion::operator==(const Geolocacion &otro) {
+	// TODO: Reducir la igualdad a rango sensato
+	return (_latitud==otro._latitud && _longitud==otro._longitud);
+}
+
+double Geolocacion::distancia(const Geolocacion &otro) {
+	double x = _latitud-otro._latitud;
+	double y = _longitud-otro._longitud;
+	return sqrt(x*x+y*y);
 }
