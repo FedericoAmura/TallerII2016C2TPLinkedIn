@@ -139,9 +139,6 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        Message last_msg = messageArrayAdapter.getItem(messageArrayAdapter.getCount()-1);
-//        Chat chat = new Chat(amigoUserID, nombreAmigo, last_msg.getMessage());
-//        PreferenceHandler.saveLastChatMessage(chat, this);
         super.onBackPressed();
     }
 

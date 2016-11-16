@@ -10,14 +10,14 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
  */
 
 public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
-    private static final String FILE_TOKEN = "FCMtoken";
-    private static final String REG_TOKEN = "REG_TOKEN";
+    private static final String FILE_TOKEN_GCM = "TOKEN_GCM";
+    private static final String REG_TOKEN_GCM = "REG_TOKEN_GCM";
 
     @Override
     public void onTokenRefresh() {
         String token = FirebaseInstanceId.getInstance().getToken();
-        Log.d(REG_TOKEN, token);
-        SharedPreferences prefs = getSharedPreferences(FILE_TOKEN, MODE_PRIVATE);
+        Log.d(REG_TOKEN_GCM, token);
+        SharedPreferences prefs = getSharedPreferences(FILE_TOKEN_GCM, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("token", token);
         editor.commit();

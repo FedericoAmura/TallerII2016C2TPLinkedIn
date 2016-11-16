@@ -23,10 +23,16 @@ class DBJSON {
     /* temporal */
     std::map<string,string> tokens;
     std::map<uint32_t,string> registration_ids; // Para el servicio de Google Cloud Messaging
+    bool gcm_mode;
 
  public:
-	DBJSON(DBRaw *db);
+	DBJSON(DBRaw *db, bool gcm_mode = false);
 	virtual ~DBJSON();
+
+    /**
+     * Modo (test ó gcm)
+     */
+    bool in_gcm_mode() {return gcm_mode;};
 
     /**
      * Generar token

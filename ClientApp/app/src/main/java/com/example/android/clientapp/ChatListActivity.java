@@ -54,14 +54,13 @@ public class ChatListActivity extends AppCompatActivity {
     private int statusCode;
 
     private ChatRVAdapter chatArrayAdapter;
-    private ListView listView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        chatArrayAdapter = new ChatRVAdapter();
+        chatArrayAdapter = new ChatRVAdapter(getApplicationContext());
 
         setContentView(R.layout.recycler_view);
         setToolbar();
@@ -83,6 +82,16 @@ public class ChatListActivity extends AppCompatActivity {
             chatArrayAdapter.add(chat);
     }
 
+    @Override
+    public void onResume() {
+        updateChatList();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

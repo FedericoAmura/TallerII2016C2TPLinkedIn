@@ -55,29 +55,33 @@ http_response POST_Handler::handle_login() {
 		std::cout << "[Error] username and/or password not found to parse. LogIn failed" << std::endl;
 		return http_response("", STATUS_FORBIDDEN);
 	}
-//  TODO Google Cloud Messaging
-/*
-	Json body;
-	try {
-		body = HttpParser::parse_json_from_body(request->message);
-		if (body["registration_id"].is_null())
-			throw BadInputException("registration_id not found");
-	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid Json Format. LogIn failed" << std::endl;
-		return http_response("", STATUS_FORBIDDEN);
-	} catch (BadInputException &e) {
-		std::cout << "[Error] registration_id not found to parse. LogIn failed" << std::endl;
-		return http_response("", STATUS_FORBIDDEN);
+
+	Json::object data;
+	data["username"] = username;
+	data["password"] = password;
+
+//  Google Cloud Messaging
+	if (db_json->in_gcm_mode()) {
+		Json body;
+		try {
+			body = HttpParser::parse_json_from_body(request->message);
+			if (body["registration_id"].is_null())
+				throw BadInputException("registration_id not found");
+			data["registration_id"] = body["registration_id"].string_value();
+		} catch (InvalidJsonException &e) {
+			std::cout << "[Error] Invalid Json Format. LogIn failed" << std::endl;
+			return http_response("", STATUS_FORBIDDEN);
+		} catch (BadInputException &e) {
+			std::cout << "[Error] registration_id not found to parse. LogIn failed" << std::endl;
+			return http_response("", STATUS_FORBIDDEN);
+		}
 	}
-*/	
-	Json data = Json::object{ {"username", username},
-							  {"password", password}, };
-	//						  {"registration_id", body["registration_id"].string_value()} };
+
 	uint32_t user_id;
 	std::string token = "";
 	try {
-		user_id = db_json->login(data);
-		token = db_json->generarToken(data);
+		user_id = db_json->login(Json(data));
+		token = db_json->generarToken(Json(data));
 	} catch (NonexistentUsername &e) {
 		std::cout << "[Error] Non Existent Username. LogIn failed" << std::endl;
 		return http_response("", STATUS_FORBIDDEN);

@@ -17,7 +17,7 @@ class Server {
 	bool init_ok;
 
  public:
-	Server();
+	Server(bool gcm_mode = true);
 	bool setting_ok();
 	void run();
 	virtual ~Server();

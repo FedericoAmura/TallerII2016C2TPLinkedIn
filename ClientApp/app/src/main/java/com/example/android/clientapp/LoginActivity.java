@@ -125,11 +125,11 @@ public class LoginActivity extends AppCompatActivity {
     private void enviarDatosAlServer(final String username, final String password){
         JSONObject jsonObj = new JSONObject();
 
-        SharedPreferences prefs = getSharedPreferences("FCMtoken", MODE_PRIVATE);
-        String FCMtoken = prefs.getString("token", null);
-        if (FCMtoken != null)
+        SharedPreferences prefs = getSharedPreferences("TOKEN_GCM", MODE_PRIVATE);
+        String token_gcm = prefs.getString("token", null);
+        if (token_gcm != null)
             try {
-                jsonObj.putOpt("registration_id", FCMtoken);
+                jsonObj.putOpt("registration_id", token_gcm);
             } catch (JSONException e) {}
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, JobifyAPI.getLoginURL(), jsonObj,

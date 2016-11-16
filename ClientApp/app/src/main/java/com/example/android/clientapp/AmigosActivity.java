@@ -23,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Amigo;
+import com.example.android.clientapp.utils.PreferenceHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -138,6 +139,11 @@ public class AmigosActivity extends AppCompatActivity {
                             amigo.cargarDatosBriefDesdeJSON(response);
                             amigo.setUserID(userID);
                             amigos.add(amigo);
+                            try {
+                                PreferenceHandler.updateUserThumbnail(Integer.valueOf(userID), response.getString("thumb"), getApplicationContext());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             if (amigos.size() == amigosID.size()) { inicializarAdapter(); }
                         }
                     }

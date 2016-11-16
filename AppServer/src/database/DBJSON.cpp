@@ -3,7 +3,7 @@
 #include "../../include/base64/base64.h"
 #include "../../include/database/JsonChecker.h"
 
-DBJSON::DBJSON(DBRaw *db) : db(db) {}
+DBJSON::DBJSON(DBRaw *db, bool gcm_mode) : db(db), gcm_mode(gcm_mode) {}
 
 DBJSON::~DBJSON() {
 	delete db;
@@ -56,17 +56,17 @@ uint32_t DBJSON::registrarse(const Json &json) {
 
 
 uint32_t DBJSON::login(const Json &json) {
-	camposExisten(json, "username", "password");
-	//TODO Google Cloud Messaging
-	// camposExisten(json, "username", "password", "registration_id");
+	if (!gcm_mode)
+		camposExisten(json, "username", "password");
+	else // Google Cloud Messaging
+		camposExisten(json, "username", "password", "registration_id");
 	string userName = json["username"].string_value();
 	string passHashStr = base64_decode(json["password"].string_value());
 	vector<char> passHash(passHashStr.begin(), passHashStr.end());
-	//TODO Google Cloud Messaging
-	//uint32_t userID = db->login(userName, passHash);
-	//registration_ids[userID] = json["registration_id"].string_value();
-	return db->login(userName, passHash);
-//	return userID;
+	uint32_t userID = db->login(userName, passHash);
+	if (gcm_mode)
+		registration_ids[userID] = json["registration_id"].string_value();
+	return userID;
 }
 
 void DBJSON::logout(const string &token) {
@@ -253,8 +253,8 @@ Json DBJSON::getPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 
 void DBJSON::aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 	db->aceptarSolicitud(uIDFuente, uIDDestino);
-	// TODO Google Cloud Messaging
-	/*
+	// Google Cloud Messaging
+	if (gcm_mode) {
 		Json::object data;
 		Json::object notification;
 		notification["title"] = "Solicitud de Contacto";
@@ -262,7 +262,7 @@ void DBJSON::aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 		data["notification"] = notification;
 		data["to"] = registration_ids[uIDDestino];
 		GCM_Connector::notify(Json(data).dump());
-	*/
+	}
 }
 
 void DBJSON::declinarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
@@ -287,8 +287,8 @@ void DBJSON::crearPeticion(const Json &json) {
 	uint32_t uIDDestino = json["targetID"].int_value();
 	string mensaje(json["message"].string_value());
 	db->solicitarContacto(uIDOrigen, uIDDestino, mensaje);
-	// TODO Google Cloud Messaging
-/*
+	// Google Cloud Messaging
+	if (gcm_mode) {
 		Json::object j;
 		Json::object data;
 		Json::object notification;
@@ -299,7 +299,7 @@ void DBJSON::crearPeticion(const Json &json) {
 		j["data"] = data;
 		j["to"] = registration_ids[uIDDestino];
 		GCM_Connector::notify(Json(j).dump());
-*/
+	}
 }
 
 bool DBJSON::esContacto(uint32_t userID1, uint32_t userID2) {
@@ -393,19 +393,19 @@ void DBJSON::enviarMensaje(const Json &json) {
 	uint32_t uIDEmisor = json["senderID"].int_value();
 	string mensaje = json["message"].string_value();
 	db->enviarMensaje(uIDReceptor, uIDEmisor, mensaje);
-	// TODO Google Cloud Messaging
-/*
-	Json::object j;
-	Json::object notification;
-	Json::object data;
-	notification["title"] = "Nuevo mensaje";
-	notification["body"] = mensaje;
-	data["type_notif"] = 1;
-	j["notification"] = notification;
-	j["data"] = data;
-	j["to"] = registration_ids[uIDReceptor];
-	GCM_Connector::notify(Json(j).dump());
-*/
+	// Google Cloud Messaging
+	if (gcm_mode) {
+		Json::object j;
+		Json::object notification;
+		Json::object data;
+		notification["title"] = "Nuevo mensaje";
+		notification["body"] = mensaje;
+		data["type_notif"] = 1;
+		j["notification"] = notification;
+		j["data"] = data;
+		j["to"] = registration_ids[uIDReceptor];
+		GCM_Connector::notify(Json(j).dump());
+	}
 }
 
 Json DBJSON::getNumLastMensaje(uint32_t userID1, uint32_t userID2) {

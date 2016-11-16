@@ -1,6 +1,8 @@
 package com.example.android.clientapp.ArrayAdapters;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import com.example.android.clientapp.ChatActivity;
 import com.example.android.clientapp.Modelo.chat.Chat;
 import com.example.android.clientapp.R;
+import com.example.android.clientapp.utils.PreferenceHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ import static android.support.v7.widget.RecyclerView.*;
 
 public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHolder> {
     private List<Chat> chatList = new ArrayList<Chat>();
+    private Context context;
 
     public static class ChatViewHolder extends ViewHolder{
         CardView cardView;
@@ -53,7 +57,9 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
         }
     }
 
-    public ChatRVAdapter(){}
+    public ChatRVAdapter(Context context) {
+        this.context = context;
+    }
 
     public void add(Chat chat) {
         if (chatList.contains(chat)) {
@@ -78,11 +84,20 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
 
     @Override
     public void onBindViewHolder(ChatViewHolder holder, int position) {
-        holder.img_photo.setImageResource(R.drawable.ic_user_black); // hardcode
-        holder.t_name.setText(chatList.get(position).getName());
-        holder.t_last_msg.setText(chatList.get(position).getLastMessage());
-        holder.t_hour.setText(chatList.get(position).getHour());
-        holder.senderID = chatList.get(position).getSenderID();
+        Chat chat = chatList.get(position);
+        Bitmap thumb = PreferenceHandler.getUserThumbnail(chat.getSenderID(), context);
+        if (thumb != null)
+            holder.img_photo.setImageBitmap(thumb);
+        else
+            holder.img_photo.setImageResource(R.drawable.ic_user_black);
+        holder.t_name.setText(chat.getName());
+        String message = chat.getLastMessage();
+        if (message.length() > 20)
+            holder.t_last_msg.setText(message.substring(0,20) + "...");
+        else
+            holder.t_last_msg.setText(message);
+        holder.t_hour.setText(chat.getHour());
+        holder.senderID = chat.getSenderID();
     }
 
     @Override

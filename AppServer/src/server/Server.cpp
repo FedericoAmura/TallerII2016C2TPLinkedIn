@@ -7,9 +7,9 @@
 
 #include "../../include/server/Server.h"
 
-Server::Server() {
+Server::Server(bool gcm_mode) {
 	try {
-		db_json = new DBJSON(new DBRaw("/tmp/db_users", &std::cout));
+		db_json = new DBJSON(new DBRaw("/tmp/db_users", &std::cout), gcm_mode);
 	} catch (LevelDBException &e) {
 		init_ok = false;
 		return;

@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/person_photo"
-            android:layout_width="@dimen/avator_size"
-            android:layout_height="@dimen/avator_size"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:scaleType="centerCrop"
             />
 
@@ -26,7 +26,9 @@
             android:id="@+id/person_name"
             android:layout_toRightOf="@+id/person_photo"
             android:layout_alignParentTop="true"
-            android:textSize="30sp"
+            android:paddingLeft="10dp"
+            android:textSize="20sp"
+            android:text="Fulanito Perez"
             />
 
         <TextView
@@ -35,6 +37,8 @@
             android:id="@+id/person_age"
             android:layout_toRightOf="@+id/person_photo"
             android:layout_below="@+id/person_name"
+            android:paddingLeft="10dp"
+            android:text="Buenos Aires"
             />
 
     </RelativeLayout>

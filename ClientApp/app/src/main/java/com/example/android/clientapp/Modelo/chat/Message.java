@@ -1,7 +1,5 @@
 package com.example.android.clientapp.Modelo.chat;
 
-import android.util.Log;
-
 import java.util.Calendar;
 
 /**
