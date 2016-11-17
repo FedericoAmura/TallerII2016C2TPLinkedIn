@@ -2,6 +2,35 @@
 sudo: required
 dist: trusty
 language: python	#El Tester esta hecho en python, lo tomamos como base
+#agregamos a la matrix gcc 4.9 y clang 3.6 y 3.7
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env: COMPILER=g++-4.9
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+      env: COMPILER=clang++-3.6
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env: COMPILER=clang++-3.7
 python:
   - '2.7'
 before_install:
@@ -12,10 +41,10 @@ before_script:
 script: 
   - "sudo ./Tester/main.py"   #tests
 #  - "sudo ./AppServer/UnitTest"   #no encuentra el test, posiblemente porque el lang es python
-#cache:
-#  pip: true
-#  directories: 
-#  - ./AppServer/lib	
+cache:
+  pip: true
+  directories: 
+  - ./AppServer/lib	
 #after_success:
 #after_failure:
 #before_deploy:
