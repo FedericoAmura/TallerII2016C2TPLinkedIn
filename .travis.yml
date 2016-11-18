@@ -2,11 +2,6 @@
 sudo: required
 dist: trusty
 language: python	#El Tester esta hecho en python, lo tomamos como base
-#agregamos a la matrix gcc 4.9 y clang 3.7
-gcc:
- - 4.9
-clang:
- - 3.7
 python:
   - '2.7'
 before_install:
