@@ -254,7 +254,7 @@ Json DBJSON::getPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 void DBJSON::aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 	db->aceptarSolicitud(uIDFuente, uIDDestino);
 	// Google Cloud Messaging
-	if (gcm_mode) {
+/*	if (gcm_mode) {
 		Json::object data;
 		Json::object notification;
 		notification["title"] = "Solicitud de Contacto";
@@ -262,7 +262,7 @@ void DBJSON::aceptarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
 		data["notification"] = notification;
 		data["to"] = registration_ids[uIDDestino];
 		GCM_Connector::notify(Json(data).dump());
-	}
+	} */
 }
 
 void DBJSON::declinarPeticion(uint32_t uIDFuente, uint32_t uIDDestino) {
@@ -295,6 +295,8 @@ void DBJSON::crearPeticion(const Json &json) {
 		notification["title"] = "Solicitud de Contacto";
 		notification["body"] = "Fulanito quiere agregarte como amigo";
 		data["type_notif"] = 2;
+		data["name"] = getDatosBrief(uIDOrigen)["name"].string_value();
+		data["senderID"] = (int)uIDOrigen;
 		j["notification"] = notification;
 		j["data"] = data;
 		j["to"] = registration_ids[uIDDestino];
@@ -401,6 +403,8 @@ void DBJSON::enviarMensaje(const Json &json) {
 		notification["title"] = "Nuevo mensaje";
 		notification["body"] = mensaje;
 		data["type_notif"] = 1;
+		data["senderID"] = (int)uIDEmisor;
+		data["name"] = getDatosBrief(uIDEmisor)["name"].string_value();
 		j["notification"] = notification;
 		j["data"] = data;
 		j["to"] = registration_ids[uIDReceptor];

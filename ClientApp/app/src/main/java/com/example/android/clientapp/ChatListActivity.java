@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -24,8 +23,14 @@ import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.ChatRVAdapter;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.Modelo.chat.Chat;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatListActivity extends AppCompatActivity {
-
+    private EventBus bus = EventBus.getDefault();
     private static final String CONTACTS = "contacts";
 
     private static final String USER_ID = "userID";
@@ -76,6 +81,7 @@ public class ChatListActivity extends AppCompatActivity {
         updateChatList();
     }
 
+    // Carga los chats guardados.
     private void updateChatList() {
         ArrayList<Chat> chats = PreferenceHandler.getSavedConversations(this);
         for (Chat chat : chats)
@@ -91,6 +97,27 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bus.register(this);
+    }
+
+    // Permite recibir notificaciones mientras está corriendo en esta activity
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NotificationEvent notificationEvent) {
+        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
+        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
+        if (type == 1 || type == 2) //NEW MESSAGE OR FRIEND REQUEST TODO
+            NotificationLauncher.launch(this, remoteMessage);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        bus.unregister(this);
     }
 
     private void setToolbar() {

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,17 +28,22 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
+import com.example.android.clientapp.utils.PreferenceHandler;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 public class PerfilActivity extends AppCompatActivity {
-
+    private EventBus bus = EventBus.getDefault();
     public Perfil perfil;
 
     //Info personal:
@@ -89,6 +93,27 @@ public class PerfilActivity extends AppCompatActivity {
 
         cargarDatosDelServer(userID);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bus.register(this);
+    }
+
+    // Permite recibir notificaciones mientras está corriendo en esta activity
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NotificationEvent notificationEvent) {
+        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
+        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
+        if (type == 1 || type == 2) //NEW MESSAGE OR FRIEND REQUEST TODO
+            NotificationLauncher.launch(this, remoteMessage);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        bus.unregister(this);
     }
 
     private void cargarBarra(){
@@ -259,6 +284,7 @@ public class PerfilActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
+                            PreferenceHandler.removeCredentials(getApplicationContext());
                             volverLogin();
                             Toast.makeText(PerfilActivity.this, "Sesion cerrada.",Toast.LENGTH_LONG).show();
                         }

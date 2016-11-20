@@ -2,7 +2,6 @@ package com.example.android.clientapp;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,9 +21,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,10 +39,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 public class AmigosActivity extends AppCompatActivity {
-
+    private EventBus bus = EventBus.getDefault();
     private static final String CONTACTS = "contacts";
 
     private static final String USER_ID = "userID";
@@ -77,6 +80,28 @@ public class AmigosActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) // Habilitar up button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Contactos");
+    }
+
+    // Nos registramos en el bus de eventos (llegada de notificaciones)
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bus.register(this);
+    }
+
+    // Permite recibir notificaciones mientras está corriendo en esta activity
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NotificationEvent notificationEvent) {
+        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
+        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
+        if (type == 1 || type == 2) //NEW MESSAGE OR FRIEND REQUEST TODO
+            NotificationLauncher.launch(getApplicationContext(), remoteMessage);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        bus.unregister(this);
     }
 
     @Override

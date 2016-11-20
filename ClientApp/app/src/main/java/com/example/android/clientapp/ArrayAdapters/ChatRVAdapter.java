@@ -35,7 +35,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
         TextView t_name;
         TextView t_last_msg;
         TextView t_hour;
-        int senderID;
+        int receiverID;
 
         ChatViewHolder(View view) {
             super(view);
@@ -50,7 +50,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ChatActivity.class);
                     intent.putExtra("name", t_name.getText().toString());
-                    intent.putExtra("receiverID", senderID);
+                    intent.putExtra("receiverID", receiverID);
                     view.getContext().startActivity(intent);
                 }
             });
@@ -85,7 +85,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
     @Override
     public void onBindViewHolder(ChatViewHolder holder, int position) {
         Chat chat = chatList.get(position);
-        Bitmap thumb = PreferenceHandler.getUserThumbnail(chat.getSenderID(), context);
+        Bitmap thumb = PreferenceHandler.getUserThumbnail(chat.getReceiverID(), context);
         if (thumb != null)
             holder.img_photo.setImageBitmap(thumb);
         else
@@ -97,7 +97,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
         else
             holder.t_last_msg.setText(message);
         holder.t_hour.setText(chat.getHour());
-        holder.senderID = chat.getSenderID();
+        holder.receiverID = chat.getReceiverID();
     }
 
     @Override

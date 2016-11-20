@@ -19,7 +19,8 @@ import java.util.List;
 
 public class MessageArrayAdapter extends ArrayAdapter<Message> {
     private Context context;
-    private TextView textView;
+    private TextView textView_msg;
+    private TextView textView_timestamp;
     private List<Message> msgList = new ArrayList<Message>();
 
     public MessageArrayAdapter(Context context, int resource) {
@@ -49,8 +50,10 @@ public class MessageArrayAdapter extends ArrayAdapter<Message> {
             row = inflater.inflate(R.layout.right, parent, false);
         else
             row = inflater.inflate(R.layout.left, parent, false);
-        textView = (TextView) row.findViewById(R.id.msg);
-        textView.setText(msg.getMessage());
+        textView_msg = (TextView) row.findViewById(R.id.msg);
+        textView_msg.setText(msg.getMessage());
+        textView_timestamp = (TextView) row.findViewById(R.id.timestamp);
+        textView_timestamp.setText(msg.getHour());
         return row;
     }
 

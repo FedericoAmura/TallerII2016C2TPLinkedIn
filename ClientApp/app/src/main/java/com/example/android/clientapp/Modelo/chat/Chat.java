@@ -7,13 +7,13 @@ import java.util.Calendar;
  */
 
 public class Chat{
-    private int senderID;
+    private int receiverID;
     private String name;
     private String last_msg;
     private String hour;
 
     public Chat(int userID, String name, String last_msg){
-        this.senderID = userID;
+        this.receiverID = userID;
         this.name = name;
         this.last_msg = last_msg;
         Calendar calendar = Calendar.getInstance();
@@ -35,8 +35,8 @@ public class Chat{
         return chat;
     }
 
-    public int getSenderID() {
-        return senderID;
+    public int getReceiverID() {
+        return receiverID;
     }
 
     public String getName() {
@@ -55,6 +55,6 @@ public class Chat{
     public boolean equals(Object o) {
         if (o == null) return false;
         Chat chat = (Chat) o;
-        return this.senderID == chat.senderID;
+        return this.receiverID == chat.receiverID;
     }
 }

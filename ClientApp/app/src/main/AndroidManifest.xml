@@ -23,15 +23,15 @@
 
         <activity
             android:name=".MainActivity"
-            android:theme="@style/IntroTheme" />
-        <activity
-            android:name=".LoginActivity"
             android:theme="@style/IntroTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/IntroTheme">
         </activity>
         <activity android:name=".PestaniasActivity" />
         <activity
@@ -54,10 +54,12 @@
             android:theme="@style/PerfilTheme" />
 
         <activity android:name=".ChatListActivity"
-            android:theme="@style/PerfilTheme"/>
+            android:theme="@style/PerfilTheme">
+        </activity>
 
         <activity android:name=".ChatActivity"
-            android:theme="@style/PerfilTheme"/>
+            android:theme="@style/PerfilTheme">
+        </activity>
 
         <service android:name=".FCM.MyFirebaseInstanceIdService">
             <intent-filter>

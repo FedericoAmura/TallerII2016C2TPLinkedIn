@@ -1,30 +1,18 @@
 package com.example.android.clientapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.BoolRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,19 +23,22 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
+    private EventBus bus = EventBus.getDefault();
     public Perfil perfil;
     boolean exit = false;
 
@@ -69,6 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        UserCredentials credentials = PreferenceHandler.loadUserCredentials(this);
+        if (credentials == null) {
+            Intent intentLogin = new Intent(this, LoginActivity.class);
+            startActivity(intentLogin);
+            finish();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -104,6 +102,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Nos registramos en el bus de eventos (llegada de notificaciones)
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bus.register(this);
+    }
+
+    // Permite recibir notificaciones mientras está corriendo en esta activity
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NotificationEvent notificationEvent) {
+        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
+        NotificationLauncher.launch(this, remoteMessage);
+    }
+
+    @Override
+    protected void onStop() {
+        bus.unregister(this);
+        super.onStop();
+    }
+
     private void verChats() {
         Intent intent = new Intent(this, ChatListActivity.class);
         startActivity(intent);
@@ -136,8 +154,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                        }
+                       // if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                       //}
+                        Toast.makeText(getApplicationContext(),"No hay conexión con el Servidor.",Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 }){
 
@@ -195,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        if (exit){
+/*        if (exit){
             finish();
         }
         else {
@@ -209,6 +229,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 3 * 1000);
         }
+        */
+        super.onBackPressed();
     }
 
 }

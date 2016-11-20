@@ -37,8 +37,29 @@ public class PreferenceHandler {
         //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences sharedPref = context.getSharedPreferences("CREDENTIALS", MODE_PRIVATE);
         int userID = sharedPref.getInt("userID", -1);
+        if (userID == -1)
+            return null;
         String token = sharedPref.getString("token", "");
         return new UserCredentials(userID, token);
+    }
+
+    /** Borrando las credenciales **/
+    public static void removeCredentials(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("CREDENTIALS", MODE_PRIVATE);
+        sharedPref.edit().clear().commit();
+    }
+
+    /** Actualiza el token recibido de Firebase Cloud Messaging **/
+    public static void updateFCMToken(Context context, String token) {
+        SharedPreferences sharedPref = context.getSharedPreferences("FCM_TOKEN", MODE_PRIVATE);
+        sharedPref.edit().putString("token", token).commit();
+    }
+
+    /** Devuelve el token recibido de Firebase Cloud Messaging **/
+    public static String getFCMToken(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("FCM_TOKEN", MODE_PRIVATE);
+        String token = sharedPref.getString("token", null);
+        return token;
     }
 
     /** Guarda un nuevo mensaje **/
@@ -78,10 +99,10 @@ public class PreferenceHandler {
         SharedPreferences sharedPref = context.getSharedPreferences("LATEST_CHATS", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         String data = chat.getName() + ";" + chat.getLastMessage() + ";" + chat.getHour();
-        editor.putString(String.valueOf(chat.getSenderID()), data);
+        editor.putString(String.valueOf(chat.getReceiverID()), data);
         editor.commit();
 
-        updateSavedConversations(String.valueOf(chat.getSenderID()), context);
+        updateSavedConversations(String.valueOf(chat.getReceiverID()), context);
     }
 
     /** Devuelve el último mensaje con otro usuario **/
