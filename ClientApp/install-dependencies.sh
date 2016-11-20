@@ -1,2 +1,2 @@
 # /usr/bin/env sh
-sudo apt-get install graddle
+#sudo apt-get install graddle
