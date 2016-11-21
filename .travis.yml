@@ -12,10 +12,10 @@ before_script:
 script: 
   - "sudo ./Tester/main.py"   #tests
 #  - "sudo ./AppServer/UnitTest"   #no encuentra el test, posiblemente porque el lang es python
-#cache:
-#  pip: true
-#  directories: 
-#  - ./AppServer/lib	
+cache:
+  pip: true
+  directories: 
+  - ./AppServer/lib	
 #after_success:
 #after_failure:
 #before_deploy:

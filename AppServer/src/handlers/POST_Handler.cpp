@@ -223,7 +223,7 @@ http_response POST_Handler::handle_create_contact_request() {
 		std::cout << "[Error] Bad Input: " << e.what() << ". Create contact request failed."<< std::endl;
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
 	}
-	return http_response("{}", STATUS_CREATED);
+	return http_response("{}", STATUS_OK);
 }
 
 http_response POST_Handler::handle_notify_message_seen() {
