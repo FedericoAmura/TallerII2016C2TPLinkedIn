@@ -54,35 +54,12 @@ public class PerfilActivity extends AppCompatActivity {
     //Resumen:
     private TextView tvResumen;
 
-    //Botones:
-    private Button botonCerrarSesion;
-    private Button botonEditar;
-
     private int statusCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
-
-        botonEditar = (Button) findViewById(R.id.boton_editar_perfil);
-        botonEditar.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick (View v){
-                apretarBotonEditar();
-            }
-
-        });
-
-        botonCerrarSesion = (Button) findViewById(R.id.boton_cerrar_sesion);
-        botonCerrarSesion.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick (View v){
-                apretarCerrarSesion();
-            }
-
-        });
-
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String userID = sharedPref.getString("userID", "");
@@ -123,7 +100,7 @@ public class PerfilActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_perfil, menu);
         return true;
     }
 
@@ -132,8 +109,11 @@ public class PerfilActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.opcionAjustes:
-                showSnackBar("Ajustes");
+            case R.id.opcionCerrarSesion:
+                apretarCerrarSesion();
+                return true;
+            case R.id.opcionEditar:
+                apretarBotonEditar();
                 return true;
             case R.id.opcionNotificaciones:
                 showSnackBar("Notificaciones");

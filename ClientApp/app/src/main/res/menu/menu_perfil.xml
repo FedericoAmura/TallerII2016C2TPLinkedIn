@@ -7,6 +7,12 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
 
+    <item android:id="@+id/opcionEditar"
+        android:title="Editar"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_edit"
+        app:showAsAction="always" />
+
     <item android:id="@+id/opcionNotificaciones"
         android:title="Notificaciones"
         android:orderInCategory="100"

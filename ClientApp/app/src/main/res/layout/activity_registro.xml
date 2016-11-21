@@ -262,8 +262,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Password"
-                android:inputType="text"
                 android:textSize="25dp"
+                android:inputType="textPassword"
                 android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
@@ -300,7 +300,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Repetir password"
-                android:inputType="text"
+                android:inputType="textPassword"
                 android:textSize="25dp"
                 android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
