@@ -46,6 +46,9 @@
             android:name=".PerfilEditActivity"
             android:theme="@style/IntroTheme" />
         <activity
+            android:name=".ConfigIPActivity"
+            android:theme="@style/IntroTheme" />
+        <activity
             android:name=".PerfilAmigoActivity"
             android:theme="@style/PerfilTheme" />
         <activity
