@@ -76,9 +76,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-//        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        String userID = sharedPref.getString("userID", "");
-
         cargarDatosDelServer(String.valueOf(credentials.getUserID()));
 
         cvPerfil = (CardView) findViewById(R.id.cvInfo);
