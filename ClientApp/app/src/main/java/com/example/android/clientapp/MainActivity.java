@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
                        // if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
                        //}
                         Toast.makeText(getApplicationContext(),"No hay conexión con el Servidor.",Toast.LENGTH_LONG).show();
+                        volverLogin();
                         finish();
                     }
                 }){
