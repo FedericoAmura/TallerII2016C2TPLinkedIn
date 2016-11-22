@@ -268,16 +268,20 @@ public class GPS extends Service implements LocationListener {
      * @return null or locality
      */
     public String getLocality(Context context) {
+        if (location == null) return null; // No engancho el gps
+
         List<Address> addresses = getGeocoderAddress(context);
 
         if (addresses != null && addresses.size() > 0) {
-            Address address = addresses.get(0);
-            String locality = address.getLocality();
-            if (locality == null) return "N/A";
-            return locality;
+            for (Address adr : addresses) {
+                if (adr.getLocality() != null && adr.getLocality().length() > 0) {
+                    return adr.getLocality();
+                }
+            }
+            return "N/A"; // El gps anda pero no tenemos el nombre del lugar
         }
-        else {
-            return null;
+        else  {
+            return "N/A"; // El gps anda pero no tenemos el nombre del lugar
         }
     }
 
