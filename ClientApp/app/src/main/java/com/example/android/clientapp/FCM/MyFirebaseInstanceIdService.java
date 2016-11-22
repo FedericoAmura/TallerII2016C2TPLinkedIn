@@ -2,6 +2,8 @@ package com.example.android.clientapp.FCM;
 
 import android.content.SharedPreferences;
 import android.util.Log;
+
+import com.example.android.clientapp.utils.PreferenceHandler;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
@@ -10,16 +12,12 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
  */
 
 public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
-    private static final String FILE_TOKEN_GCM = "TOKEN_GCM";
-    private static final String REG_TOKEN_GCM = "REG_TOKEN_GCM";
+    private static final String REG_TOKEN_GCM = "FCM_TOKEN";
 
     @Override
     public void onTokenRefresh() {
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(REG_TOKEN_GCM, token);
-        SharedPreferences prefs = getSharedPreferences(FILE_TOKEN_GCM, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("token", token);
-        editor.commit();
+        PreferenceHandler.updateFCMToken(getApplicationContext(), token);
     }
 }

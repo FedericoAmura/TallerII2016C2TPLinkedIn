@@ -137,10 +137,10 @@ class ClientTest(unittest.TestCase):
         res5 = client1.create_contact_request(data)
         data["targetID"] = client6.get_user_id()
         res6 = client1.create_contact_request(data)
-        self.assertEquals(201, res1.status_code)
-        self.assertEquals(201, res2.status_code)
-        self.assertEquals(201, res5.status_code)
-        self.assertEquals(201, res6.status_code)
+        self.assertEquals(200, res1.status_code)
+        self.assertEquals(200, res2.status_code)
+        self.assertEquals(200, res5.status_code)
+        self.assertEquals(200, res6.status_code)
 
     #checked
     def test_08_accept_existent_contact_request(self):
@@ -358,7 +358,7 @@ class ClientTest(unittest.TestCase):
         data["targetID"] = client2.get_user_id()
         data["message"] = "quiero ser tu amigo"
         res = client1.create_contact_request(data)
-        self.assertEquals(201, res.status_code)
+        self.assertEquals(200, res.status_code)
         res = client2.get_particular_request(client1.get_user_id())
         self.assertEquals(200, res.status_code)
         data = json.loads(res.text)

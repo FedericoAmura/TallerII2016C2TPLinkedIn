@@ -25,15 +25,15 @@
 
         <activity
             android:name=".MainActivity"
-            android:theme="@style/IntroTheme" />
-        <activity
-            android:name=".LoginActivity"
             android:theme="@style/IntroTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/IntroTheme">
         </activity>
         <activity android:name=".PestaniasActivity" />
         <activity
@@ -54,25 +54,25 @@
         <activity
             android:name=".AmigosActivity"
             android:theme="@style/PerfilTheme" />
-        <activity
-            android:name=".ChatListActivity"
-            android:theme="@style/PerfilTheme" />
-        <activity
-            android:name=".ChatActivity"
-            android:theme="@style/PerfilTheme" />
+
+        <activity android:name=".ChatListActivity"
+            android:theme="@style/PerfilTheme">
+        </activity>
+
+        <activity android:name=".ChatActivity"
+            android:theme="@style/PerfilTheme">
+        </activity>
 
         <service android:name=".FCM.MyFirebaseInstanceIdService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"></action>
             </intent-filter>
         </service>
         <service android:name=".FCM.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"></action>
             </intent-filter>
         </service>
-
-        <activity android:name=".ConfigIPActivity"></activity>
     </application>
 
 </manifest>

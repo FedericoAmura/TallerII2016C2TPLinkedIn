@@ -1,33 +1,22 @@
 package com.example.android.clientapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.BoolRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,19 +24,26 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    private EventBus bus = EventBus.getDefault();
+    private UserCredentials credentials;
     public Perfil perfil;
     boolean exit = false;
 
@@ -72,10 +68,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String userID = sharedPref.getString("userID", "");
+        credentials = PreferenceHandler.loadUserCredentials(this);
+        if (credentials == null) {
+            Intent intentLogin = new Intent(this, LoginActivity.class);
+            startActivity(intentLogin);
+            finish();
+            return;
+        }
 
-        cargarDatosDelServer(userID);
+        cargarDatosDelServer(String.valueOf(credentials.getUserID()));
 
         cvPerfil = (CardView) findViewById(R.id.cvInfo);
         cvPerfil.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +103,26 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    // Nos registramos en el bus de eventos (llegada de notificaciones)
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bus.register(this);
+    }
+
+    // Permite recibir notificaciones mientras está corriendo en esta activity
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NotificationEvent notificationEvent) {
+        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
+        NotificationLauncher.launch(this, remoteMessage);
+    }
+
+    @Override
+    protected void onStop() {
+        bus.unregister(this);
+        super.onStop();
     }
 
     private void verChats() {
@@ -136,8 +157,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                        }
+                       // if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                       //}
+                        Toast.makeText(getApplicationContext(),"No hay conexión con el Servidor.",Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 }){
 
@@ -183,19 +206,21 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.opcionAjustes) {
-            Toast.makeText(this,"Ajustes", Toast.LENGTH_SHORT).show();
+        switch (id) {
+            case R.id.opcionCerrarSesion:
+                apretarCerrarSesion();
+                return true;
+            case R.id.opcionNotificaciones:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        else if(id==R.id.opcionNotificaciones){
-            Toast.makeText(this,"Notificaciones", Toast.LENGTH_LONG).show();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
     @Override
     public void onBackPressed(){
-        if (exit){
+/*        if (exit){
             finish();
         }
         else {
@@ -209,6 +234,59 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 3 * 1000);
         }
+        */
+        super.onBackPressed();
     }
+
+
+    private void apretarCerrarSesion() {
+        final String token = credentials.getToken();
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.DELETE, JobifyAPI.getLoginURL(), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (statusCode == HttpURLConnection.HTTP_OK){
+                            volverLogin();
+                            Toast.makeText(MainActivity.this, "Sesion cerrada.",Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                            Toast.makeText(MainActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                    }
+                }){
+
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
+                statusCode = response.statusCode;
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
+
+    private void volverLogin(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
 
 }

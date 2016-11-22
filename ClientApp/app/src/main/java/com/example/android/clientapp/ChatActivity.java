@@ -1,6 +1,5 @@
 package com.example.android.clientapp;
 
-import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -21,11 +20,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.MessageArrayAdapter;
+import com.example.android.clientapp.utils.Constants;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.chat.Chat;
 import com.example.android.clientapp.Modelo.chat.Message;
 import com.example.android.clientapp.utils.PreferenceHandler;
 import com.example.android.clientapp.utils.UserCredentials;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +38,8 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class ChatActivity extends AppCompatActivity {
     private MessageArrayAdapter messageArrayAdapter;
@@ -52,7 +59,7 @@ public class ChatActivity extends AppCompatActivity {
         editTextSend = (EditText) findViewById(R.id.edit_msg);
         msglist = (ListView) findViewById(R.id.msg_list);
 
-        messageArrayAdapter = new MessageArrayAdapter(getApplicationContext(), R.layout.right);
+        messageArrayAdapter = new MessageArrayAdapter(getApplicationContext(), R.layout.right_message);
         msglist.setAdapter(messageArrayAdapter);
 
         buttonSend.setOnClickListener(new View.OnClickListener() {
@@ -66,22 +73,15 @@ public class ChatActivity extends AppCompatActivity {
         credentials = PreferenceHandler.loadUserCredentials(this);
 
         Bundle bundle = getIntent().getExtras();
-        nombreAmigo = bundle.getString("name");
         amigoUserID = bundle.getInt("receiverID");
+        nombreAmigo = bundle.getString("name");
 
         setToolbar();
 
         msglist.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msglist.setAdapter(messageArrayAdapter);
 
-        messageArrayAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                msglist.setSelection(messageArrayAdapter.getCount()-1);
-            }
-        });
-
+        // Tests
         messageArrayAdapter.add(new Message("Hola", false));
         messageArrayAdapter.add(new Message("Hola1", false));
         messageArrayAdapter.add(new Message("Hola2", false));
@@ -108,15 +108,43 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(nombreAmigo);
     }
 
-/*
-    private void receiveMessage(Arg arg) {
-        Message message = new Message(, false);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    // Permite recibir notificaciones mientras está corriendo en esta activity
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NotificationEvent notificationEvent) {
+        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
+        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
+        int senderID = Integer.valueOf(remoteMessage.getData().get("senderID"));
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE && senderID == amigoUserID) {//Nuevo mensaje
+            receiveMessage(remoteMessage.getNotification().getBody());
+            // notificar mensaje visto (TODO)
+        }
+        else {
+            NotificationLauncher.launch(getApplicationContext(), remoteMessage);
+        }
+    }
+
+    // Agrega los mensajes recibidos. Guarda el mensaje.
+    private void receiveMessage(String msg) {
+        Message message = new Message(msg, false);
         messageArrayAdapter.add(message);
+        messageArrayAdapter.notifyDataSetChanged();
         PreferenceHandler.saveMessage(amigoUserID, message, this);
         PreferenceHandler.saveLastChatMessage(new Chat(amigoUserID, nombreAmigo, message.getMessage()), this);
     }
-*/
 
+    // Envía el mensaje al servidor y guarda el mensaje.
     private void sendMessage() {
         Message message = new Message(editTextSend.getText().toString(), true);
         messageArrayAdapter.add(message);

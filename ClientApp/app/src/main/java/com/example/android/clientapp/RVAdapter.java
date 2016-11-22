@@ -5,6 +5,7 @@ package com.example.android.clientapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -70,6 +71,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
     public void onBindViewHolder(PersonViewHolder personViewHolder, int i) {
         personViewHolder.personName.setText(amigos.get(i).getNombre());
         personViewHolder.personAge.setText(amigos.get(i).getCiudad());
+        Bitmap thumb = amigos.get(i).getFoto();
+        if (thumb != null) { personViewHolder.personPhoto.setImageBitmap(thumb); }
+        else personViewHolder.personPhoto.setImageResource(R.drawable.ic_user_black);
         personViewHolder.personPhoto.setImageBitmap(amigos.get(i).getFoto());
         personViewHolder.id = amigos.get(i).getUserID();
     }

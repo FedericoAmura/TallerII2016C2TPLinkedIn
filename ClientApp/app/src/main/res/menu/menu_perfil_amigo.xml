@@ -2,15 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.herprogramacion.toolbarapp.DetailActivity">
-    <!--<item
-        android:id="@+id/opcionAjustes"
+
+    <item
+        android:id="@+id/opcionAgregar"
+        android:icon="@drawable/ic_friend"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />-->
+        android:title="Agregar"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/opcionChat"
         android:icon="@drawable/ic_chat"
         android:orderInCategory="100"
-        android:title="Recomendar"
-        app:showAsAction="ifRoom" />
+        android:title="Chat"
+        app:showAsAction="always" />
 </menu>

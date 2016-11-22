@@ -365,34 +365,6 @@
             </android.support.v7.widget.CardView>
             -->
 
-            <!-- Bottom Bar -->
-            <LinearLayout
-                android:id="@+id/bottom_bar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_alignParentBottom="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/boton_cerrar_sesion"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Cerrar sesion"
-                    android:textColor="@android:color/black"/>
-
-                <Button
-                    android:id="@+id/boton_editar_perfil"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:backgroundTint="@color/colorAccent"
-                    android:text="Editar datos"
-                    android:textColor="@android:color/black"/>
-
-            </LinearLayout>
 
         </LinearLayout>
 

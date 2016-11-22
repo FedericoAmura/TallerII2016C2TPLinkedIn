@@ -26,7 +26,7 @@
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-        
+
     </android.support.design.widget.AppBarLayout>
 
     <ListView
@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@null"
+        android:background="#d3eba0"
         android:divider="@null"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll">
@@ -42,23 +42,26 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:weightSum="3">
 
         <EditText
             android:id="@+id/edit_msg"
-            android:layout_width="0dp"
+            android:layout_width="250sp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             android:layout_height="match_parent"
-            android:layout_weight="2">
+            android:background="#a8a8a8">
         </EditText>
 
         <Button
             android:id="@+id/btn_send"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Send">
+            android:background="@drawable/send_button">
         </Button>
     </LinearLayout>
 </LinearLayout>

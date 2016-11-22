@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
@@ -24,64 +25,64 @@ import java.util.Map;
 /**
  * Created by guidonegri on 28/10/16.
  */
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.HttpHeaderParser;
 
-public class VolleyRequest {
+/*public class VolleyRequest extends Request<JSONObject> {
 
-    private Context context;
-    private String url;
-    private int metodo;
-    private String header;
-    private JSONObject jsonAlServer;
-    private JSONObject jsonDesdeServer;
+    private Listener<JSONObject> listener;
+    private Map<String, String> params;
     private int statusCode;
 
-    public VolleyRequest(Context context, int metodo, String url, JSONObject json, String header) {
-        this.metodo = metodo;
-        this.url = url;
-        this.jsonAlServer = json;
-        this.jsonDesdeServer = null;
-        this.context = context;
-        this.header = header;
+    public VolleyRequest(String url, Map<String, String> params,
+                         Listener<JSONObject> reponseListener, ErrorListener errorListener) {
+        super(Method.GET, url, errorListener);
+        this.listener = reponseListener;
+        this.params = params;
     }
 
-    public void crearRequest() {
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(metodo, url, jsonAlServer,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("LOOOOOOOOOOOOOOOOOG", "CODE ON:" + statusCode);
-                        jsonDesdeServer = response;
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse netResp = error.networkResponse;
-                        statusCode = netResp.statusCode;
-                        Log.d("LOOOOOOOOOOOOOOOOOG", "CODE ERROR: " + statusCode);
-                    }
-                }) {
+    public VolleyRequest(int method, String url, Map<String, String> params,
+                         Listener<JSONObject> reponseListener, ErrorListener errorListener) {
+        super(method, url, errorListener);
+        this.listener = reponseListener;
+        this.params = params;
+    }
 
+    protected Map<String, String> getParams()
+            throws com.android.volley.AuthFailureError {
+        return params;
+    };
 
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                statusCode = response.statusCode;
-                return super.parseNetworkResponse(response);
+    @Override
+    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+        statusCode = response.statusCode;
+        try {
+            if (statusCode == HttpURLConnection.HTTP_OK) {
+                String jsonString = new String(response.data,
+                        HttpHeaderParser.parseCharset(response.headers));
+                return Response.success(new JSONObject(jsonString),
+                        HttpHeaderParser.parseCacheHeaders(response));
             }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        requestQueue.add(jsonRequest);
+        } catch (UnsupportedEncodingException e) {
+            return Response.error(new ParseError(e));
+        } catch (JSONException je) {
+            return Response.error(new ParseError(je));
+        }
+        return null;
     }
 
-    public JSONObject getJsonDesdeServer(){
-        return jsonDesdeServer;
+    @Override
+    protected void deliverResponse(JSONObject response) {
+        // TODO Auto-generated method stub
+        listener.onResponse(response);
     }
-
-    public int getStatusCode(){
-        return statusCode;
-    }
-}
-
-
+}*/
