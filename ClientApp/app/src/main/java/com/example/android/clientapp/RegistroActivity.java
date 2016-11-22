@@ -241,6 +241,7 @@ public class RegistroActivity extends AppCompatActivity {
 
             // Cargo datos de localizacion:
             if (gps.getIsGPSTrackingEnabled()) {
+                gps.getLocation(); // Actualizamos la locacion
                 jsonObj.putOpt(LATITUDE, gps.getLatitude());
                 jsonObj.putOpt(LONGITUDE, gps.getLongitude());
                 jsonObj.putOpt(CITY, gps.getLocality(this));

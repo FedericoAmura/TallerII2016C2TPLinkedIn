@@ -6,9 +6,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- Needed only if your app targets Android 5.0 (API level 21) or higher. -->
+    <uses-feature android:name="android.hardware.location.network" />
+    <uses-feature android:name="android.hardware.location.gps" />
 
     <application
         android:name=".JobifyApp"
@@ -52,23 +54,25 @@
         <activity
             android:name=".AmigosActivity"
             android:theme="@style/PerfilTheme" />
-
-        <activity android:name=".ChatListActivity"
-            android:theme="@style/PerfilTheme"/>
-
-        <activity android:name=".ChatActivity"
-            android:theme="@style/PerfilTheme"/>
+        <activity
+            android:name=".ChatListActivity"
+            android:theme="@style/PerfilTheme" />
+        <activity
+            android:name=".ChatActivity"
+            android:theme="@style/PerfilTheme" />
 
         <service android:name=".FCM.MyFirebaseInstanceIdService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"></action>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <service android:name=".FCM.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"></action>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".ConfigIPActivity"></activity>
     </application>
 
 </manifest>

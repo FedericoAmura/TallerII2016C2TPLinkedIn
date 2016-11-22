@@ -11,9 +11,9 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class JobifyAPI {
 
-    private static final String APPSERVER_IP = "192.168.43.142";
-    private static final String APPSERVER_PUERTO = "8888";
-    private static final String APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
+    private static String APPSERVER_IP = "192.168.1.37";
+    private static String APPSERVER_PUERTO = "8888";
+    private static String APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
 
     // Endpoints:
     private static final String LOGIN = "/login";
@@ -43,5 +43,12 @@ public class JobifyAPI {
     public static String getSendMessageURL(int senderID, int receiverID) {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
     }
+
+    public static void setIP(String IP) {
+        APPSERVER_IP = IP;
+        APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
+    }
+
+    public static String getIP() { return APPSERVER_IP; }
 
 }

@@ -18,6 +18,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -272,7 +273,7 @@ public class GPS extends Service implements LocationListener {
         if (addresses != null && addresses.size() > 0) {
             Address address = addresses.get(0);
             String locality = address.getLocality();
-
+            if (locality == null) return "N/A";
             return locality;
         }
         else {

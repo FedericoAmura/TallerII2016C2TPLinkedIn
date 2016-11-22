@@ -12,6 +12,14 @@ Aplicación similar a Linkedin, consta de un app server, un shared server, y un 
 
 ###Ejecución###
 
+Parametros
+
+--test
+Corre el servidor para hacer tests.
+
+--gcm
+Corre el servidor con google cloud messages.
+
 ##App Server##
 
 ###Dependencias###
