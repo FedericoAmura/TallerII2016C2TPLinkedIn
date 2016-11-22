@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.ChatRVAdapter;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.Modelo.chat.Chat;
+import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
@@ -110,7 +111,7 @@ public class ChatListActivity extends AppCompatActivity {
     public void onEvent(NotificationEvent notificationEvent) {
         RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
         int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        if (type == 1 || type == 2) //NEW MESSAGE OR FRIEND REQUEST TODO
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
             NotificationLauncher.launch(this, remoteMessage);
     }
 

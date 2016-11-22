@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,9 +37,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private EventBus bus = EventBus.getDefault();
+    private UserCredentials credentials;
     public Perfil perfil;
     boolean exit = false;
 
@@ -60,20 +65,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        UserCredentials credentials = PreferenceHandler.loadUserCredentials(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        credentials = PreferenceHandler.loadUserCredentials(this);
         if (credentials == null) {
             Intent intentLogin = new Intent(this, LoginActivity.class);
             startActivity(intentLogin);
             finish();
+            return;
         }
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        String userID = sharedPref.getString("userID", "");
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String userID = sharedPref.getString("userID", "");
-
-        cargarDatosDelServer(userID);
+        cargarDatosDelServer(String.valueOf(credentials.getUserID()));
 
         cvPerfil = (CardView) findViewById(R.id.cvInfo);
         cvPerfil.setOnClickListener(new View.OnClickListener() {
@@ -203,13 +209,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.opcionAjustes) {
-            Toast.makeText(this,"Ajustes", Toast.LENGTH_SHORT).show();
+        switch (id) {
+            case R.id.opcionCerrarSesion:
+                apretarCerrarSesion();
+                return true;
+            case R.id.opcionNotificaciones:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        else if(id==R.id.opcionNotificaciones){
-            Toast.makeText(this,"Notificaciones", Toast.LENGTH_LONG).show();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -232,5 +240,56 @@ public class MainActivity extends AppCompatActivity {
         */
         super.onBackPressed();
     }
+
+
+    private void apretarCerrarSesion() {
+        final String token = credentials.getToken();
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.DELETE, JobifyAPI.getLoginURL(), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (statusCode == HttpURLConnection.HTTP_OK){
+                            volverLogin();
+                            Toast.makeText(MainActivity.this, "Sesion cerrada.",Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                            Toast.makeText(MainActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                    }
+                }){
+
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
+                statusCode = response.statusCode;
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
+
+    private void volverLogin(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
 
 }

@@ -15,8 +15,6 @@ import com.google.firebase.messaging.RemoteMessage;
  */
 
 public class NotificationLauncher {
-    private static final int TYPE_NOTIF_NEW_MSG = 1;
-    private static final int TYPE_NOTIF_CONT_REQ = 2;
     private static final String GROUP_MESSAGES = "MESSAGES";
     private static final String GROUP_FRIEND_REQUESTS = "FRIEND_REQUESTS";
 
@@ -26,9 +24,9 @@ public class NotificationLauncher {
         String username = remoteMessage.getData().get("name");
         String message = remoteMessage.getNotification().getBody();
 
-        String group = (notification_id == TYPE_NOTIF_NEW_MSG) ? GROUP_MESSAGES : GROUP_FRIEND_REQUESTS;
-        String title = (notification_id == TYPE_NOTIF_NEW_MSG) ? "Nuevos Mensajes" : "Solicitud de Contacto";
-        String line = (notification_id == TYPE_NOTIF_NEW_MSG) ? username + " " + message : username + " quiere unirte a sus contactos";
+        String group = (notification_id == Constants.NOTIFICATION_TYPE_NEW_MESSAGE) ? GROUP_MESSAGES : GROUP_FRIEND_REQUESTS;
+        String title = (notification_id == Constants.NOTIFICATION_TYPE_NEW_MESSAGE) ? "Nuevos Mensajes" : "Solicitud de Contacto";
+        String line = (notification_id == Constants.NOTIFICATION_TYPE_NEW_MESSAGE) ? username + " " + message : username + " quiere unirte a sus contactos";
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);

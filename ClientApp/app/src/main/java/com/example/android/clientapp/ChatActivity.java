@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.MessageArrayAdapter;
+import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.chat.Chat;
@@ -58,7 +59,7 @@ public class ChatActivity extends AppCompatActivity {
         editTextSend = (EditText) findViewById(R.id.edit_msg);
         msglist = (ListView) findViewById(R.id.msg_list);
 
-        messageArrayAdapter = new MessageArrayAdapter(getApplicationContext(), R.layout.right);
+        messageArrayAdapter = new MessageArrayAdapter(getApplicationContext(), R.layout.right_message);
         msglist.setAdapter(messageArrayAdapter);
 
         buttonSend.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +126,7 @@ public class ChatActivity extends AppCompatActivity {
         RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
         int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
         int senderID = Integer.valueOf(remoteMessage.getData().get("senderID"));
-        if (type == 1 && senderID == amigoUserID) {//Nuevo mensaje
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE && senderID == amigoUserID) {//Nuevo mensaje
             receiveMessage(remoteMessage.getNotification().getBody());
             // notificar mensaje visto (TODO)
         }

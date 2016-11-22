@@ -47,9 +47,9 @@ public class MessageArrayAdapter extends ArrayAdapter<Message> {
         View row;
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (msg.is_mine())
-            row = inflater.inflate(R.layout.right, parent, false);
+            row = inflater.inflate(R.layout.right_message, parent, false);
         else
-            row = inflater.inflate(R.layout.left, parent, false);
+            row = inflater.inflate(R.layout.left_message, parent, false);
         textView_msg = (TextView) row.findViewById(R.id.msg);
         textView_msg.setText(msg.getMessage());
         textView_timestamp = (TextView) row.findViewById(R.id.timestamp);

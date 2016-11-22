@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <item android:id="@+id/opcionCerrarSesion"
+        android:title="Cerrar sesion"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/opcionEditar"
+        android:title="Editar"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_edit"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/opcionNotificaciones"
+        android:title="Notificaciones"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_notificacion"
+        app:showAsAction="always" />
+</menu>

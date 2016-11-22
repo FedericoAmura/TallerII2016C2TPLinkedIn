@@ -28,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.google.firebase.messaging.RemoteMessage;
@@ -86,7 +87,7 @@ public class PerfilAmigoActivity extends AppCompatActivity {
     public void onEvent(NotificationEvent notificationEvent) {
         RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
         int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        if (type == 1 || type == 2) //NEW MESSAGE OR FRIEND REQUEST TODO
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
             NotificationLauncher.launch(this, remoteMessage);
     }
 
@@ -148,6 +149,9 @@ public class PerfilAmigoActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.opcionAgregar:
+                agregarUsuario();
+                return true;
             case R.id.opcionChat:
                 abrirChat();
                 return true;
@@ -326,7 +330,7 @@ public class PerfilAmigoActivity extends AppCompatActivity {
                                 tvFav.setText(String.valueOf(rec));
                             }
                             else {
-                                rec = rec;
+                                //rec = rec;
                                 tvFav.setText(String.valueOf(rec));}
                         }
                     }
@@ -350,6 +354,65 @@ public class PerfilAmigoActivity extends AppCompatActivity {
         requestQueue.add(jsonRequest);
 
     }
+
+
+    private void agregarUsuario(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final String userID = sharedPref.getString("userID", "");
+        final String token = sharedPref.getString("token", "");
+
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.putOpt("userID", Integer.valueOf(userID));;
+            jsonObj.putOpt("targetID", Integer.valueOf(amigoUserID));
+            jsonObj.putOpt("message", " ");
+        } catch (JSONException e) { }
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, JobifyAPI.getContactosURL(userID), jsonObj,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
+                            Toast.makeText(PerfilAmigoActivity.this, "Solicitud de amistad enviada.", Toast.LENGTH_LONG).show();
+                        }
+                        else { Toast.makeText(PerfilAmigoActivity.this, "Solicitud de amistad enviada. 2222222", Toast.LENGTH_LONG).show(); }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                            Toast.makeText(PerfilAmigoActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                            Toast.makeText(PerfilAmigoActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                        else {
+                            Toast.makeText(PerfilAmigoActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                        }
+                    }
+                }) {
+
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
+                statusCode = response.statusCode;
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+
+    }
+
 
 
 

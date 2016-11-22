@@ -28,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
@@ -58,35 +59,12 @@ public class PerfilActivity extends AppCompatActivity {
     //Resumen:
     private TextView tvResumen;
 
-    //Botones:
-    private Button botonCerrarSesion;
-    private Button botonEditar;
-
     private int statusCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
-
-        botonEditar = (Button) findViewById(R.id.boton_editar_perfil);
-        botonEditar.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick (View v){
-                apretarBotonEditar();
-            }
-
-        });
-
-        botonCerrarSesion = (Button) findViewById(R.id.boton_cerrar_sesion);
-        botonCerrarSesion.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick (View v){
-                apretarCerrarSesion();
-            }
-
-        });
-
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String userID = sharedPref.getString("userID", "");
@@ -106,7 +84,7 @@ public class PerfilActivity extends AppCompatActivity {
     public void onEvent(NotificationEvent notificationEvent) {
         RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
         int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        if (type == 1 || type == 2) //NEW MESSAGE OR FRIEND REQUEST TODO
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
             NotificationLauncher.launch(this, remoteMessage);
     }
 
@@ -148,7 +126,7 @@ public class PerfilActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_perfil, menu);
         return true;
     }
 
@@ -157,8 +135,11 @@ public class PerfilActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.opcionAjustes:
-                showSnackBar("Ajustes");
+            case R.id.opcionCerrarSesion:
+                apretarCerrarSesion();
+                return true;
+            case R.id.opcionEditar:
+                apretarBotonEditar();
                 return true;
             case R.id.opcionNotificaciones:
                 showSnackBar("Notificaciones");
