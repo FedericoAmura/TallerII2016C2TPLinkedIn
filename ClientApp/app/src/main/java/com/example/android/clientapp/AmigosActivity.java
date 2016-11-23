@@ -26,6 +26,7 @@ import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,6 +55,7 @@ public class AmigosActivity extends AppCompatActivity {
     private LinearLayoutManager llm;
 
     private int statusCode;
+    private UserCredentials credentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +68,9 @@ public class AmigosActivity extends AppCompatActivity {
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String userID = sharedPref.getString(USER_ID, "");
-        final String token = sharedPref.getString(TOKEN, "");
+        credentials = PreferenceHandler.loadUserCredentials(this);
 
-        cargarAmigosIdDelServer(userID, token);
+        cargarAmigosIdDelServer(String.valueOf(credentials.getUserID()), credentials.getToken());
         setToolbar();
     }
 

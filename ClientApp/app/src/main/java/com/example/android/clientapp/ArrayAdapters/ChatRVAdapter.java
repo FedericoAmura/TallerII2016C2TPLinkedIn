@@ -3,6 +3,8 @@ package com.example.android.clientapp.ArrayAdapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.example.android.clientapp.ChatActivity;
 import com.example.android.clientapp.Modelo.chat.Chat;
 import com.example.android.clientapp.R;
+import com.example.android.clientapp.utils.CircleBitmap;
 import com.example.android.clientapp.utils.PreferenceHandler;
 
 import java.util.ArrayList;
@@ -51,6 +54,8 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
                     Intent intent = new Intent(view.getContext(), ChatActivity.class);
                     intent.putExtra("name", t_name.getText().toString());
                     intent.putExtra("receiverID", receiverID);
+                    Bitmap thumb = ((BitmapDrawable)img_photo.getDrawable()).getBitmap();
+                    intent.putExtra("thumbnail", CircleBitmap.resize_thumbnail(thumb, 60, 60));
                     view.getContext().startActivity(intent);
                 }
             });
@@ -86,10 +91,12 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
     public void onBindViewHolder(ChatViewHolder holder, int position) {
         Chat chat = chatList.get(position);
         Bitmap thumb = PreferenceHandler.getUserThumbnail(chat.getReceiverID(), context);
-        if (thumb != null)
+        if (thumb != null) {
             holder.img_photo.setImageBitmap(thumb);
-        else
-            holder.img_photo.setImageResource(R.drawable.ic_user_black);
+        } else {
+            Bitmap img_default = BitmapFactory.decodeResource(context.getResources(), R.drawable.user_default);
+            holder.img_photo.setImageBitmap(CircleBitmap.generate(img_default));
+        }
         holder.t_name.setText(chat.getName());
         String message = chat.getLastMessage();
         if (message.length() > 20)

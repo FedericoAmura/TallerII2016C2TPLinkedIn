@@ -27,6 +27,8 @@ public class PreferenceHandler {
     public static void saveUserCredentials(UserCredentials credentials, Context context) {
         SharedPreferences sharedPref = context.getSharedPreferences("CREDENTIALS", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("username", credentials.getUsername());
+        editor.putString("password", credentials.getPassword());
         editor.putInt("userID", credentials.getUserID());
         editor.putString("token", credentials.getToken());
         editor.commit();
@@ -34,13 +36,14 @@ public class PreferenceHandler {
 
     /** Carga las credenciales del usuario **/
     public static UserCredentials loadUserCredentials(Context context) {
-        //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences sharedPref = context.getSharedPreferences("CREDENTIALS", MODE_PRIVATE);
         int userID = sharedPref.getInt("userID", -1);
         if (userID == -1)
             return null;
         String token = sharedPref.getString("token", "");
-        return new UserCredentials(userID, token);
+        String username = sharedPref.getString("username", "");
+        String password = sharedPref.getString("password", "");
+        return new UserCredentials(username, password, userID, token);
     }
 
     /** Borrando las credenciales **/
@@ -68,7 +71,11 @@ public class PreferenceHandler {
       * 1 : receiverID
       * */
     public static void saveMessage(int userID, Message message, Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences("CONVERSATIONS", MODE_PRIVATE);
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return;
+        String myUserID = String.valueOf(credentials.getUserID());
+        SharedPreferences sharedPref = context.getSharedPreferences(myUserID + "-CONVERSATIONS", MODE_PRIVATE);
         String conv = sharedPref.getString(String.valueOf(userID), "");
         String flag = (message.is_mine()) ? "0" : "1";
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -83,7 +90,11 @@ public class PreferenceHandler {
     }
 
     public static ArrayList<Message> loadMessages(int userID, Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences("CONVERSATIONS", MODE_PRIVATE);
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return new ArrayList<>();
+        String myUserID = String.valueOf(credentials.getUserID());
+        SharedPreferences sharedPref = context.getSharedPreferences(myUserID + "-CONVERSATIONS", MODE_PRIVATE);
         String conv = sharedPref.getString(String.valueOf(userID), "");
         ArrayList<Message> messages = new ArrayList<Message>();
         if (conv.isEmpty())
@@ -96,7 +107,11 @@ public class PreferenceHandler {
 
     /** Guarda el último mensaje con otro usuario **/
     public static void saveLastChatMessage(Chat chat, Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences("LATEST_CHATS", MODE_PRIVATE);
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return;
+        String myUserID = String.valueOf(credentials.getUserID());
+        SharedPreferences sharedPref = context.getSharedPreferences(myUserID + "-LATEST_CHATS", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         String data = chat.getName() + ";" + chat.getLastMessage() + ";" + chat.getHour();
         editor.putString(String.valueOf(chat.getReceiverID()), data);
@@ -107,7 +122,11 @@ public class PreferenceHandler {
 
     /** Devuelve el último mensaje con otro usuario **/
     private static Chat getSavedLastChat(String senderID, Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences("LATEST_CHATS", MODE_PRIVATE);
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return null;
+        String myUserID = String.valueOf(credentials.getUserID());
+        SharedPreferences sharedPref = context.getSharedPreferences(myUserID + "-LATEST_CHATS", MODE_PRIVATE);
         String dataChat = sharedPref.getString(senderID, "");
         if (dataChat.isEmpty())
             return null;
@@ -117,7 +136,11 @@ public class PreferenceHandler {
     /** Devuelve los chats (últimos) de cada usuario **/
     public static ArrayList<Chat> getSavedConversations(Context context) {
         ArrayList<Chat> chats = new ArrayList<Chat>();
-        SharedPreferences sharedPref = context.getSharedPreferences("CHATS", MODE_PRIVATE);
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return chats;
+        String myUserID = String.valueOf(credentials.getUserID());
+        SharedPreferences sharedPref = context.getSharedPreferences(myUserID + "-CHATS", MODE_PRIVATE);
         String userIDs = sharedPref.getString("userIDs", "");
         if (userIDs.isEmpty())
             return chats;
@@ -132,7 +155,11 @@ public class PreferenceHandler {
 
     /** Actualiza el orden de los últimos chats cuando se agrega otro (puede ser uno ya existente)**/
     private static void updateSavedConversations(String senderID, Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences("CHATS", MODE_PRIVATE);
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return;
+        String myUserID = String.valueOf(credentials.getUserID());
+        SharedPreferences sharedPref = context.getSharedPreferences(myUserID + "-CHATS", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         String userIDs = sharedPref.getString("userIDs", "");
         if (userIDs.isEmpty()){
@@ -166,6 +193,8 @@ public class PreferenceHandler {
         byte[] decodedString = Base64.decode(thumbnailencoded, Base64.NO_WRAP);
         InputStream is = new ByteArrayInputStream(decodedString);
         Bitmap thumb = BitmapFactory.decodeStream(is);
-        return thumb;
+        Bitmap circleThumb = CircleBitmap.generate(thumb);
+        return circleThumb;
     }
+
 }

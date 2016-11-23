@@ -44,6 +44,10 @@ public class JobifyAPI {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
     }
 
+    public static String getThumbnailURL(int userID) {
+        return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/thumb";
+    }
+
     public static void setIP(String IP) {
         APPSERVER_IP = IP;
         APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;

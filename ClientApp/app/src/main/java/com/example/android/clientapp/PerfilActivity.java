@@ -32,6 +32,7 @@ import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
@@ -60,16 +61,16 @@ public class PerfilActivity extends AppCompatActivity {
     private TextView tvResumen;
 
     private int statusCode;
+    private UserCredentials credentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String userID = sharedPref.getString("userID", "");
+        credentials = PreferenceHandler.loadUserCredentials(this);
 
-        cargarDatosDelServer(userID);
+        cargarDatosDelServer(String.valueOf(credentials.getUserID()));
 
     }
 
@@ -257,8 +258,7 @@ public class PerfilActivity extends AppCompatActivity {
     }
 
     private void apretarCerrarSesion() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String token = sharedPref.getString("token", "");
+        final String token = credentials.getToken();
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.DELETE, JobifyAPI.getLoginURL(), null,
                 new Response.Listener<JSONObject>() {

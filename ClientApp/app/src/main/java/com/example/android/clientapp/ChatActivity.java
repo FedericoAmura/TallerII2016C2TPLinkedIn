@@ -1,5 +1,8 @@
 package com.example.android.clientapp;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.MessageArrayAdapter;
+import com.example.android.clientapp.utils.CircleBitmap;
 import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
@@ -48,6 +52,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText editTextSend;
     private int amigoUserID;
     private String nombreAmigo = "?";
+    private Bitmap thumbnail = null;
     private UserCredentials credentials;
 
     @Override
@@ -75,6 +80,7 @@ public class ChatActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         amigoUserID = bundle.getInt("receiverID");
         nombreAmigo = bundle.getString("name");
+        thumbnail = getIntent().getParcelableExtra("thumbnail");
 
         setToolbar();
 
@@ -82,14 +88,14 @@ public class ChatActivity extends AppCompatActivity {
         msglist.setAdapter(messageArrayAdapter);
 
         // Tests
-        messageArrayAdapter.add(new Message("Hola", false));
-        messageArrayAdapter.add(new Message("Hola1", false));
+        messageArrayAdapter.add(new Message("Hola, mensaje un poco más largo", false));
+        messageArrayAdapter.add(new Message("Hola1 jajajjajajajajajajajajjajaja ajajajja", false));
         messageArrayAdapter.add(new Message("Hola2", false));
         messageArrayAdapter.add(new Message("Hola4", true));
-        messageArrayAdapter.add(new Message("Hola", false));
+        messageArrayAdapter.add(new Message("Hola ha jajaj jajaj jajaj nahhhh", false));
         messageArrayAdapter.add(new Message("Hola1", true));
         messageArrayAdapter.add(new Message("Hola2", false));
-        messageArrayAdapter.add(new Message("Hola4", true));
+        messageArrayAdapter.add(new Message("Hola ll pp oo ww  asd asd, jjjjj", true));
 
         updateConversations();
     }
@@ -106,6 +112,16 @@ public class ChatActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(nombreAmigo);
+        if (thumbnail != null) {
+            BitmapDrawable iconThumb = new BitmapDrawable(getResources(), thumbnail);
+            //getSupportActionBar().setHomeAsUpIndicator(iconThumb);
+            toolbar.setNavigationIcon(iconThumb);
+        } else {
+            Bitmap thumb_default = BitmapFactory.decodeResource(getResources(), R.drawable.user_default);
+            Bitmap circle_thumb = CircleBitmap.resize_thumbnail(CircleBitmap.generate(thumb_default), 60, 60);
+            BitmapDrawable iconThumb = new BitmapDrawable(getResources(), circle_thumb);
+            toolbar.setNavigationIcon(iconThumb);
+        }
     }
 
     @Override

@@ -5,13 +5,13 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
-import org.json.JSONArray;
+import com.example.android.clientapp.utils.CircleBitmap;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 /**
  * Created by guidonegri on 05/11/16.
@@ -47,10 +47,11 @@ public class Amigo {
             popularidad = object.getInt(POPULARIDAD);
 
             strFoto = object.getString(THUMB);
+            Log.d("PHOTOOOOOOOO",strFoto);
             Log.d("TEST", "STRfoto: "+ strFoto);
             byte[] decodedString = Base64.decode(strFoto, Base64.NO_WRAP);
             InputStream is = new ByteArrayInputStream(decodedString);
-            foto = BitmapFactory.decodeStream(is);
+            foto = CircleBitmap.generate(BitmapFactory.decodeStream(is));
 
         } catch (JSONException e) {
             e.printStackTrace();
