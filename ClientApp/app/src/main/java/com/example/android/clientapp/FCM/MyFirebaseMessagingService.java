@@ -8,6 +8,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.example.android.clientapp.R;
+import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.MainActivity;
 import com.example.android.clientapp.utils.NotificationEvent;
@@ -41,7 +42,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = null;
         PendingIntent pendingIntent = null;
 
-        if ( type_notif != 1 || type_notif != 2)
+        if ( type_notif != Constants.NOTIFICATION_TYPE_NEW_MESSAGE ||
+             type_notif != Constants.NOTIFICATION_TYPE_FRIEND_REQUEST)
             return;
         NotificationLauncher.launch(getApplicationContext(), remoteMessage);
 

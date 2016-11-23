@@ -35,6 +35,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -87,23 +88,14 @@ public class ChatActivity extends AppCompatActivity {
         msglist.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msglist.setAdapter(messageArrayAdapter);
 
-        // Tests
-        messageArrayAdapter.add(new Message("Hola, mensaje un poco más largo", false));
-        messageArrayAdapter.add(new Message("Hola1 jajajjajajajajajajajajjajaja ajajajja", false));
-        messageArrayAdapter.add(new Message("Hola2", false));
-        messageArrayAdapter.add(new Message("Hola4", true));
-        messageArrayAdapter.add(new Message("Hola ha jajaj jajaj jajaj nahhhh", false));
-        messageArrayAdapter.add(new Message("Hola1", true));
-        messageArrayAdapter.add(new Message("Hola2", false));
-        messageArrayAdapter.add(new Message("Hola ll pp oo ww  asd asd, jjjjj", true));
-
-        updateConversations();
+        updateConversation();
     }
 
-    private void updateConversations() {
+    private void updateConversation() {
         ArrayList<Message> messages = PreferenceHandler.loadMessages(amigoUserID, this);
         for (Message msg : messages)
             messageArrayAdapter.add(msg);
+        checkForNewUnreadMessages();        // Chequeamos si hay mensajes no leidos
     }
 
     private void setToolbar() {
@@ -144,7 +136,6 @@ public class ChatActivity extends AppCompatActivity {
         int senderID = Integer.valueOf(remoteMessage.getData().get("senderID"));
         if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE && senderID == amigoUserID) {//Nuevo mensaje
             receiveMessage(remoteMessage.getNotification().getBody());
-            // notificar mensaje visto (TODO)
         }
         else {
             NotificationLauncher.launch(getApplicationContext(), remoteMessage);
@@ -156,6 +147,7 @@ public class ChatActivity extends AppCompatActivity {
         Message message = new Message(msg, false);
         messageArrayAdapter.add(message);
         messageArrayAdapter.notifyDataSetChanged();
+        NotifyMessageSeen();
         PreferenceHandler.saveMessage(amigoUserID, message, this);
         PreferenceHandler.saveLastChatMessage(new Chat(amigoUserID, nombreAmigo, message.getMessage()), this);
     }
@@ -212,6 +204,141 @@ public class ChatActivity extends AppCompatActivity {
                                 netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                     Toast.makeText(ChatActivity.this, "No pudo enviarse el mensaje." +
                                             " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+                    }
+                }){
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                String token = credentials.getToken();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
+
+    /** Notificar mensajes vistos (clavar visto) **/
+    private void NotifyMessageSeen() {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("targetID", amigoUserID);
+            data.put("userID", credentials.getUserID());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,
+                JobifyAPI.getNewChatURL(credentials.getUserID()), data,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null)
+                            if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
+                                Toast.makeText(ChatActivity.this, "No pudo clavar visto." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+                    }
+                }){
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                String token = credentials.getToken();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
+
+    /** Chequeo for mensajes no leídos **/
+    private void checkForNewUnreadMessages() {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
+                JobifyAPI.getIDLastMessageURL(credentials.getUserID(), amigoUserID), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int id_last_message = response.getInt("lastmsg");
+                            int numberMessages = messageArrayAdapter.getCount();
+                            if (numberMessages - 1 < id_last_message)
+                                getUnreadMessages(numberMessages, id_last_message);
+                        } catch (JSONException e) {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null)
+                            if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
+                                Toast.makeText(ChatActivity.this, "No pudo obtener el id del ultimo mensaje." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+                    }
+                }){
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                String token = credentials.getToken();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
+
+    /** Obtener mensajes no leídos **/
+    private void getUnreadMessages(int start, int end) {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
+                JobifyAPI.getMessagesInRange(credentials.getUserID(), amigoUserID, start, end), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray messages = response.getJSONArray("messages");
+                            for (int i = 0; i < messages.length(); i++) {
+                                JSONObject msg = messages.getJSONObject(i);
+                                int senderID = msg.getInt("senderID");
+                                String message = msg.getString("message");
+                                if (senderID == amigoUserID)
+                                    receiveMessage(message);
+                                else
+                                    messageArrayAdapter.add(new Message(message, true));
+                            }
+                        } catch (JSONException e) {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null)
+                            if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
+                                Toast.makeText(ChatActivity.this, "No pudo obtener los mensajes comprendidos en un rango." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                             }
                     }
                 }){

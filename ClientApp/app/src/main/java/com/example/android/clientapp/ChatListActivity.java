@@ -137,6 +137,7 @@ public class ChatListActivity extends AppCompatActivity {
                 .show();
     }
 
+    /** Actualización de thumbnails de los usuarios en caso de que cambien su foto durante el chat **/
     private void updateUserThumbnailFromServer(final int userID) {
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getThumbnailURL(userID), null,
                 new Response.Listener<JSONObject>() {

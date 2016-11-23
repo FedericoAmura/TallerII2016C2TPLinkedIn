@@ -48,6 +48,20 @@ public class JobifyAPI {
         return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/thumb";
     }
 
+    public static String getNewChatURL(int userID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(userID) + "/new";
+    }
+
+    public static String getIDLastMessageURL(int senderID, int receiverID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID) + "/last";
+    }
+
+    public static String getMessagesInRange(int senderID, int receiverID, int start, int end) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(senderID) +
+                "/" + String.valueOf(receiverID) + "/?start=" + String.valueOf(start) +
+                "&end=" + String.valueOf(end);
+    }
+
     public static void setIP(String IP) {
         APPSERVER_IP = IP;
         APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;

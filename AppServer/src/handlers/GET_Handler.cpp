@@ -541,7 +541,44 @@ http_response GET_Handler::handle_get_id_last_message() {
 }
 
 http_response GET_Handler::handle_get_including_messages() {
-	return http_response("{\"chat\":\"{including msg}\"}\n", STATUS_OK);
+	// /chat/<userID1/<userId2>/?start=0&end=5
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID1 = std::stoi(vec_uri[1]);
+	uint32_t userID2 = std::stoi(vec_uri[2]);
+
+	std::string ini_s = HttpParser::parse_variable_from_query_string(request->message, "start");
+	std::string fin_s = HttpParser::parse_variable_from_query_string(request->message, "end");
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Including Messages) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	if (ini_s.empty() || fin_s.empty()) {
+		std::cout << "[Error] Bad Request. Query (Including Messages) failed." << std::endl;
+		return http_response("", STATUS_BAD_REQUEST);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Including Messages) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Including Messages) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	try {
+		data = db_json->getMensajes(userID1, userID2, std::stoi(ini_s), std::stoi(fin_s));
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Query (Number Last Message) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
 }
 
 http_response GET_Handler::handle_get_categories() {

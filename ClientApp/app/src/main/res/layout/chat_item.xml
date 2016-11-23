@@ -56,5 +56,18 @@
             android:text="Last message"
             android:textSize="16sp">
         </TextView>
+
+        <TextView
+            android:id="@+id/badge_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/badge_item_count"
+            android:text="12"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignBaseline="@+id/last_msg"
+            android:textColor="#FFF"
+            android:layout_below="@+id/hour"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

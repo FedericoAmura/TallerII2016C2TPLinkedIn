@@ -90,3 +90,15 @@ Json HttpParser::parse_json_from_body(struct http_message* msg) {
 	}
 	return data;
 }
+
+std::string HttpParser::parse_variable_from_query_string(struct http_message* msg, const std::string var_name) {
+	int BUFFER_SIZE = 100;
+	char buffer[BUFFER_SIZE];
+	int found;
+
+	memset(buffer, 0, BUFFER_SIZE);
+	found = mg_get_http_var(&msg->query_string, var_name.c_str(), buffer, BUFFER_SIZE);
+	if (found > 0)
+		return std::string(buffer);
+	return "";
+}

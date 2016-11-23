@@ -29,6 +29,8 @@ public:
 	static Json parse_user_search(struct http_message* msg);
 
 	static Json parse_json_from_body(struct http_message* msg);
+
+	static std::string parse_variable_from_query_string(struct http_message* msg, const std::string var_name);
 };
 
 #endif /* APPSERVER_INCLUDE_PARSERS_HTTPPARSER_H_ */
