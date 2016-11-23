@@ -149,7 +149,7 @@ public class ChatActivity extends AppCompatActivity {
         messageArrayAdapter.notifyDataSetChanged();
         NotifyMessageSeen();
         PreferenceHandler.saveMessage(amigoUserID, message, this);
-        PreferenceHandler.saveLastChatMessage(new Chat(amigoUserID, nombreAmigo, message.getMessage()), this);
+        PreferenceHandler.saveLastChatMessage(new Chat(amigoUserID, nombreAmigo, message.getMessage(), 0), this);
     }
 
     // Envía el mensaje al servidor y guarda el mensaje.
@@ -157,7 +157,7 @@ public class ChatActivity extends AppCompatActivity {
         Message message = new Message(editTextSend.getText().toString(), true);
         messageArrayAdapter.add(message);
         PreferenceHandler.saveMessage(amigoUserID, message, this);
-        PreferenceHandler.saveLastChatMessage(new Chat(amigoUserID, nombreAmigo, message.getMessage()), this);
+        PreferenceHandler.saveLastChatMessage(new Chat(amigoUserID, nombreAmigo, message.getMessage(), 0), this);
         sendMessageToServer(message);
         editTextSend.setText("");
     }

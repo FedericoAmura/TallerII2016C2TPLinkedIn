@@ -11,8 +11,9 @@ public class Chat{
     private String name;
     private String last_msg;
     private String hour;
+    private int unreadMsg = 0;
 
-    public Chat(int userID, String name, String last_msg){
+    public Chat(int userID, String name, String last_msg, int unreadMsg){
         this.receiverID = userID;
         this.name = name;
         this.last_msg = last_msg;
@@ -23,6 +24,7 @@ public class Chat{
         if (min < 10)
             m = "0" + m;
         this.hour = h + ":" + m;
+        this.unreadMsg = unreadMsg;
     }
 
     public static Chat hydrate(int userID, String stream) {
@@ -30,7 +32,7 @@ public class Chat{
         String name = data[0];
         String last_msg = data[1];
         String hour = data[2];
-        Chat chat = new Chat(userID, name, last_msg);
+        Chat chat = new Chat(userID, name, last_msg, 0);
         chat.hour = hour;
         return chat;
     }
@@ -49,6 +51,10 @@ public class Chat{
 
     public String getHour() {
         return hour;
+    }
+
+    public int getUnreadMsg() {
+        return unreadMsg;
     }
 
     @Override
