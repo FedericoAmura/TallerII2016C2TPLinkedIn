@@ -58,6 +58,10 @@ http_response GET_Handler::handleRequest() {
 			// /users/<user_id1>/contacts/<user_id2>
 			res = handle_get_are_they_connected();
 			break;
+		case _USERS_BRIEF_CHAT_DATA:
+			// /users/<userID>/brief/<chatterUID>
+			res = handle_get_brief_chat_data();
+			break;
 		case _POPULAR:
 			// /users/popular
 			res = handle_get_popular();
@@ -448,6 +452,39 @@ http_response GET_Handler::handle_get_user_recommendations() {
 		data = db_json->esRecomendado(userID1, userID2);
 	} catch (NonexistentUserID &e) {
 		std::cout << "[Error] Non existent userID. Query (user recommended) failed." << std::endl;
+		return http_response("", STATUS_NOT_FOUND);
+	}
+	return http_response(data.dump(), STATUS_OK);
+}
+
+http_response GET_Handler::handle_get_brief_chat_data() {
+	// /users/<userID>/brief/<chatterUID>
+	std::vector<std::string> vec_uri = split(request->uri(), "/");
+	uint32_t userID1 = std::stoi(vec_uri[1]);
+	uint32_t userID2 = std::stoi(vec_uri[3]);
+
+	std::string token;
+	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
+	if (!parsed) {
+		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	try {
+		db_json->validar_token(token);
+	} catch (NonexistentToken &e) {
+		std::cout << "[Error] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}catch (TokenHasExpired &e) {
+		std::cout << "[Error] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		return http_response("", STATUS_FORBIDDEN);
+	}
+
+	Json data;
+	try {
+		data = db_json->getDatosChatBrief(userID1, userID2);
+	} catch (NonexistentUserID &e) {
+		std::cout << "[Error] Non existent userID. Query (Brief Chat Data) failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);

@@ -40,6 +40,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
         TextView t_hour;
         TextView t_badge;
         int receiverID;
+        //Chat chat;
 
         ChatViewHolder(View view) {
             super(view);
@@ -53,6 +54,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //chat.resetCountUnreadMessages();
                     Intent intent = new Intent(view.getContext(), ChatActivity.class);
                     intent.putExtra("name", t_name.getText().toString());
                     intent.putExtra("receiverID", receiverID);
@@ -107,16 +109,18 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
             holder.t_last_msg.setText(message);
         holder.t_hour.setText(chat.getHour());
         holder.receiverID = chat.getReceiverID();
-        if (chat.getUnreadMsg() == 0) {
+        if (chat.getCountUnreadMessages() == 0) {
             holder.t_badge.setVisibility(INVISIBLE);
         } else {
-            holder.t_badge.setText(String.valueOf(chat.getUnreadMsg()));
+            holder.t_badge.setText(String.valueOf(chat.getCountUnreadMessages()));
             holder.t_badge.setVisibility(VISIBLE);
         }
+//        holder.chat = chat;
     }
 
     @Override
     public int getItemCount() {
         return chatList.size();
     }
+
 }

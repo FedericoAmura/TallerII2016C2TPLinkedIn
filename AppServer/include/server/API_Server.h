@@ -37,6 +37,7 @@ static const std::string USERS_NEW_NOTIF_URI	= "/users/" + USER_ID + "/notif/new
 static const std::string USERS_REQ_NOTIF_URI	= "/users/" + USER_ID + "/notif/" + USER_ID;
 static const std::string USERS_CONTACTS_URI		= "/users/" + USER_ID + "/contacts";
 static const std::string USERS_REQ_CONTACTS_URI	= "/users/" + USER_ID + "/contacts/" + USER_ID;
+static const std::string USERS_BRF_CHATDATA_URI = "/users/" + USER_ID + "/brief/" + USER_ID;
 
 /* Popularity / Recommendations */
 static const std::string POPULAR_URI			= "/users/popular";

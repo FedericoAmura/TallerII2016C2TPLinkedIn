@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
@@ -150,6 +151,7 @@ public class ChatActivity extends AppCompatActivity {
         NotifyMessageSeen();
         PreferenceHandler.saveMessage(amigoUserID, message, this);
         PreferenceHandler.saveLastChatMessage(new Chat(amigoUserID, nombreAmigo, message.getMessage(), 0), this);
+        Log.d("SAVE_MESSAGE", msg);
     }
 
     // Envía el mensaje al servidor y guarda el mensaje.

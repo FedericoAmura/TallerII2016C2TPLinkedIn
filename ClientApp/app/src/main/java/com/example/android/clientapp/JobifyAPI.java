@@ -66,6 +66,10 @@ public class JobifyAPI {
         return APPSERVER_URL + "/chat/" + String.valueOf(userID) + "/new";
     }
 
+    public static String getBriefChatDataURL(int chatterUID, int userID) {
+        return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/brief/" + String.valueOf(chatterUID);
+    }
+
     public static void setIP(String IP) {
         APPSERVER_IP = IP;
         APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;

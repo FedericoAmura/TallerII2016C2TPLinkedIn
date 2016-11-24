@@ -227,14 +227,15 @@ public class ChatListActivity extends AppCompatActivity {
     private void addNewUnreadChat(final int senderID, final int count_unread_msg) {
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
-                JobifyAPI.getContactoBriefURL(String.valueOf(senderID)), null,
+                JobifyAPI.getBriefChatDataURL(credentials.getUserID(), senderID), null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                                 String name = response.getString("name");
                                 String thumb = response.getString("thumb");
-                                Chat newUnreadChat = new Chat(senderID, name, "unread messages", count_unread_msg);
+                                String last_message = response.getString("msg");
+                                Chat newUnreadChat = new Chat(senderID, name, last_message, count_unread_msg);
                                 chatArrayAdapter.add(newUnreadChat);
                                 PreferenceHandler.updateUserThumbnail(senderID, thumb, getApplicationContext());
                             } catch (JSONException e1) {
@@ -250,7 +251,7 @@ public class ChatListActivity extends AppCompatActivity {
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
                                     netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
-                                Toast.makeText(ChatListActivity.this, "No pudo obtener los datos breves del usuario." +
+                                Toast.makeText(ChatListActivity.this, "No pudo obtener los datos breves de chat con el usuario." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                             }
                     }
