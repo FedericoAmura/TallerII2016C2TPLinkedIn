@@ -32,6 +32,7 @@ enum URI {	_LOGIN,
 			_USERS_REQ_CONTACT,
 			_USERS_CONTACTS,
 			_USERS_ADM_CONTACTS,
+			_USERS_BRIEF_CHAT_DATA,
 			_POPULAR,
 			_POPULAR_RECOMMEND,
 			_POPULAR_POS,
@@ -64,6 +65,7 @@ static URI validate_uri(std::string uri){
 	if (std::regex_match(uri, std::regex(USERS_REQ_NOTIF_URI)))	return _USERS_REQ_CONTACT;
 	if (std::regex_match(uri, std::regex(USERS_CONTACTS_URI)))	return _USERS_CONTACTS;
 	if (std::regex_match(uri, std::regex(USERS_REQ_CONTACTS_URI)))	return _USERS_ADM_CONTACTS;
+	if (std::regex_match(uri, std::regex(USERS_BRF_CHATDATA_URI)))	return _USERS_BRIEF_CHAT_DATA;
 
 	if (uri == POPULAR_URI)		 								return _POPULAR;
 	if (std::regex_match(uri, std::regex(POPULAR_RECOMMED_URI)))return _POPULAR_RECOMMEND;

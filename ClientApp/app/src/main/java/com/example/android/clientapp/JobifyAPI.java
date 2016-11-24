@@ -45,10 +45,38 @@ public class JobifyAPI {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
     }
 
+<<<<<<< HEAD
     public static String getNotificacionesURL(String userID) { return APPSERVER_URL + USERS + "/" + userID + NOTIF; }
 
     public static String getNotificacionURL(String userID, String senderUserID) {
         return APPSERVER_URL + USERS + "/" + userID + NOTIF + "/" + senderUserID; }
+=======
+    public static String getThumbnailURL(int userID) {
+        return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/thumb";
+    }
+
+    public static String getNewChatURL(int userID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(userID) + "/new";
+    }
+
+    public static String getIDLastMessageURL(int senderID, int receiverID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID) + "/last";
+    }
+
+    public static String getMessagesInRange(int senderID, int receiverID, int start, int end) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(senderID) +
+                "/" + String.valueOf(receiverID) + "/?start=" + String.valueOf(start) +
+                "&end=" + String.valueOf(end);
+    }
+
+    public static String getNewChatMessages(int userID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(userID) + "/new";
+    }
+
+    public static String getBriefChatDataURL(int chatterUID, int userID) {
+        return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/brief/" + String.valueOf(chatterUID);
+    }
+>>>>>>> 486d9614e003ea42fdc409d3cf843bcf67c536a2
 
     public static void setIP(String IP) {
         APPSERVER_IP = IP;

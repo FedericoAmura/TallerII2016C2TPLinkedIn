@@ -180,7 +180,7 @@ http_response POST_Handler::handle_accept_contact_request() {
 		std::cout << "[Error] Non existent userID. Accept contact request failed." << std::endl;
 		return http_response("", STATUS_NOT_FOUND);
 	}
-	return http_response("{}", STATUS_NO_CONTENT);
+	return http_response("{}", STATUS_OK);
 }
 
 http_response POST_Handler::handle_create_contact_request() {
