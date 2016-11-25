@@ -44,13 +44,12 @@ public class JobifyAPI {
     public static String getSendMessageURL(int senderID, int receiverID) {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
     }
-
-<<<<<<< HEAD
+    
     public static String getNotificacionesURL(String userID) { return APPSERVER_URL + USERS + "/" + userID + NOTIF; }
 
     public static String getNotificacionURL(String userID, String senderUserID) {
         return APPSERVER_URL + USERS + "/" + userID + NOTIF + "/" + senderUserID; }
-=======
+
     public static String getThumbnailURL(int userID) {
         return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/thumb";
     }
@@ -76,7 +75,6 @@ public class JobifyAPI {
     public static String getBriefChatDataURL(int chatterUID, int userID) {
         return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/brief/" + String.valueOf(chatterUID);
     }
->>>>>>> 486d9614e003ea42fdc409d3cf843bcf67c536a2
 
     public static void setIP(String IP) {
         APPSERVER_IP = IP;
