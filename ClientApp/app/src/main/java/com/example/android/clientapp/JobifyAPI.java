@@ -44,7 +44,7 @@ public class JobifyAPI {
     public static String getSendMessageURL(int senderID, int receiverID) {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
     }
-    
+
     public static String getNotificacionesURL(String userID) { return APPSERVER_URL + USERS + "/" + userID + NOTIF; }
 
     public static String getNotificacionURL(String userID, String senderUserID) {

@@ -27,6 +27,7 @@ import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
@@ -55,6 +56,7 @@ public class NotificacionesActivity extends AppCompatActivity {
     private LinearLayoutManager llm;
 
     private int statusCode;
+    private UserCredentials credentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +69,9 @@ public class NotificacionesActivity extends AppCompatActivity {
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String userID = sharedPref.getString(USER_ID, "");
-        final String token = sharedPref.getString(TOKEN, "");
+        credentials = PreferenceHandler.loadUserCredentials(this);
 
-        cargarNotificacionesIdDelServer(userID, token);
+        cargarNotificacionesIdDelServer(String.valueOf(credentials.getUserID()), credentials.getToken());
         setToolbar();
     }
 
@@ -153,10 +153,6 @@ public class NotificacionesActivity extends AppCompatActivity {
     }
 
     private void cargarNotificacionesDelServer(final String senderUserID){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String userID = sharedPref.getString(USER_ID, "");
-        final String token = sharedPref.getString(TOKEN, "");
-
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactoBriefURL(senderUserID), null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -167,7 +163,7 @@ public class NotificacionesActivity extends AppCompatActivity {
                             amigo.setUserID(senderUserID);
                             amigos.add(amigo);
                             try {
-                                PreferenceHandler.updateUserThumbnail(Integer.valueOf(userID), response.getString("thumb"), getApplicationContext());
+                                PreferenceHandler.updateUserThumbnail(Integer.valueOf(senderUserID), response.getString("thumb"), getApplicationContext());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -195,7 +191,7 @@ public class NotificacionesActivity extends AppCompatActivity {
             @Override
             public Map<String,String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<String,String>();
-                params.put("Authorization", "token="+token);
+                params.put("Authorization", "token="+credentials.getToken());
                 return params;
             }
         };

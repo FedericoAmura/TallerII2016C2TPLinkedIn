@@ -24,6 +24,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Amigo;
+import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
 
 import org.json.JSONObject;
 
@@ -50,9 +52,9 @@ public class NotifAdapter extends RecyclerView.Adapter<NotifAdapter.PersonViewHo
         ImageButton botonDeclinar;
         String senderID;
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String userID = sharedPref.getString("userID", "");
-        final String token = sharedPref.getString("token", "");
+        UserCredentials credentials = PreferenceHandler.loadUserCredentials(getApplicationContext());
+        final String userID = String.valueOf(credentials.getUserID());
+        final String token = credentials.getToken();
 
         int statusCode;
 
