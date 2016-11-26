@@ -146,11 +146,11 @@ class ClientTest(unittest.TestCase):
     def test_08_accept_existent_contact_request(self):
         another_userID = client1.get_user_id()
         res = client2.accept_contact_request(another_userID)
-        self.assertEquals(204, res.status_code)
+        self.assertEquals(200, res.status_code)
         res5 = client5.accept_contact_request(another_userID)
-        self.assertEquals(204, res5.status_code)
+        self.assertEquals(200, res5.status_code)
         res6 = client6.accept_contact_request(another_userID)
-        self.assertEquals(204, res6.status_code)
+        self.assertEquals(200, res6.status_code)
 
     #checked
     def test_09_send_message_to_non_existent_user(self):

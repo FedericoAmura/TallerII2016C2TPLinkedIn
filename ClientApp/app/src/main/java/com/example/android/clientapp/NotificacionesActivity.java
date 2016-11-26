@@ -1,9 +1,6 @@
 package com.example.android.clientapp;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,12 +20,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Amigo;
-import com.example.android.clientapp.utils.Constants;
-import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
 import com.example.android.clientapp.utils.UserCredentials;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -43,11 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NotificacionesActivity extends AppCompatActivity {
-    //private EventBus bus = EventBus.getDefault();
+    private EventBus bus = EventBus.getDefault();
     private static final String PENDING = "pending";
-
-    private static final String USER_ID = "userID";
-    private static final String TOKEN = "token";
 
     private ArrayList<Amigo> amigos;
     private ArrayList<String> notifID;
@@ -85,7 +77,7 @@ public class NotificacionesActivity extends AppCompatActivity {
     }
 
     // Nos registramos en el bus de eventos (llegada de notificaciones)
-    /*@Override
+    @Override
     protected void onStart() {
         super.onStart();
         bus.register(this);
@@ -93,11 +85,8 @@ public class NotificacionesActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
-            NotificationLauncher.launch(getApplicationContext(), remoteMessage);
+    public void onEvent(AppServerNotification notification) {
+        NotificationLauncher.launch(this, notification);
     }
 
     @Override
@@ -105,7 +94,6 @@ public class NotificacionesActivity extends AppCompatActivity {
         super.onStop();
         bus.unregister(this);
     }
-    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

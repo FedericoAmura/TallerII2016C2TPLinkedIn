@@ -218,21 +218,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-/*        if (exit){
-            finish();
-        }
-        else {
-            Toast.makeText(this, "Presione de nuevo para Salir.",
-                    Toast.LENGTH_SHORT).show();
-            exit = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run(){
-                    exit = false;
-                }
-            }, 3 * 1000);
-        }
-        */
         super.onBackPressed();
     }
 

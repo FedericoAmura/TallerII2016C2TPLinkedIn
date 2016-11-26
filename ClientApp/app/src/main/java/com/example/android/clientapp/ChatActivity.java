@@ -360,7 +360,7 @@ public class ChatActivity extends AppCompatActivity {
         requestQueue.add(jsonRequest);
     }
 
-    /** Obtener mensajes no leídos **/
+    /** Update thumbnail **/
     private void loadUserThumbnailFromServer() {
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
                 JobifyAPI.getThumbnailURL(amigoUserID), null,
