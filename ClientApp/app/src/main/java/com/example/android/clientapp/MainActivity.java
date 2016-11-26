@@ -207,11 +207,13 @@ public class MainActivity extends AppCompatActivity {
                 apretarCerrarSesion();
                 return true;
             case R.id.opcionNotificaciones:
+                apretarBotonNotificaciones();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
 
     @Override
@@ -284,5 +286,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void apretarBotonNotificaciones(){
+        Intent intent = new Intent(this, NotificacionesActivity.class);
+        startActivity(intent);
+    }
 
 }

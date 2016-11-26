@@ -114,12 +114,6 @@ public class PerfilActivity extends AppCompatActivity {
         image.setImageBitmap(perfil.getFoto());
     }
 
-    private void showSnackBar(String msg) {
-        Snackbar
-                .make(findViewById(R.id.coordinator), msg, Snackbar.LENGTH_LONG)
-                .show();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_perfil, menu);
@@ -138,7 +132,7 @@ public class PerfilActivity extends AppCompatActivity {
                 apretarBotonEditar();
                 return true;
             case R.id.opcionNotificaciones:
-                showSnackBar("Notificaciones");
+                apretarBotonNotificaciones();
                 return true;
             case android.R.id.home:
                 super.onBackPressed();
@@ -305,6 +299,11 @@ public class PerfilActivity extends AppCompatActivity {
     private void apretarBotonEditar(){
         Intent intent = new Intent(this, PerfilEditActivity.class);
         intent.putExtra("perfil", perfil.crearJson().toString());
+        startActivity(intent);
+    }
+
+    private void apretarBotonNotificaciones(){
+        Intent intent = new Intent(this, NotificacionesActivity.class);
         startActivity(intent);
     }
 

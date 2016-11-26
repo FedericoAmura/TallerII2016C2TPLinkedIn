@@ -74,7 +74,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         Bitmap thumb = amigos.get(i).getFoto();
         if (thumb != null) { personViewHolder.personPhoto.setImageBitmap(thumb); }
         else personViewHolder.personPhoto.setImageResource(R.drawable.ic_user_black);
-        personViewHolder.personPhoto.setImageBitmap(amigos.get(i).getFoto());
+        //personViewHolder.personPhoto.setImageBitmap(amigos.get(i).getFoto());
         personViewHolder.id = amigos.get(i).getUserID();
     }
 

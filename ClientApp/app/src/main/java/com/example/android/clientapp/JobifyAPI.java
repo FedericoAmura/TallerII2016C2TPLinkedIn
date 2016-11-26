@@ -11,7 +11,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class JobifyAPI {
 
-    private static String APPSERVER_IP = "192.168.1.37";
+    private static String APPSERVER_IP = "192.168.0.103";
     private static String APPSERVER_PUERTO = "8888";
     private static String APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
 
@@ -22,6 +22,7 @@ public class JobifyAPI {
     private static final String CONTACTS = "/contacts";
     private static final String BRIEF = "/brief";
     private static final String POPULAR = "/popular";
+    private static final String NOTIF = "/notif";
 
     public static String getLoginURL(){
         return APPSERVER_URL + LOGIN;
@@ -43,6 +44,11 @@ public class JobifyAPI {
     public static String getSendMessageURL(int senderID, int receiverID) {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
     }
+
+    public static String getNotificacionesURL(String userID) { return APPSERVER_URL + USERS + "/" + userID + NOTIF; }
+
+    public static String getNotificacionURL(String userID, String senderUserID) {
+        return APPSERVER_URL + USERS + "/" + userID + NOTIF + "/" + senderUserID; }
 
     public static String getThumbnailURL(int userID) {
         return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/thumb";

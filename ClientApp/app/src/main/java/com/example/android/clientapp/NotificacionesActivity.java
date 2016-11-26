@@ -1,5 +1,6 @@
 package com.example.android.clientapp;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -21,11 +22,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.android.clientapp.utils.AppServerNotification;
-import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Amigo;
+import com.example.android.clientapp.utils.Constants;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
 import com.example.android.clientapp.utils.UserCredentials;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -39,15 +42,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AmigosActivity extends AppCompatActivity {
-    private EventBus bus = EventBus.getDefault();
-    private static final String CONTACTS = "contacts";
+public class NotificacionesActivity extends AppCompatActivity {
+    //private EventBus bus = EventBus.getDefault();
+    private static final String PENDING = "pending";
 
     private static final String USER_ID = "userID";
     private static final String TOKEN = "token";
 
     private ArrayList<Amigo> amigos;
-    private ArrayList<String> amigosID;
+    private ArrayList<String> notifID;
 
     private RecyclerView rv;
     private LinearLayoutManager llm;
@@ -68,7 +71,7 @@ public class AmigosActivity extends AppCompatActivity {
 
         credentials = PreferenceHandler.loadUserCredentials(this);
 
-        cargarAmigosIdDelServer(String.valueOf(credentials.getUserID()), credentials.getToken());
+        cargarNotificacionesIdDelServer(String.valueOf(credentials.getUserID()), credentials.getToken());
         setToolbar();
     }
 
@@ -78,11 +81,11 @@ public class AmigosActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) // Habilitar up button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Contactos");
+        getSupportActionBar().setTitle("Notificaciones");
     }
 
     // Nos registramos en el bus de eventos (llegada de notificaciones)
-    @Override
+    /*@Override
     protected void onStart() {
         super.onStart();
         bus.register(this);
@@ -90,8 +93,11 @@ public class AmigosActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(AppServerNotification notification) {
-        NotificationLauncher.launch(this, notification);
+    public void onEvent(NotificationEvent notificationEvent) {
+        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
+        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
+            NotificationLauncher.launch(getApplicationContext(), remoteMessage);
     }
 
     @Override
@@ -99,6 +105,7 @@ public class AmigosActivity extends AppCompatActivity {
         super.onStop();
         bus.unregister(this);
     }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -111,62 +118,56 @@ public class AmigosActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
-                super.onBackPressed();
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void showSnackBar(String msg) {
-        Snackbar
-                .make(findViewById(R.id.coordinator), msg, Snackbar.LENGTH_LONG)
-                .show();
-    }
-
-
     private void inicializarData(){
         amigos = new ArrayList<Amigo>();
-        for (String userID : amigosID) {
-            cargarAmigosDelServer(userID);
+        for (String senderUserID : notifID) {
+            cargarNotificacionesDelServer(senderUserID);
         }
     }
 
     private void inicializarAdapter(){
-        Log.d("TEST", "AMigos size: " +amigos.size());
-        RVAdapter adapter = new RVAdapter(amigos, PerfilAmigoActivity.class);
+        Log.d("TEST", "Anigos notif size: " +amigos.size());
+        NotifAdapter adapter = new NotifAdapter(amigos);
         rv.setAdapter(adapter);
     }
 
-    private void inicializarAmigosID(JSONObject obj){
+    private void inicializarNotificacionesID(JSONObject obj){
         try {
-            amigosID = new ArrayList<String>();
-            JSONArray jsonContacts = obj.getJSONArray(CONTACTS);
+            notifID = new ArrayList<String>();
+            JSONArray jsonContacts = obj.getJSONArray(PENDING);
             for (int i = 0; i < jsonContacts.length(); i++) {
-                amigosID.add(jsonContacts.getString(i));
-                Log.d("TEST", "AMigos ID size: " +amigosID.size());
+                notifID.add(jsonContacts.getString(i));
+                Log.d("TEST", "Notif ID size: " + notifID.size());
             }
             inicializarData();
         } catch(JSONException e) {e.printStackTrace();}
     }
 
-    private void cargarAmigosDelServer(final String userID){
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactoBriefURL(userID), null,
+    private void cargarNotificacionesDelServer(final String senderUserID){
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactoBriefURL(senderUserID), null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
-                            Log.d("TEST", "Cargar Amigos del server response OK");
                             Amigo amigo = new Amigo();
                             amigo.cargarDatosBriefDesdeJSON(response);
-                            amigo.setUserID(userID);
+                            amigo.setUserID(senderUserID);
                             amigos.add(amigo);
                             try {
-                                PreferenceHandler.updateUserThumbnail(Integer.valueOf(userID), response.getString("thumb"), getApplicationContext());
+                                PreferenceHandler.updateUserThumbnail(Integer.valueOf(senderUserID), response.getString("thumb"), getApplicationContext());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            if (amigos.size() == amigosID.size()) { inicializarAdapter(); }
+                            if (amigos.size() == notifID.size()) { inicializarAdapter(); }
                         }
                     }
                 },
@@ -175,7 +176,7 @@ public class AmigosActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(AmigosActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            Toast.makeText(NotificacionesActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                         }
                     }
                 }){
@@ -185,6 +186,14 @@ public class AmigosActivity extends AppCompatActivity {
                 statusCode = response.statusCode;
                 return super.parseNetworkResponse(response);
             }
+
+
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                params.put("Authorization", "token="+credentials.getToken());
+                return params;
+            }
         };
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -192,15 +201,14 @@ public class AmigosActivity extends AppCompatActivity {
 
     }
 
-
-    private void cargarAmigosIdDelServer(final String userID, final String token){
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactosURL(userID), null,
+    private void cargarNotificacionesIdDelServer(final String userID, final String token){
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getNotificacionesURL(userID), null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
-                            Log.d("TEST", "Amigos ID response OK");
-                            inicializarAmigosID(response);
+                            Log.d("TEST", "Cargar Notif ID del server response OK");
+                            inicializarNotificacionesID(response);
                         }
                     }
                 },
@@ -209,10 +217,10 @@ public class AmigosActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(AmigosActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            Toast.makeText(NotificacionesActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                         }
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
-                            Toast.makeText(AmigosActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            Toast.makeText(NotificacionesActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                         }
                     }
                 }){
@@ -234,7 +242,5 @@ public class AmigosActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonRequest);
     }
-
-
 
 }
