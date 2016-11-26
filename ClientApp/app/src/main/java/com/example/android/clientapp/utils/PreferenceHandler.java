@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 
 import com.example.android.clientapp.Modelo.chat.Chat;
 import com.example.android.clientapp.Modelo.chat.Message;
@@ -14,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -195,6 +197,109 @@ public class PreferenceHandler {
         Bitmap thumb = BitmapFactory.decodeStream(is);
         Bitmap circleThumb = CircleBitmap.generate(thumb);
         return circleThumb;
+    }
+
+    /** Guarda una nueva notificación **/
+    public static void saveNotification(AppServerNotification notification, Context context) {
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return;
+        String myUserID = String.valueOf(credentials.getUserID());
+        String senderID = String.valueOf(notification.getSenderID());
+        SharedPreferences sharedPref;
+        if (notification.getType() == Constants.NOTIFICATION_TYPE_NEW_MESSAGE) {
+            sharedPref = context.getSharedPreferences(myUserID + "-MESSAGE_NOTIFICATIONS", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            SharedPreferences sharedPrefUsernames = context.getSharedPreferences(myUserID + "-USERNAMES_FROM_MESSAGE_NOTIFICATIONS", MODE_PRIVATE);
+            String messagesFromSender = sharedPref.getString(senderID, null);
+            if (messagesFromSender == null)
+                editor.putString(senderID, notification.getMessage()).commit();
+            else
+                editor.putString(senderID, messagesFromSender + ";" + notification.getMessage()).commit();
+            SharedPreferences.Editor editorUsernames = sharedPrefUsernames.edit();
+            editorUsernames.putString(senderID, notification.getUsername()).commit();
+        } else {
+            sharedPref = context.getSharedPreferences(myUserID + "-FRIEND_REQUESTS_NOTIFICATIONS", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(senderID, notification.getUsername()).commit();
+        }
+        Log.d("SAVE_NOTIF", "guardando notificación -> " + notification.getMessage());
+    }
+
+    /** Remueve una notificación de un usuario en particular **/
+    public static void removeNotificationsFromSender(int senderID, int notif_type, Context context) {
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return;
+        String myUserID = String.valueOf(credentials.getUserID());
+        String senderID_s = String.valueOf(senderID);
+        SharedPreferences sharedPref;
+        if (notif_type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE) {
+            sharedPref = context.getSharedPreferences(myUserID + "-MESSAGE_NOTIFICATIONS", MODE_PRIVATE);
+            SharedPreferences sharedPrefUsernames = context.getSharedPreferences(myUserID + "-USERNAMES_FROM_MESSAGE_NOTIFICATIONS", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            SharedPreferences.Editor editorUsernames = sharedPrefUsernames.edit();
+            String messagesFromSender = sharedPref.getString(senderID_s, null);
+            if (messagesFromSender != null) {
+                editor.remove(senderID_s).commit();
+                editorUsernames.remove(senderID_s).commit();
+                editor.apply();
+                editorUsernames.apply();
+            }
+        } else {
+            sharedPref = context.getSharedPreferences(myUserID + "-FRIEND_REQUESTS_NOTIFICATIONS", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.remove(senderID_s).commit();
+            editor.apply();
+        }
+        Log.d("DELETE_NOTIF", "borrando notificación de: " + senderID_s);
+    }
+
+    public static ArrayList<AppServerNotification> loadPreviousMessagesNotifications(Context context) {
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return null;
+        String myUserID = String.valueOf(credentials.getUserID());
+        ArrayList<AppServerNotification> notifications = new ArrayList<>();
+
+        SharedPreferences sharedPrefMsgNotif = context.getSharedPreferences(myUserID + "-MESSAGE_NOTIFICATIONS", MODE_PRIVATE);
+        SharedPreferences sharedPrefUsernames = context.getSharedPreferences(myUserID + "-USERNAMES_FROM_MESSAGE_NOTIFICATIONS", MODE_PRIVATE);
+
+        Map<String, ?> senderIDs = sharedPrefMsgNotif.getAll();
+        for (Map.Entry<String,?> entry : senderIDs.entrySet()) {
+            int senderID = Integer.valueOf(entry.getKey());
+            String username = sharedPrefUsernames.getString(entry.getKey().toString(), "unknown");
+            String unreadMessages = entry.getValue().toString();
+            AppServerNotification newNotif = new AppServerNotification(senderID, username, "", Constants.NOTIFICATION_TYPE_NEW_MESSAGE);
+
+            ArrayList<String> messages = new ArrayList<String>(Arrays.asList(unreadMessages.split(";")));
+            for (String msg : messages)
+                newNotif.loadPreviousMessage(msg);
+
+            notifications.add(newNotif);
+        }
+        if (notifications.isEmpty())
+            return null;
+
+        return notifications;
+    }
+
+    public static ArrayList<AppServerNotification> loadPreviousFriendRequestsNotifications(Context context) {
+        UserCredentials credentials = loadUserCredentials(context);
+        if (credentials == null)
+            return null;
+        String myUserID = String.valueOf(credentials.getUserID());
+        ArrayList<AppServerNotification> notifications = new ArrayList<>();
+        SharedPreferences sharedPref = context.getSharedPreferences(myUserID + "-FRIEND_REQUESTS_NOTIFICATIONS", MODE_PRIVATE);
+        Map<String, ?> senderIDs = sharedPref.getAll();
+        for (Map.Entry<String,?> entry : senderIDs.entrySet()) {
+            int senderID = Integer.valueOf(entry.getKey());
+            String name = entry.getValue().toString();
+            notifications.add(new AppServerNotification(senderID, name, "", Constants.NOTIFICATION_TYPE_FRIEND_REQUEST));
+        }
+        if (notifications.isEmpty())
+            return null;
+        return notifications;
     }
 
 }

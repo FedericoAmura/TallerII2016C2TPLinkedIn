@@ -5,7 +5,7 @@ package com.example.android.clientapp.utils;
  */
 
 public class Constants {
-    public static int NOTIFICATION_TYPE_NEW_MESSAGE = 1;
+    public static final int NOTIFICATION_TYPE_NEW_MESSAGE = 1;
 
-    public static int NOTIFICATION_TYPE_FRIEND_REQUEST = 2;
+    public static final int NOTIFICATION_TYPE_FRIEND_REQUEST = 2;
 }

@@ -22,12 +22,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Perfil;
 import com.example.android.clientapp.utils.PreferenceHandler;
 import com.example.android.clientapp.utils.UserCredentials;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -111,9 +110,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        NotificationLauncher.launch(this, remoteMessage);
+    public void onEvent(AppServerNotification notification) {
+        NotificationLauncher.launch(this, notification);
     }
 
     @Override

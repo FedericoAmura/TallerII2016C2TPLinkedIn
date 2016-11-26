@@ -47,8 +47,6 @@ public class Amigo {
             popularidad = object.getInt(POPULARIDAD);
 
             strFoto = object.getString(THUMB);
-            Log.d("PHOTOOOOOOOO",strFoto);
-            Log.d("TEST", "STRfoto: "+ strFoto);
             byte[] decodedString = Base64.decode(strFoto, Base64.NO_WRAP);
             InputStream is = new ByteArrayInputStream(decodedString);
             foto = CircleBitmap.generate(BitmapFactory.decodeStream(is));
