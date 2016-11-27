@@ -18,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.utils.JsonUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,7 +93,7 @@ public class BusquedasActivity extends NotifiableActivity {
             public void onResponse(JSONObject response) {
                 if (statusCode == HttpURLConnection.HTTP_OK) {
                     bar.setVisibility(View.INVISIBLE);
-                    ArrayList<String> uIDs = jsonToStringArray(response, "users");
+                    ArrayList<String> uIDs = JsonUtil.jsonToStringArray(response, "users");
                     Intent intent = new Intent(BusquedasActivity.this, UserListActivity.class);
                     intent.putExtra("userIDs", uIDs);
                     startActivity(intent);
@@ -121,22 +122,4 @@ public class BusquedasActivity extends NotifiableActivity {
         requestQueue.add(jsonRequest);
     }
 
-    /**
-     * Dado un json con un campo que tiene un array de strings, devuelve el array de strings
-     * @param json                   Json a desmenuzar
-     * @param fieldName             Nombre del campo con el array
-     * @return                      Un arraylist con los valores
-     */
-    private ArrayList<String> jsonToStringArray(JSONObject json, String fieldName) {
-        ArrayList<String> result = new ArrayList<String>();
-        try {
-            JSONArray jArray = json.getJSONArray(fieldName);
-            for (int i = 0; i < jArray.length(); ++i)
-                result.add(jArray.getString(i));
-        }
-        catch(JSONException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 }

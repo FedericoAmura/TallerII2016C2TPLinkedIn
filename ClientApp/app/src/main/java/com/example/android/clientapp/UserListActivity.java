@@ -36,11 +36,12 @@ import java.util.ArrayList;
  */
 public class UserListActivity extends NotifiableActivity {
 
-    private int statusCode;
-    private int count = 0;
-    private ArrayList<Amigo> usuarios;
-    private RecyclerView rv;
-    private LinearLayoutManager llm;
+    protected String toolbarTitle = "Resultados";
+    protected int statusCode;
+    protected int count = 0;
+    protected ArrayList<Amigo> usuarios;
+    protected RecyclerView rv;
+    protected LinearLayoutManager llm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class UserListActivity extends NotifiableActivity {
         rv.setHasFixedSize(true);
 
         ArrayList<String> uIDs = this.getIntent().getStringArrayListExtra("userIDs");
-        if (uIDs.size() <= 0) {
+        if (uIDs != null && uIDs.size() <= 0) {
             TextView noResults = new TextView(this);
             noResults.setGravity(Gravity.CENTER);
             noResults.setTextSize(40);
@@ -67,12 +68,12 @@ public class UserListActivity extends NotifiableActivity {
         setToolbar();
     }
 
-    private void setToolbar() {
+    protected void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) // Habilitar up button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Resultados");
+        getSupportActionBar().setTitle(toolbarTitle);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class UserListActivity extends NotifiableActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void cargarUsuarios(ArrayList<String> uIDs) {
+    protected void cargarUsuarios(ArrayList<String> uIDs) {
         usuarios = new ArrayList<Amigo>(uIDs.size());
         for (int i = 0; i < uIDs.size(); ++i) {
             usuarios.add(null);
@@ -95,7 +96,7 @@ public class UserListActivity extends NotifiableActivity {
         }
     }
 
-    private void cargarUsuario(final String userID, final int num, final int size) {
+    protected void cargarUsuario(final String userID, final int num, final int size) {
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
                 JobifyAPI.getContactoBriefURL(userID), null, new Response.Listener<JSONObject>() {
                 @Override
@@ -137,7 +138,7 @@ public class UserListActivity extends NotifiableActivity {
         requestQueue.add(jsonRequest);
     }
 
-    private void inicializarAdapter(){
+    protected void inicializarAdapter(){
         RVAdapter adapter = new RVAdapter(usuarios, PerfilAmigoActivity.class);
         rv.setAdapter(adapter);
     }
