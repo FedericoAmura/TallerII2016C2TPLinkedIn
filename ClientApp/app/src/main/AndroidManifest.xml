@@ -34,7 +34,7 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/IntroTheme"></activity>
+            android:theme="@style/IntroTheme" />
         <activity android:name=".PestaniasActivity" />
         <activity
             android:name=".IntroActivity"
@@ -59,10 +59,10 @@
             android:theme="@style/PerfilTheme" />
         <activity
             android:name=".ChatListActivity"
-            android:theme="@style/PerfilTheme"></activity>
+            android:theme="@style/PerfilTheme" />
         <activity
             android:name=".ChatActivity"
-            android:theme="@style/PerfilTheme"></activity>
+            android:theme="@style/PerfilTheme" />
 
         <service android:name=".FCM.MyFirebaseInstanceIdService">
             <intent-filter>
@@ -81,8 +81,10 @@
         <activity
             android:name=".UserListActivity"
             android:theme="@style/PerfilTheme" />
-        <activity android:name=".NotificacionesActivity"
-            android:theme="@style/PerfilTheme"></activity>
+        <activity
+            android:name=".NotificacionesActivity"
+            android:theme="@style/PerfilTheme" />
+        <activity android:name=".NotifiableActivity"></activity>
     </application>
 
 </manifest>

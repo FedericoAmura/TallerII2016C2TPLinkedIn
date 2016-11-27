@@ -3,8 +3,11 @@ package com.example.android.clientapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.content.Context;
 
@@ -23,9 +26,10 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-public class BusquedasActivity extends AppCompatActivity {
+public class BusquedasActivity extends NotifiableActivity {
 
     private int statusCode;
+    private ProgressBar bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +60,8 @@ public class BusquedasActivity extends AppCompatActivity {
             }
         });
 
-        boton = (Button) findViewById(R.id.butAdv);
-        boton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                botAdv(v);
-            }
-        });
+        bar = (ProgressBar) findViewById(R.id.progressBar);
+        bar.setVisibility(View.INVISIBLE);
     }
 
     private void botPop(View view) {
@@ -86,11 +85,13 @@ public class BusquedasActivity extends AppCompatActivity {
      * @param url                   Url a la cual hacerle GET para obtener json con "users"
      */
     private void buscarYCambiarActivity(final String url) {
+        bar.setVisibility(View.VISIBLE);
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
                 url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 if (statusCode == HttpURLConnection.HTTP_OK) {
+                    bar.setVisibility(View.INVISIBLE);
                     ArrayList<String> uIDs = jsonToStringArray(response, "users");
                     Intent intent = new Intent(BusquedasActivity.this, UserListActivity.class);
                     intent.putExtra("userIDs", uIDs);
@@ -102,6 +103,7 @@ public class BusquedasActivity extends AppCompatActivity {
             new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    bar.setVisibility(View.INVISIBLE);
                     NetworkResponse netResp = error.networkResponse;
                     if (netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
                         Toast.makeText(BusquedasActivity.this, "Error al buscar. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje

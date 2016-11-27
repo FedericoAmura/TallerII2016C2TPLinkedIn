@@ -34,9 +34,10 @@ import java.util.ArrayList;
  * "userIDs" ArrayList de strings, ids de usuario
  * TODO: Merge con la activity de amigos
  */
-public class UserListActivity extends AppCompatActivity {
+public class UserListActivity extends NotifiableActivity {
 
     private int statusCode;
+    private int count = 0;
     private ArrayList<Amigo> usuarios;
     private RecyclerView rv;
     private LinearLayoutManager llm;
@@ -51,7 +52,7 @@ public class UserListActivity extends AppCompatActivity {
         rv.setHasFixedSize(true);
 
         ArrayList<String> uIDs = this.getIntent().getStringArrayListExtra("userIDs");
-        if (uIDs == null || uIDs.size() <= 0) {
+        if (uIDs.size() <= 0) {
             TextView noResults = new TextView(this);
             noResults.setGravity(Gravity.CENTER);
             noResults.setTextSize(40);
@@ -59,7 +60,7 @@ public class UserListActivity extends AppCompatActivity {
             ViewGroup topView = (ViewGroup)findViewById(android.R.id.content);
             topView.addView(noResults);
         }
-        else {
+        else if (uIDs != null) {
             cargarUsuarios(uIDs);
         }
 
@@ -87,13 +88,14 @@ public class UserListActivity extends AppCompatActivity {
     }
 
     private void cargarUsuarios(ArrayList<String> uIDs) {
-        usuarios = new ArrayList<Amigo>();
-        for (String userID : uIDs) {
-            cargarUsuario(userID, uIDs.size());
+        usuarios = new ArrayList<Amigo>(uIDs.size());
+        for (int i = 0; i < uIDs.size(); ++i) {
+            usuarios.add(null);
+            cargarUsuario(uIDs.get(i), i, uIDs.size());
         }
     }
 
-    private void cargarUsuario(final String userID, final int size) {
+    private void cargarUsuario(final String userID, final int num, final int size) {
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
                 JobifyAPI.getContactoBriefURL(userID), null, new Response.Listener<JSONObject>() {
                 @Override
@@ -102,13 +104,14 @@ public class UserListActivity extends AppCompatActivity {
                         Amigo usuario = new Amigo();
                         usuario.cargarDatosBriefDesdeJSON(response);
                         usuario.setUserID(userID);
-                        usuarios.add(usuario);
+                        usuarios.set(num,usuario);
+                        ++count;
                         try {
                             PreferenceHandler.updateUserThumbnail(Integer.valueOf(userID), response.getString("thumb"), getApplicationContext());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if (usuarios.size() == size) {
+                        if (count == size) {
                             inicializarAdapter();
                         }
                     }
