@@ -3,6 +3,8 @@ package com.example.android.clientapp;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.ArrayList;
+
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -42,6 +44,26 @@ public class JobifyAPI {
 
     public static String getSendMessageURL(int senderID, int receiverID) {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
+    }
+
+    public static String getTopTenPopURL() {
+        return APPSERVER_URL+ USERS + POPULAR;
+    }
+
+    public static String getTopTenPopSkillURL(String skill) {
+        return getTopTenPopURL()+"/skill/"+skill;
+    }
+
+    public static String getTopTenPopPuestoURL(String puesto) {
+        return getTopTenPopURL()+"/position/"+puesto;
+    }
+
+    public static String getAdvBuscquedaURL(ArrayList<String> skills, ArrayList<String> puestos,
+                                            double origenLongitud, double origenLatitud,
+                                            double maxDist, boolean popSort) {
+        //TODO: Devolver el resultado correcto
+        String result = APPSERVER_URL+USERS+"/?";
+        return result;
     }
 
     public static void setIP(String IP) {

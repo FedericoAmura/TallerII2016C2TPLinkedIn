@@ -103,6 +103,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        botonBusqueda = (FloatingActionButton) findViewById(R.id.boton_busqueda);
+        botonBusqueda.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                busqueda();
+            }
+        });
     }
 
     // Nos registramos en el bus de eventos (llegada de notificaciones)
@@ -132,6 +140,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void verPerfil(){
         Intent intent = new Intent(this, PerfilActivity.class);
+        startActivity(intent);
+    }
+
+    private void busqueda(){
+        Intent intent = new Intent(this, BusquedasActivity.class);
         startActivity(intent);
     }
 

@@ -1,0 +1,154 @@
+package com.example.android.clientapp;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.Modelo.Amigo;
+import com.example.android.clientapp.utils.Constants;
+import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.NotificationLauncher;
+import com.example.android.clientapp.utils.PreferenceHandler;
+import com.google.firebase.messaging.RemoteMessage;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+
+/**
+ * Clase que muestra una lista de usuarios
+ * Se espera se pasen los siguientes parametros como extras
+ * "userIDs" ArrayList de strings, ids de usuario
+ * TODO: Merge con la activity de amigos
+ */
+public class UserListActivity extends AppCompatActivity {
+
+    private EventBus bus = EventBus.getDefault();
+
+    private int statusCode;
+    private ArrayList<Amigo> usuarios;
+    private RecyclerView rv;
+    private LinearLayoutManager llm;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.recycler_view);
+        rv = (RecyclerView) findViewById(R.id.rv);
+        llm = new LinearLayoutManager(this);
+        rv.setLayoutManager(llm);
+        rv.setHasFixedSize(true);
+
+        ArrayList<String> uIDs = this.getIntent().getStringArrayListExtra("userIDs");
+        if (uIDs == null || uIDs.size() <= 0) {
+            TextView noResults = new TextView(this);
+            noResults.setGravity(Gravity.CENTER);
+            noResults.setTextSize(40);
+            noResults.setText("No hay resultados");
+            ViewGroup topView = (ViewGroup)findViewById(android.R.id.content);
+            topView.addView(noResults);
+        }
+        else {
+            cargarUsuarios(uIDs);
+        }
+
+        setToolbar();
+    }
+
+    private void setToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) // Habilitar up button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Resultados");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void cargarUsuarios(ArrayList<String> uIDs) {
+        usuarios = new ArrayList<Amigo>();
+        for (String userID : uIDs) {
+            cargarUsuario(userID, uIDs.size());
+        }
+    }
+
+    private void cargarUsuario(final String userID, final int size) {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
+                JobifyAPI.getContactoBriefURL(userID), null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if (statusCode == HttpURLConnection.HTTP_OK) {
+                        Amigo usuario = new Amigo();
+                        usuario.cargarDatosBriefDesdeJSON(response);
+                        usuario.setUserID(userID);
+                        usuarios.add(usuario);
+                        try {
+                            PreferenceHandler.updateUserThumbnail(Integer.valueOf(userID), response.getString("thumb"), getApplicationContext());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (usuarios.size() == size) {
+                            inicializarAdapter();
+                        }
+                    }
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    NetworkResponse netResp = error.networkResponse;
+                    if (netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                        Toast.makeText(UserListActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                    }
+                }
+            }) {
+
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                statusCode = response.statusCode;
+                return super.parseNetworkResponse(response);
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
+
+    private void inicializarAdapter(){
+        RVAdapter adapter = new RVAdapter(usuarios, PerfilAmigoActivity.class);
+        rv.setAdapter(adapter);
+    }
+
+}
