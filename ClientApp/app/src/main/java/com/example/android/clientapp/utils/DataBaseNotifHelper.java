@@ -8,7 +8,7 @@ import android.support.v7.app.NotificationCompat;
 
 import com.example.android.clientapp.ChatActivity;
 import com.example.android.clientapp.ChatListActivity;
-import com.example.android.clientapp.MainActivity;
+import com.example.android.clientapp.NotificacionesActivity;
 import com.example.android.clientapp.R;
 
 import java.util.ArrayList;
@@ -85,8 +85,7 @@ public class DataBaseNotifHelper {
             builder.setStyle(not_inbox_style);
 
         } else {
-            // TODO hardcode, debería ir a una pantalla de aceptar/rechazar solicitud
-            intent = new Intent(context, MainActivity.class);
+            intent = new Intent(context, NotificacionesActivity.class);
 
             pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
             builder.setContentTitle("Solicitud de Contacto")
@@ -149,8 +148,7 @@ public class DataBaseNotifHelper {
             }
             builder.setStyle(not_inbox_style);
         } else {
-            // TODO hardcode, debería ir a una pantalla de aceptar/rechazar solicitudes
-            intent = new Intent(context, MainActivity.class);
+            intent = new Intent(context, NotificacionesActivity.class);
 
             pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 

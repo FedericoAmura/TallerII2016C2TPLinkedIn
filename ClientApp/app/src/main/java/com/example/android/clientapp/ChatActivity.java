@@ -110,7 +110,7 @@ public class ChatActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(nombreAmigo);
         if (thumbnail != null) {
-            BitmapDrawable iconThumb = new BitmapDrawable(getResources(), thumbnail);
+            BitmapDrawable iconThumb = new BitmapDrawable(getResources(), CircleBitmap.resize_thumbnail(thumbnail, 60, 60));
             //getSupportActionBar().setHomeAsUpIndicator(iconThumb);
             toolbar.setNavigationIcon(iconThumb);
         } else {
