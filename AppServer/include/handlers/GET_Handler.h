@@ -124,6 +124,14 @@ private:
 	http_response handle_get_are_they_connected();
 
 	/*
+	 * Datos breves de chat entre usuarios
+	 * @return	en caso de éxito, retorna información breve sobre el chat entre
+	 *			usuarios, thumbnail, nombre, último mensaje, sino devuelve un error
+	 *			específicado en la documentación.
+	 * */
+	http_response handle_get_brief_chat_data();
+
+	/*
 	 * Usuarios más populares
 	 * @return	en caso de éxito, retorna los 10 usuarios más populares
 	 * 			sino devuelve "" y el código de respuesta queda específicado

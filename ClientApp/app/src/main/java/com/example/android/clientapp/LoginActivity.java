@@ -104,8 +104,11 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String username = sharedPref.getString(USERNAME, "");
         String password = sharedPref.getString(PASSWORD, "");
-        etUsuario.setText(username);
-        etPass.setText(password);
+        UserCredentials credentials = PreferenceHandler.loadUserCredentials(getApplicationContext());
+        if (credentials != null) {
+            etUsuario.setText(credentials.getUsername());
+            etPass.setText(credentials.getPassword());
+        }
     }
 
     //Funcion a llamar al clickear boton Ingresar.
@@ -160,25 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 int user_id = response.getInt(USER_ID);
                                 String token = response.getString(TOKEN);
-                                //Creo preferencia para los chats del usuario:
-                                SharedPreferences chatsPref = getApplicationContext().getSharedPreferences("chats_user_"+user_id, MODE_PRIVATE);
-                                SharedPreferences.Editor chatEditor = chatsPref.edit();
-                                //chatEditor.clear();
-                                //chatEditor.commit();
-
-                                //Guardo las preferencias default de usuario:
-                                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
-                                        (getApplicationContext());
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.clear();
-                                editor.commit();
-                                editor.putString(USERNAME, username);
-                                editor.putString(PASSWORD, password);
-                                editor.putString(USER_ID, String.valueOf(user_id));
-                                editor.putString(TOKEN, token);
-                                editor.commit();
-
-                                PreferenceHandler.saveUserCredentials(new UserCredentials(user_id, token), getApplicationContext());
+                                PreferenceHandler.saveUserCredentials(new UserCredentials(username, password, user_id, token), getApplicationContext());
 
                             } catch (JSONException e) { e.printStackTrace(); }
                             ingresar();

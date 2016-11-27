@@ -1,13 +1,11 @@
 package com.example.android.clientapp;
 
-import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -21,13 +19,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.ChatRVAdapter;
-import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.Modelo.chat.Chat;
+import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.Constants;
-import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
-import com.google.firebase.messaging.RemoteMessage;
+import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -43,19 +40,10 @@ import java.util.Map;
 
 public class ChatListActivity extends AppCompatActivity {
     private EventBus bus = EventBus.getDefault();
-    private static final String CONTACTS = "contacts";
-
-    private static final String USER_ID = "userID";
-    private static final String TOKEN = "token";
-
-    private ArrayList<Amigo> amigos;
-    private ArrayList<String> amigosID;
-    private String userID;
+    private UserCredentials credentials;
 
     private RecyclerView rv;
     private LinearLayoutManager llm;
-
-    private ArrayList<String> chatIDs = new ArrayList<>();
 
     private int statusCode;
 
@@ -65,6 +53,7 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        credentials = PreferenceHandler.loadUserCredentials(this);
 
         chatArrayAdapter = new ChatRVAdapter(getApplicationContext());
 
@@ -78,15 +67,16 @@ public class ChatListActivity extends AppCompatActivity {
         rv.setHasFixedSize(true);
 
         rv.setAdapter(chatArrayAdapter);
-
-        updateChatList();
     }
 
     // Carga los chats guardados.
     private void updateChatList() {
         ArrayList<Chat> chats = PreferenceHandler.getSavedConversations(this);
-        for (Chat chat : chats)
+        for (Chat chat : chats) {
+            updateUserThumbnailFromServer(chat.getReceiverID());
             chatArrayAdapter.add(chat);
+        }
+        checkForNewUnreadMessages();
     }
 
     @Override
@@ -108,11 +98,12 @@ public class ChatListActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
-            NotificationLauncher.launch(this, remoteMessage);
+    public void onEvent(AppServerNotification notification) {
+        int type = notification.getType();
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE)
+            checkForNewUnreadMessages();
+        else
+            NotificationLauncher.launch(this, notification);
     }
 
     @Override
@@ -155,84 +146,53 @@ public class ChatListActivity extends AppCompatActivity {
                 .show();
     }
 
-
-    private void inicializarData(){
-        amigos = new ArrayList<Amigo>();
-
-        SharedPreferences chatsPref = getApplicationContext().getSharedPreferences("chats_user_"+ userID, MODE_PRIVATE);
-        int chatSize = chatsPref.getInt("chatSize", 0);
-        String chatID;
-        for (String amigoUserID : amigosID) {
-            Log.d("TEST", "AmigoUserID vale: " + amigoUserID);
-            chatID = chatsPref.getString("chatID_"+ amigoUserID, null);
-            if (chatID != null) {
-                cargarAmigosDelServer(amigoUserID, chatSize);
-            }
-        }
-    }
-
-    private void inicializarAdapter(){
-        Log.d("TEST", "AmigosChat size: " +amigos.size());
-        RVAdapter adapter = new RVAdapter(amigos, ChatActivity.class);
-        rv.setAdapter(adapter);
-    }
-
-    private void inicializarAmigosID(JSONObject obj){
-        try {
-            amigosID = new ArrayList<String>();
-            JSONArray jsonContacts = obj.getJSONArray(CONTACTS);
-            for (int i = 0; i < jsonContacts.length(); i++) {
-                amigosID.add(jsonContacts.getString(i));
-                Log.d("TEST", "AmigosChat ID size: " +amigosID.size());
-            }
-            inicializarData();
-        } catch(JSONException e) {e.printStackTrace();}
-    }
-
-    private void cargarAmigosDelServer(final String userID, final int chatSize){
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactoBriefURL(userID), null,
+    /** Actualización de thumbnails de los usuarios en caso de que cambien su foto durante el chat **/
+    private void updateUserThumbnailFromServer(final int userID) {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getThumbnailURL(userID), null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
-                            Amigo amigo = new Amigo();
-                            amigo.cargarDatosBriefDesdeJSON(response); //TODO: cambiar por el nuevo chat brief.
-                            amigo.setUserID(userID);
-                            amigos.add(amigo);
-                            if (amigos.size() == chatSize) { inicializarAdapter(); }
+                            try {
+                                String thumb_encoded = response.getString("thumb");
+                                PreferenceHandler.updateUserThumbnail(userID, thumb_encoded, getApplicationContext());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(ChatListActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
                     }
-                }){
-
+                }) {
             @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
                 statusCode = response.statusCode;
                 return super.parseNetworkResponse(response);
             }
         };
-
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonRequest);
-
     }
 
-
-    private void cargarAmigosIdDelServer(final String userID, final String token){
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getContactosURL(userID), null,
+    /** Chequea si hay chat pendientes/nuevos **/
+    private void checkForNewUnreadMessages() {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
+                JobifyAPI.getNewChatMessages(credentials.getUserID()), null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if (statusCode == HttpURLConnection.HTTP_OK){
-                            inicializarAmigosID(response);
+                        try {
+                            JSONArray new_chats = response.getJSONArray("new");
+                            for (int i = 0; i < new_chats.length(); i++) {
+                                JSONObject chat = new_chats.getJSONObject(i);
+                                int senderID = chat.getInt("senderID");
+                                int count_msg = chat.getInt("count");
+                                addNewUnreadChat(senderID, count_msg);
+                            }
+                        } catch (JSONException e) {
                         }
                     }
                 },
@@ -240,27 +200,20 @@ public class ChatListActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(ChatListActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
-                            Toast.makeText(ChatListActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
-                        if ( netResp != null) {
-                            Toast.makeText(ChatListActivity.this,"ESTOY ACA 2:" + netResp.statusCode ,Toast.LENGTH_LONG).show();
-                        }
+                        if ( netResp != null)
+                            if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
+                                Toast.makeText(ChatListActivity.this, "No pudo obtener los nuevos chats." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
                     }
                 }){
 
             @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
-                statusCode = response.statusCode;
-                return super.parseNetworkResponse(response);
-            }
-
-            @Override
-            public Map<String,String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<String,String>();
+                String token = credentials.getToken();
                 params.put("Authorization", "token="+token);
                 return params;
             }
@@ -270,6 +223,50 @@ public class ChatListActivity extends AppCompatActivity {
         requestQueue.add(jsonRequest);
     }
 
+    /** Agrega el nuevo chat a ChatList **/
+    private void addNewUnreadChat(final int senderID, final int count_unread_msg) {
 
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
+                JobifyAPI.getBriefChatDataURL(credentials.getUserID(), senderID), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                                String name = response.getString("name");
+                                String thumb = response.getString("thumb");
+                                String last_message = response.getString("msg");
+                                Chat newUnreadChat = new Chat(senderID, name, last_message, count_unread_msg);
+                                chatArrayAdapter.add(newUnreadChat);
+                                PreferenceHandler.updateUserThumbnail(senderID, thumb, getApplicationContext());
+                            } catch (JSONException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null)
+                            if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
+                                Toast.makeText(ChatListActivity.this, "No pudo obtener los datos breves de chat con el usuario." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+                    }
+                }){
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                String token = credentials.getToken();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
 }

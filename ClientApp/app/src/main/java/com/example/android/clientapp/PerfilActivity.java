@@ -28,11 +28,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
-import com.example.android.clientapp.utils.Constants;
-import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
-import com.google.firebase.messaging.RemoteMessage;
+import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -60,16 +59,16 @@ public class PerfilActivity extends AppCompatActivity {
     private TextView tvResumen;
 
     private int statusCode;
+    private UserCredentials credentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String userID = sharedPref.getString("userID", "");
+        credentials = PreferenceHandler.loadUserCredentials(this);
 
-        cargarDatosDelServer(userID);
+        cargarDatosDelServer(String.valueOf(credentials.getUserID()));
 
     }
 
@@ -81,11 +80,8 @@ public class PerfilActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
-            NotificationLauncher.launch(this, remoteMessage);
+    public void onEvent(AppServerNotification notification) {
+        NotificationLauncher.launch(this, notification);
     }
 
     @Override
@@ -118,12 +114,6 @@ public class PerfilActivity extends AppCompatActivity {
         image.setImageBitmap(perfil.getFoto());
     }
 
-    private void showSnackBar(String msg) {
-        Snackbar
-                .make(findViewById(R.id.coordinator), msg, Snackbar.LENGTH_LONG)
-                .show();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_perfil, menu);
@@ -142,7 +132,7 @@ public class PerfilActivity extends AppCompatActivity {
                 apretarBotonEditar();
                 return true;
             case R.id.opcionNotificaciones:
-                showSnackBar("Notificaciones");
+                apretarBotonNotificaciones();
                 return true;
             case android.R.id.home:
                 super.onBackPressed();
@@ -257,8 +247,7 @@ public class PerfilActivity extends AppCompatActivity {
     }
 
     private void apretarCerrarSesion() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String token = sharedPref.getString("token", "");
+        final String token = credentials.getToken();
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.DELETE, JobifyAPI.getLoginURL(), null,
                 new Response.Listener<JSONObject>() {
@@ -310,6 +299,11 @@ public class PerfilActivity extends AppCompatActivity {
     private void apretarBotonEditar(){
         Intent intent = new Intent(this, PerfilEditActivity.class);
         intent.putExtra("perfil", perfil.crearJson().toString());
+        startActivity(intent);
+    }
+
+    private void apretarBotonNotificaciones(){
+        Intent intent = new Intent(this, NotificacionesActivity.class);
         startActivity(intent);
     }
 

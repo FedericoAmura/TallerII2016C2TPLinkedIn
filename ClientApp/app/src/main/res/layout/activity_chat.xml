@@ -34,13 +34,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#d3eba0"
         android:divider="@null"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll">
     </ListView>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -50,18 +49,22 @@
 
         <EditText
             android:id="@+id/edit_msg"
-            android:layout_width="250sp"
+            android:layout_width="match_parent"
+            android:layout_alignBottom="@+id/btn_send"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
+            android:layout_marginRight="60dp"
             android:layout_height="match_parent"
             android:background="#a8a8a8">
         </EditText>
 
         <Button
             android:id="@+id/btn_send"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:background="@drawable/send_button">
+            android:layout_alignParentRight="true"
+            android:background="@drawable/send_button_chat">
         </Button>
-    </LinearLayout>
+
+    </RelativeLayout>
 </LinearLayout>

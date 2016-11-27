@@ -24,6 +24,7 @@ public class JobifyAPI {
     private static final String CONTACTS = "/contacts";
     private static final String BRIEF = "/brief";
     private static final String POPULAR = "/popular";
+    private static final String NOTIF = "/notif";
 
     public static String getLoginURL(){
         return APPSERVER_URL + LOGIN;
@@ -46,6 +47,37 @@ public class JobifyAPI {
         return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID);
     }
 
+    public static String getNotificacionesURL(String userID) { return APPSERVER_URL + USERS + "/" + userID + NOTIF; }
+
+    public static String getNotificacionURL(String userID, String senderUserID) {
+        return APPSERVER_URL + USERS + "/" + userID + NOTIF + "/" + senderUserID; }
+
+    public static String getThumbnailURL(int userID) {
+        return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/thumb";
+    }
+
+    public static String getNewChatURL(int userID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(userID) + "/new";
+    }
+
+    public static String getIDLastMessageURL(int senderID, int receiverID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(senderID) + "/" + String.valueOf(receiverID) + "/last";
+    }
+
+    public static String getMessagesInRange(int senderID, int receiverID, int start, int end) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(senderID) +
+                "/" + String.valueOf(receiverID) + "/?start=" + String.valueOf(start) +
+                "&end=" + String.valueOf(end);
+    }
+
+    public static String getNewChatMessages(int userID) {
+        return APPSERVER_URL + "/chat/" + String.valueOf(userID) + "/new";
+    }
+
+    public static String getBriefChatDataURL(int chatterUID, int userID) {
+        return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/brief/" + String.valueOf(chatterUID);
+    }
+
     public static String getTopTenPopURL() {
         return APPSERVER_URL+ USERS + POPULAR;
     }
@@ -62,7 +94,7 @@ public class JobifyAPI {
                                             double origenLongitud, double origenLatitud,
                                             double maxDist, boolean popSort) {
         //TODO: Devolver el resultado correcto
-        String result = APPSERVER_URL+USERS+"/?";
+        String result = APPSERVER_URL + USERS + "/?";
         return result;
     }
 

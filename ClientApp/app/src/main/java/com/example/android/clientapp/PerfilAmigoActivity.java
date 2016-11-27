@@ -2,6 +2,7 @@ package com.example.android.clientapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -28,10 +29,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
-import com.example.android.clientapp.utils.Constants;
-import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.AppServerNotification;
+import com.example.android.clientapp.utils.CircleBitmap;
 import com.example.android.clientapp.utils.NotificationLauncher;
-import com.google.firebase.messaging.RemoteMessage;
+import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -84,11 +86,8 @@ public class PerfilAmigoActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE || type == Constants.NOTIFICATION_TYPE_FRIEND_REQUEST) //NEW MESSAGE OR FRIEND REQUEST TODO
-            NotificationLauncher.launch(this, remoteMessage);
+    public void onEvent(AppServerNotification notification) {
+        NotificationLauncher.launch(this, notification);
     }
 
     @Override
@@ -166,24 +165,11 @@ public class PerfilAmigoActivity extends AppCompatActivity {
     }
 
     private void abrirChat(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences
-                (getApplicationContext());
-        String userID = sharedPref.getString("userID", "");
-
-        SharedPreferences chatsPref = getApplicationContext().getSharedPreferences("chats_user_"+ userID, MODE_PRIVATE);
-
-        int chatSize = chatsPref.getInt("chatSize", 0);
-        String chatID = chatsPref.getString("chatID_"+ amigoUserID, null);
-        if (chatID == null) {
-            SharedPreferences.Editor editor = chatsPref.edit();
-            editor.putString("chatID_" + amigoUserID, amigoUserID);
-            chatSize = chatSize + 1;
-            editor.putInt("chatSize", chatSize);
-            editor.commit();
-        }
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("receiverID", Integer.valueOf(amigoUserID));
         intent.putExtra("name", tvNombre.getText().toString());
+        Bitmap thumb = CircleBitmap.generate(perfil.getFoto());
+        intent.putExtra("thumbnail", CircleBitmap.resize_thumbnail(thumb, 60, 60));
         startActivity(intent);
     }
 
@@ -290,13 +276,11 @@ public class PerfilAmigoActivity extends AppCompatActivity {
     }
 
     private void recomendarUsuario(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String recommenderUserID = sharedPref.getString("userID", "");
-        final String token = sharedPref.getString("token", "");
+        final UserCredentials credentials = PreferenceHandler.loadUserCredentials(getApplicationContext());
 
         JSONObject jsonObj = new JSONObject();
         try {
-            jsonObj.putOpt("recommender", Integer.valueOf(recommenderUserID));;
+            jsonObj.putOpt("recommender", credentials.getUserID());
             jsonObj.putOpt("recommended", Integer.valueOf(amigoUserID));
             if (! recomendado) {
                 jsonObj.putOpt("recommends", true);
@@ -307,7 +291,7 @@ public class PerfilAmigoActivity extends AppCompatActivity {
             }
         } catch (JSONException e) { }
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.PUT, JobifyAPI.getRecomendarURL(amigoUserID, recommenderUserID), jsonObj,
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.PUT, JobifyAPI.getRecomendarURL(amigoUserID, String.valueOf(credentials.getUserID())), jsonObj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -345,7 +329,7 @@ public class PerfilAmigoActivity extends AppCompatActivity {
             @Override
             public Map<String,String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<String,String>();
-                params.put("Authorization", "token="+token);
+                params.put("Authorization", "token="+credentials.getToken());
                 return params;
             }
         };
@@ -357,18 +341,16 @@ public class PerfilAmigoActivity extends AppCompatActivity {
 
 
     private void agregarUsuario(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final String userID = sharedPref.getString("userID", "");
-        final String token = sharedPref.getString("token", "");
+        final UserCredentials credentials = PreferenceHandler.loadUserCredentials(getApplicationContext());
 
         JSONObject jsonObj = new JSONObject();
         try {
-            jsonObj.putOpt("userID", Integer.valueOf(userID));;
+            jsonObj.putOpt("userID", credentials.getUserID());
             jsonObj.putOpt("targetID", Integer.valueOf(amigoUserID));
             jsonObj.putOpt("message", " ");
         } catch (JSONException e) { }
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, JobifyAPI.getContactosURL(userID), jsonObj,
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, JobifyAPI.getContactosURL(String.valueOf(credentials.getUserID())), jsonObj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -403,7 +385,7 @@ public class PerfilAmigoActivity extends AppCompatActivity {
             @Override
             public Map<String,String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> params = new HashMap<String,String>();
-                params.put("Authorization", "token="+token);
+                params.put("Authorization", "token="+credentials.getToken());
                 return params;
             }
         };

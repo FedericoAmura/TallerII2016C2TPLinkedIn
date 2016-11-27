@@ -1,10 +1,8 @@
 package com.example.android.clientapp;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -24,12 +22,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Perfil;
 import com.example.android.clientapp.utils.PreferenceHandler;
 import com.example.android.clientapp.utils.UserCredentials;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,7 +34,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,9 +118,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        NotificationLauncher.launch(this, remoteMessage);
+    public void onEvent(AppServerNotification notification) {
+        NotificationLauncher.launch(this, notification);
     }
 
     @Override
@@ -173,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                        // if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
                        //}
                         Toast.makeText(getApplicationContext(),"No hay conexión con el Servidor.",Toast.LENGTH_LONG).show();
+                        volverLogin();
                         finish();
                     }
                 }){
@@ -224,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
                 apretarCerrarSesion();
                 return true;
             case R.id.opcionNotificaciones:
+                apretarBotonNotificaciones();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -231,23 +228,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     public void onBackPressed(){
-/*        if (exit){
-            finish();
-        }
-        else {
-            Toast.makeText(this, "Presione de nuevo para Salir.",
-                    Toast.LENGTH_SHORT).show();
-            exit = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run(){
-                    exit = false;
-                }
-            }, 3 * 1000);
-        }
-        */
         super.onBackPressed();
     }
 
@@ -301,5 +284,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void apretarBotonNotificaciones(){
+        Intent intent = new Intent(this, NotificacionesActivity.class);
+        startActivity(intent);
+    }
 
 }
