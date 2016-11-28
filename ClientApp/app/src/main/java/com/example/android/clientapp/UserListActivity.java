@@ -36,7 +36,6 @@ import java.util.ArrayList;
  */
 public class UserListActivity extends NotifiableActivity {
 
-    protected String toolbarTitle = "Resultados";
     protected int statusCode;
     protected int count = 0;
     protected ArrayList<Amigo> usuarios;
@@ -68,12 +67,14 @@ public class UserListActivity extends NotifiableActivity {
         setToolbar();
     }
 
+    protected String getToolbarTitle() { return "Resultados"; };
+
     protected void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) // Habilitar up button
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(toolbarTitle);
+        getSupportActionBar().setTitle(getToolbarTitle());
     }
 
     @Override

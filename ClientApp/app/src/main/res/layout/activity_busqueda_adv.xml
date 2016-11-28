@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+
+            <android.support.design.widget.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+                <!-- Toolbar -->
+                <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+            </android.support.design.widget.AppBarLayout>
+
+            <Button
+                android:text="Agregar skill"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/butSkill" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/frameSkills"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp">
+
+            </FrameLayout>
+
+            <Button
+                android:text="Agregar Position"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/butPos" />
+
+            <Switch
+                android:text="Búsqueda geografica"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/switchGeo" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/framePos"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp">
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:text="Locación actual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/butGeoloc"
+                        android:visibility="gone" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:ems="10"
+                        android:id="@+id/campoLongitud"
+                        android:hint="Longitud"
+                        android:visibility="gone" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:ems="10"
+                        android:id="@+id/campoLatitud"
+                        android:hint="Latitud"
+                        android:visibility="gone" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:ems="10"
+                        android:id="@+id/campoDistancia"
+                        android:hint="Distancia"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <CheckBox
+                android:text="Ordenar por popularidad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/popSort"
+                android:checked="false" />
+
+            <Button
+                android:text="OK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/butBuscar"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                style="@style/Widget.AppCompat.Button.Colored" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            style="@android:style/Widget.Material.Light.ProgressBar.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:visibility="invisible"
+            android:layout_gravity="center" />
+
+    </android.support.design.widget.CoordinatorLayout>
+</ScrollView>

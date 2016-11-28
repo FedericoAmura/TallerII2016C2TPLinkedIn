@@ -77,14 +77,17 @@
 
         <activity
             android:name=".BusquedasActivity"
-            android:theme="@style/IntroTheme" />
+            android:theme="@style/PerfilTheme" />
+        <activity
+            android:name=".BusquedaAdvActivity"
+            android:theme="@style/PerfilTheme" />
         <activity
             android:name=".UserListActivity"
             android:theme="@style/PerfilTheme" />
         <activity
             android:name=".NotificacionesActivity"
             android:theme="@style/PerfilTheme" />
-        <activity android:name=".NotifiableActivity"></activity>
+        <activity android:name=".NotifiableActivity" />
     </application>
 
 </manifest>

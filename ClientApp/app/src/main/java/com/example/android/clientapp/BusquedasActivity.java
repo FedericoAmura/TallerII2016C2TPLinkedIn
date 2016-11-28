@@ -3,7 +3,9 @@ package com.example.android.clientapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -41,7 +43,7 @@ public class BusquedasActivity extends NotifiableActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                botPop(v);
+                buscarYCambiarActivity(JobifyAPI.getTopTenPopURL());
             }
         });
 
@@ -49,7 +51,7 @@ public class BusquedasActivity extends NotifiableActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                botSkill(v);
+
             }
         });
 
@@ -57,28 +59,42 @@ public class BusquedasActivity extends NotifiableActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                botPosition(v);
+
+            }
+        });
+
+        boton = (Button) findViewById(R.id.butAdv);
+        boton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(BusquedasActivity.this, BusquedaAdvActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
         bar = (ProgressBar) findViewById(R.id.progressBar);
-        bar.setVisibility(View.INVISIBLE);
+
+        setToolbar();
     }
 
-    private void botPop(View view) {
-        buscarYCambiarActivity(JobifyAPI.getTopTenPopURL());
+    protected void setToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) // Habilitar up button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Opciones de Búsqueda");
     }
 
-    private void botSkill(View view) {
-
-    }
-
-    private void botPosition(View view) {
-
-    }
-
-    private void botAdv(View view) {
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

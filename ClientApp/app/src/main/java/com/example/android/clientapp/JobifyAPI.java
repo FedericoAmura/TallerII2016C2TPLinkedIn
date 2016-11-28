@@ -91,10 +91,24 @@ public class JobifyAPI {
     }
 
     public static String getAdvBuscquedaURL(ArrayList<String> skills, ArrayList<String> puestos,
-                                            double origenLongitud, double origenLatitud,
-                                            double maxDist, boolean popSort) {
-        //TODO: Devolver el resultado correcto
+                                            String origenLongitud, String origenLatitud,
+                                            String maxDist, boolean popSort) {
         String result = APPSERVER_URL + USERS + "/?";
+        result += "skill=";
+        for (int i = 0; i < skills.size(); ++i) {
+            if (i > 0) result += ";";
+            result += skills.get(i);
+        }
+        result += "&job=";
+        for (int i = 0; i < puestos.size(); ++i) {
+            if (i > 0) result += ";";
+            result += puestos.get(i);
+        }
+        result += "&geoloc=" + origenLongitud + ";" + origenLatitud;
+        result += "&distance=" + maxDist;
+        result += "&popsort=";
+        if (popSort) result += "1";
+        else result += "0";
         return result;
     }
 

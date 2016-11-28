@@ -42,7 +42,6 @@ import java.util.Map;
 
 public class AmigosActivity extends UserListActivity {
 
-    protected String toolbarTitle = "Contactos";
     private static final String CONTACTS = "contacts";
     private static final String USER_ID = "userID";
     private static final String TOKEN = "token";
@@ -56,6 +55,9 @@ public class AmigosActivity extends UserListActivity {
         credentials = PreferenceHandler.loadUserCredentials(this);
         cargarAmigosIdDelServer(String.valueOf(credentials.getUserID()), credentials.getToken());
     }
+
+    @Override
+    protected String getToolbarTitle() { return "Contactos"; };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
