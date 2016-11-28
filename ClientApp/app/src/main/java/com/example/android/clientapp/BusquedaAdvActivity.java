@@ -95,8 +95,8 @@ public class BusquedaAdvActivity extends NotifiableActivity {
     public void buscar(View v) {
         ArrayList<String> skills = new ArrayList<String>();
         ArrayList<String> puestos = new ArrayList<String>();
-        String origenLongitud = "0.0";
-        String origenLatitud = "0.0";
+        String origenLongitud = "";
+        String origenLatitud = "";
         String maxDist = Double.toString(Double.POSITIVE_INFINITY);
         if (geoSwitch.isChecked()) {
             EditText eLong = (EditText)findViewById(R.id.campoLatitud);
@@ -105,8 +105,6 @@ public class BusquedaAdvActivity extends NotifiableActivity {
             if (eLong.getText().length() > 0)origenLongitud = eLong.getText().toString();
             if (eLat.getText().length() > 0)origenLatitud = eLat.getText().toString();
             if (eDist.getText().length() > 0)maxDist = eDist.getText().toString();
-            if (origenLongitud == "") origenLongitud = "0.0";
-            if (origenLatitud == "") origenLatitud = "0.0";
         }
         boolean popSort = popSortBox.isChecked();
         buscarYCambiarActivity(JobifyAPI.getAdvBuscquedaURL(skills, puestos,

@@ -99,12 +99,14 @@ public class JobifyAPI {
             if (i > 0) result += ";";
             result += skills.get(i);
         }
-        result += "&job=";
+        result += "&job_position=";
         for (int i = 0; i < puestos.size(); ++i) {
             if (i > 0) result += ";";
             result += puestos.get(i);
         }
-        result += "&geoloc=" + origenLongitud + ";" + origenLatitud;
+        result += "&geolocation=";
+        if (origenLatitud != "" && origenLongitud != "")
+            result += origenLongitud + ";" + origenLatitud;
         result += "&distance=" + maxDist;
         result += "&popsort=";
         if (popSort) result += "true";
