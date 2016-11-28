@@ -52,7 +52,7 @@ Json HttpParser::parse_user_search(struct http_message* msg) {
 		Json::array array_positions;
 		for (std::string position : positions)
 			array_positions.push_back(position);
-		data["job_positions"] = array_positions;
+		data["positions"] = array_positions;
 	}
 	memset(buffer, 0, BUFFER_SIZE);
 	found = mg_get_http_var(&msg->query_string, GEOLOCATION, buffer, BUFFER_SIZE);

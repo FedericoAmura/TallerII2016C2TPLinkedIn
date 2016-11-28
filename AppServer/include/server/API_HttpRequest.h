@@ -38,7 +38,7 @@
 
 #define CATEGORY		"category"
 #define SKILL			"skill"
-#define JOB_POSITION	"job_position"
-#define GEOLOCATION		"geolocation"
+#define JOB_POSITION	"job"
+#define GEOLOCATION		"geoloc"
 #define DISTANCE		"distance"
 #define POPSORT         "popsort"

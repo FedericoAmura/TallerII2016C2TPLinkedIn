@@ -107,8 +107,8 @@ public class JobifyAPI {
         result += "&geoloc=" + origenLongitud + ";" + origenLatitud;
         result += "&distance=" + maxDist;
         result += "&popsort=";
-        if (popSort) result += "1";
-        else result += "0";
+        if (popSort) result += "true";
+        else result += "false";
         return result;
     }
 
