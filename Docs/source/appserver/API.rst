@@ -276,7 +276,7 @@ Búsquedas sobre usuarios
 --------------------------------------------------------
 
 ======================  ==========================
-URL                  	| \http://<appserver>/users/?skill=...&job=...&geoloc=...&distance=...&popsort=..."
+URL                  	| \http://<appserver>/users/?skill=...&job_position=...&geolocation=...&distance=...&popsort=..."
 AUTH                 	| No hace falta
 VERB                 	| GET
 PARAMETROS           	|

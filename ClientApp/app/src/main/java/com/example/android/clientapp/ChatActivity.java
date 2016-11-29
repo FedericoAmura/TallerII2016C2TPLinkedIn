@@ -24,15 +24,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.MessageArrayAdapter;
+import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.CircleBitmap;
 import com.example.android.clientapp.utils.Constants;
-import com.example.android.clientapp.utils.NotificationEvent;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.chat.Chat;
 import com.example.android.clientapp.Modelo.chat.Message;
 import com.example.android.clientapp.utils.PreferenceHandler;
 import com.example.android.clientapp.utils.UserCredentials;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -84,10 +83,15 @@ public class ChatActivity extends AppCompatActivity {
         nombreAmigo = bundle.getString("name");
         thumbnail = getIntent().getParcelableExtra("thumbnail");
 
+        if (thumbnail == null)
+            loadUserThumbnailFromServer();
+
         setToolbar();
 
         msglist.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msglist.setAdapter(messageArrayAdapter);
+
+        PreferenceHandler.removeNotificationsFromSender(amigoUserID, Constants.NOTIFICATION_TYPE_NEW_MESSAGE, this);
 
         updateConversation();
     }
@@ -106,7 +110,7 @@ public class ChatActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(nombreAmigo);
         if (thumbnail != null) {
-            BitmapDrawable iconThumb = new BitmapDrawable(getResources(), thumbnail);
+            BitmapDrawable iconThumb = new BitmapDrawable(getResources(), CircleBitmap.resize_thumbnail(thumbnail, 60, 60));
             //getSupportActionBar().setHomeAsUpIndicator(iconThumb);
             toolbar.setNavigationIcon(iconThumb);
         } else {
@@ -131,16 +135,14 @@ public class ChatActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        int type = Integer.valueOf(remoteMessage.getData().get("type_notif"));
-        int senderID = Integer.valueOf(remoteMessage.getData().get("senderID"));
-        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE && senderID == amigoUserID) {//Nuevo mensaje
-            receiveMessage(remoteMessage.getNotification().getBody());
-        }
-        else {
-            NotificationLauncher.launch(getApplicationContext(), remoteMessage);
-        }
+    public void onEvent(AppServerNotification notification) {
+        int type = notification.getType();
+        int senderID = notification.getSenderID();
+        if (type == Constants.NOTIFICATION_TYPE_NEW_MESSAGE && senderID == amigoUserID) {
+            receiveMessage(notification.getMessage());
+            PreferenceHandler.removeNotificationsFromSender(amigoUserID, type, this);
+        } else
+            NotificationLauncher.launch(this, notification);
     }
 
     // Agrega los mensajes recibidos. Guarda el mensaje.
@@ -340,6 +342,49 @@ public class ChatActivity extends AppCompatActivity {
                                     netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                 Toast.makeText(ChatActivity.this, "No pudo obtener los mensajes comprendidos en un rango." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+                    }
+                }){
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String,String>();
+                String token = credentials.getToken();
+                params.put("Authorization", "token="+token);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
+    }
+
+    /** Update thumbnail **/
+    private void loadUserThumbnailFromServer() {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,
+                JobifyAPI.getThumbnailURL(amigoUserID), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String thumb_encoded = response.getString("thumb");
+                            PreferenceHandler.updateUserThumbnail(amigoUserID, thumb_encoded, getApplicationContext());
+                            thumbnail = PreferenceHandler.getUserThumbnail(amigoUserID, getApplicationContext());
+                            setToolbar();
+                        } catch (JSONException e) {
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null)
+                            if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
+                                Toast.makeText(ChatActivity.this, "No pudo obtener el thumbnail del amigo." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                             }
                     }

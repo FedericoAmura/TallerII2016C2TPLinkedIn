@@ -3,6 +3,8 @@ package com.example.android.clientapp;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.ArrayList;
+
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -11,7 +13,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class JobifyAPI {
 
-    private static String APPSERVER_IP = "192.168.0.103";
+    private static String APPSERVER_IP = "192.168.1.37";
     private static String APPSERVER_PUERTO = "8888";
     private static String APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
 
@@ -84,6 +86,42 @@ public class JobifyAPI {
 
     public static String getJobsURL() {
         return APPSERVER_URL + JOB_POSITIONS;
+    }
+
+    public static String getTopTenPopURL() {
+        return APPSERVER_URL+ USERS + POPULAR;
+    }
+
+    public static String getTopTenPopSkillURL(String skill) {
+        return getTopTenPopURL()+"/skill/"+skill;
+    }
+
+    public static String getTopTenPopPuestoURL(String puesto) {
+        return getTopTenPopURL()+"/position/"+puesto;
+    }
+
+    public static String getAdvBuscquedaURL(ArrayList<String> skills, ArrayList<String> puestos,
+                                            String origenLongitud, String origenLatitud,
+                                            String maxDist, boolean popSort) {
+        String result = APPSERVER_URL + USERS + "/?";
+        result += "skill=";
+        for (int i = 0; i < skills.size(); ++i) {
+            if (i > 0) result += ";";
+            result += skills.get(i);
+        }
+        result += "&job_position=";
+        for (int i = 0; i < puestos.size(); ++i) {
+            if (i > 0) result += ";";
+            result += puestos.get(i);
+        }
+        result += "&geolocation=";
+        if (origenLatitud != "" && origenLongitud != "")
+            result += origenLongitud + ";" + origenLatitud;
+        result += "&distance=" + maxDist;
+        result += "&popsort=";
+        if (popSort) result += "true";
+        else result += "false";
+        return result;
     }
 
     public static void setIP(String IP) {

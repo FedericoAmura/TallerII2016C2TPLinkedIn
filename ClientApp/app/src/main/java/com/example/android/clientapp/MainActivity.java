@@ -22,12 +22,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.android.clientapp.utils.NotificationEvent;
+import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Perfil;
 import com.example.android.clientapp.utils.PreferenceHandler;
 import com.example.android.clientapp.utils.UserCredentials;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -100,6 +99,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        botonBusqueda = (FloatingActionButton) findViewById(R.id.boton_busqueda);
+        botonBusqueda.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+                busqueda();
+            }
+        });
     }
 
     // Nos registramos en el bus de eventos (llegada de notificaciones)
@@ -111,9 +118,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NotificationEvent notificationEvent) {
-        RemoteMessage remoteMessage = notificationEvent.getRemoteMessage();
-        NotificationLauncher.launch(this, remoteMessage);
+    public void onEvent(AppServerNotification notification) {
+        NotificationLauncher.launch(this, notification);
     }
 
     @Override
@@ -129,6 +135,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void verPerfil(){
         Intent intent = new Intent(this, PerfilActivity.class);
+        startActivity(intent);
+    }
+
+    private void busqueda(){
+        Intent intent = new Intent(this, BusquedasActivity.class);
         startActivity(intent);
     }
 
@@ -220,21 +231,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-/*        if (exit){
-            finish();
-        }
-        else {
-            Toast.makeText(this, "Presione de nuevo para Salir.",
-                    Toast.LENGTH_SHORT).show();
-            exit = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run(){
-                    exit = false;
-                }
-            }, 3 * 1000);
-        }
-        */
         super.onBackPressed();
     }
 

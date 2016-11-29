@@ -59,7 +59,7 @@ public class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatViewHo
                     intent.putExtra("name", t_name.getText().toString());
                     intent.putExtra("receiverID", receiverID);
                     Bitmap thumb = ((BitmapDrawable)img_photo.getDrawable()).getBitmap();
-                    intent.putExtra("thumbnail", CircleBitmap.resize_thumbnail(thumb, 60, 60));
+                    intent.putExtra("thumbnail", thumb);
                     view.getContext().startActivity(intent);
                 }
             });

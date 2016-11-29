@@ -80,10 +80,10 @@ public class ConfigIPActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean canConnect) {
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.pingLoading);
             progressBar.setVisibility(View.INVISIBLE);
+            JobifyAPI.setIP(ip);
             if (!canConnect)  Toast.makeText(ConfigIPActivity.this,"IP unreachable",Toast.LENGTH_LONG).show();
             else {
                 Toast.makeText(ConfigIPActivity.this,"IP OK",Toast.LENGTH_LONG).show();
-                JobifyAPI.setIP(ip);
                 finish();
             }
         }
