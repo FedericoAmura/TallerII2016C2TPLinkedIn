@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -209,7 +210,7 @@ public class PerfilActivity extends AppCompatActivity {
             TextView tvSkill = new TextView(this);
             tvSkill.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
-            tvSkill.setText(perfil.getSkills(i));
+            tvSkill.setText("+" + perfil.getSkills(i));
             tvSkill.setTextColor(Color.GRAY);
             llSkills.addView(tvSkill);
         }
@@ -217,24 +218,25 @@ public class PerfilActivity extends AppCompatActivity {
         // Tv dinamicos de ExpLaboral:
         LinearLayout llExpLaboral = (LinearLayout) findViewById(R.id.llExpLaboral);
         for (int i = 0; i < perfil.getSizeExp(); i++ ) {
-            for (int j = 0; j < 3; j++) {
+            //for (int j = 0; j < 3; j++) {
                 TextView tvExpLaboral = new TextView(this);
                 tvExpLaboral.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
-                switch (j) {
-                    case (0):
-                        tvExpLaboral.setText("- Lugar: " + perfil.getExpLaboralNombre(i));
-                        break;
-                    case (1):
+              //  switch (j) {
+              //      case (0):
+                        tvExpLaboral.setText("+" + perfil.getExpLaboralNombre(i));
+              //          break;
+                 /*   case (1):
                         tvExpLaboral.setText("     Desde: " + perfil.getExpLaboralInicio(i));
                         break;
                     case (2):
                         tvExpLaboral.setText("     Hasta: " + perfil.getExpLaboralFin(i));
                         break;
-                }
+                */
+              //  }
                 tvExpLaboral.setTextColor(Color.GRAY);
                 llExpLaboral.addView(tvExpLaboral);
-            }
+            //}
         }
 
         tvResumen = (TextView) findViewById(R.id.tvResumen);
@@ -303,7 +305,9 @@ public class PerfilActivity extends AppCompatActivity {
     //Funcion a llamar al clickear boton Editar Perfil.
     private void apretarBotonEditar(){
         Intent intent = new Intent(this, PerfilEditActivity.class);
-        intent.putExtra("perfil", perfil.crearJson().toString());
+        perfil.setStrFoto("");
+        String prf = perfil.crearJson().toString();
+        intent.putExtra("perfil", prf);
         startActivity(intent);
     }
 

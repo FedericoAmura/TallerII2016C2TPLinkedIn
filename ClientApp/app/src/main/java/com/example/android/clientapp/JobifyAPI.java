@@ -23,6 +23,8 @@ public class JobifyAPI {
     private static final String BRIEF = "/brief";
     private static final String POPULAR = "/popular";
     private static final String NOTIF = "/notif";
+    private static final String SKILLS = "/skills";
+    private static final String JOB_POSITIONS = "/job_positions";
 
     public static String getLoginURL(){
         return APPSERVER_URL + LOGIN;
@@ -74,6 +76,14 @@ public class JobifyAPI {
 
     public static String getBriefChatDataURL(int chatterUID, int userID) {
         return APPSERVER_URL + "/users/" + String.valueOf(userID) + "/brief/" + String.valueOf(chatterUID);
+    }
+
+    public static String getSkillsURL() {
+        return APPSERVER_URL + SKILLS;
+    }
+
+    public static String getJobsURL() {
+        return APPSERVER_URL + JOB_POSITIONS;
     }
 
     public static void setIP(String IP) {

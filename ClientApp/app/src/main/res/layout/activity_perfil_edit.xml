@@ -34,6 +34,29 @@
                 android:layout_marginTop="10dp"/>
         </LinearLayout>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/person_photo"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:maxHeight="200px"
+            android:maxWidth="200px"
+            android:minHeight="200px"
+            android:minWidth="200px"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_camara"
+            />
+
+        <Button
+            android:id="@+id/boton_foto"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Editar foto"
+            android:layout_gravity="center"
+            android:textColor="@android:color/black"/>
+
 
         <!-- AREA NOMBRE -->
         <LinearLayout
@@ -189,92 +212,154 @@
 
 
         <!--Skills -->
-        <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/rlSkills"
+        <LinearLayout
+            android:id="@+id/area_skills"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/area_resumen"
+            android:orientation="horizontal"
             >
-            <Button
-                android:id="@+id/btnSkills"
+
+            <ImageView
+                android:id="@+id/img_skills"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Modificar Skills"
-                app:backgroundTint="@color/colorPrimary"
-                />
-            <TextView
-                android:id="@+id/tvSkills"
+                android:layout_below="@+id/img_correo"
+                android:layout_column="0"
+                android:layout_gravity="center_vertical"
+                android:layout_row="2"
+                android:src="@drawable/ic_recomendacion" />
+
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rlSkills"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/btnSkills"
-                android:textSize="20dp"
-                />
-        </RelativeLayout>
+                android:layout_marginLeft="32dp">
+                android:gravity="center"
+                >
+                <Button
+                    android:id="@+id/btnSkills"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Modificar Skills"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/colorPrimary"
+                    />
+                <TextView
+                    android:id="@+id/tvSkills"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/btnSkills"
+                    android:textSize="20dp"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
 
 
         <!--Experiencia-->
-        <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/rlExperiencia"
+        <LinearLayout
+            android:id="@+id/area_jobs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/area_skills"
+            android:orientation="horizontal"
             >
-            <Button
-                android:id="@+id/btnExperiencia"
+
+            <ImageView
+                android:id="@+id/img_jobs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Modificar Experiencia laboral"
-                app:backgroundTint="@color/colorPrimary"
-                />
-            <TextView
-                android:id="@+id/tvExperiencia"
+                android:layout_below="@+id/img_correo"
+                android:layout_column="0"
+                android:layout_gravity="center_vertical"
+                android:layout_row="2"
+                android:src="@drawable/ic_maletin_black" />
+
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rlExperiencia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/btnExperiencia"
-                android:textSize="20dp"
-                />
-        </RelativeLayout>
-
-        <!-- Ubicacion-->
-        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:stretchColumns="1" >
-
-            <TableRow>
+                android:layout_marginLeft="32dp"
+                android:gravity="center"
+                >
+                <Button
+                    android:id="@+id/btnExperiencia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Modificar Experiencia laboral"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/colorPrimary"
+                    />
                 <TextView
-                    android:id="@+id/lblTexto"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/tvExperiencia"
                     android:layout_width="wrap_content"
-                    android:layout_column="0"
-                    android:text="Actualizar ubicacion"/>
-            </TableRow>
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/btnExperiencia"
+                    android:textSize="20dp"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
 
-            <TableRow>
-                <RadioGroup
-                    android:id="@+id/rdgGrupo"
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkedButton="@+id/rdbOne"
-                    android:layout_column="0"
-                    android:layout_span="2">
-                    <RadioButton
-                        android:id="@+id/gps_si"
+
+
+        <!-- AREA GPS -->
+        <LinearLayout
+            android:id="@+id/area_gps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/area_jobs"
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:id="@+id/img_gps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/img_correo"
+                android:layout_column="0"
+                android:layout_gravity="center_vertical"
+                android:layout_row="2"
+                android:src="@drawable/ic_gps_black" />
+
+            <!-- Ubicacion-->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="32dp">
+
+                    <TextView
+                        android:id="@+id/lblTexto"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_column="0"
+                        android:textSize="25dp"
+                        android:text="Actualizar ubicacion"/>
+
+                    <RadioGroup
+                        android:id="@+id/rdgGrupo"
+                        android:orientation="horizontal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Si"/>
-                    <RadioButton
-                        android:id="@+id/gps_no"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No"/>
-                </RadioGroup>
-            </TableRow>
-        </TableLayout>
+                        android:checkedButton="@+id/rdbOne"
+                        android:layout_column="0"
+                        android:layout_span="2">
+                        <RadioButton
+                            android:id="@+id/gps_si"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Si"/>
+                        <RadioButton
+                            android:id="@+id/gps_no"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="No"/>
+                    </RadioGroup>
+            </LinearLayout>
+        </LinearLayout>
+
 
 
 
@@ -284,6 +369,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentBottom="true"
+            android:layout_below="@+id/area_gps"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 

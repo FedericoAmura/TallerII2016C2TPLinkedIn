@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NotificacionesActivity extends AppCompatActivity {
-    //private EventBus bus = EventBus.getDefault();
+    private EventBus bus = EventBus.getDefault();
     private static final String PENDING = "pending";
 
     private static final String USER_ID = "userID";
@@ -84,8 +84,8 @@ public class NotificacionesActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Notificaciones");
     }
 
-    // Nos registramos en el bus de eventos (llegada de notificaciones)
-    /*@Override
+    //Nos registramos en el bus de eventos (llegada de notificaciones)
+    @Override
     protected void onStart() {
         super.onStart();
         bus.register(this);
@@ -105,7 +105,6 @@ public class NotificacionesActivity extends AppCompatActivity {
         super.onStop();
         bus.unregister(this);
     }
-    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

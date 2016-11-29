@@ -79,6 +79,7 @@ public class Perfil {
             correo = object.getString(EMAIL);
 
             strFoto = object.getString(PHOTO);
+            Log.d("TEST", "PERFIL PARSER JSON: Strfoto vale: " + strFoto);
             byte[] decodedString = Base64.decode(strFoto, Base64.NO_WRAP);
             InputStream is = new ByteArrayInputStream(decodedString);
             foto = BitmapFactory.decodeStream(is);
@@ -207,5 +208,9 @@ public class Perfil {
             return expLaboral.get(i).getString(END);
         } catch (JSONException e) {}
         return null;
+    }
+
+    public void setStrFoto(String str){
+        strFoto = str;
     }
 }
