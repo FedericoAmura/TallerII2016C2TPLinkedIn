@@ -291,13 +291,10 @@ void DBJSON::crearPeticion(const Json &json) {
 	if (gcm_mode) {
 		Json::object j;
 		Json::object data;
-		Json::object notification;
-		notification["title"] = "Solicitud de Contacto";
-		notification["body"] = "Fulanito quiere agregarte como amigo";
-		data["type_notif"] = 2;
+		data["notif_type"] = 2; // Notification Type Contact Request
 		data["name"] = getDatosBrief(uIDOrigen)["name"].string_value();
 		data["senderID"] = (int)uIDOrigen;
-		j["notification"] = notification;
+		data["message"] = mensaje;
 		j["data"] = data;
 		j["to"] = registration_ids[uIDDestino];
 		GCM_Connector::notify(Json(j).dump());
@@ -398,14 +395,11 @@ void DBJSON::enviarMensaje(const Json &json) {
 	// Google Cloud Messaging
 	if (gcm_mode) {
 		Json::object j;
-		Json::object notification;
 		Json::object data;
-		notification["title"] = "Nuevo mensaje";
-		notification["body"] = mensaje;
-		data["type_notif"] = 1;
+		data["notif_type"] = 1; // Notification Type Send Message
 		data["senderID"] = (int)uIDEmisor;
 		data["name"] = getDatosBrief(uIDEmisor)["name"].string_value();
-		j["notification"] = notification;
+		data["message"] = mensaje;
 		j["data"] = data;
 		j["to"] = registration_ids[uIDReceptor];
 		GCM_Connector::notify(Json(j).dump());

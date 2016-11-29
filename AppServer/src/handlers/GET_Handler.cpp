@@ -167,7 +167,7 @@ http_response GET_Handler::handle_get_user_search() {
 		if (!features["popsort"].is_null()) popsort = features["popsort"].bool_value();
 
 		std::vector<std::string> *vec_skills = (skills.empty()) ? 0 : &skills;
-		std::vector<std::string> *vec_positions = (skills.empty()) ? 0 : &positions;
+		std::vector<std::string> *vec_positions = (positions.empty()) ? 0 : &positions;
 
 		if (!features["longitude"].is_null() && !features["latitude"].is_null()) {
 			Geolocacion geoloc = Geolocacion(features["longitude"].number_value(), features["latitude"].number_value());
