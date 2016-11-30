@@ -1,17 +1,13 @@
 package com.example.android.clientapp;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.content.Context;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -22,14 +18,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.utils.JsonUtil;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-public class BusquedasActivity extends NotifiableActivity {
+public class BusquedasActivity extends SkillJobActivity {
 
     private int statusCode;
     private ProgressBar bar;

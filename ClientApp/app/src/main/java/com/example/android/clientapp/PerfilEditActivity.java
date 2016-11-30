@@ -48,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +58,7 @@ import java.util.Map;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class PerfilEditActivity extends NotifiableActivity {
+public class PerfilEditActivity extends SkillJobActivity {
 
     private static final String DEBUG_TAG = "EDITAR_PERFIL";
     private static final String NAME = "name";
@@ -94,12 +95,8 @@ public class PerfilEditActivity extends NotifiableActivity {
     private boolean editarUbicacion;
 
     private Perfil perfil;
-    private ArrayList<String> skills;
     private ArrayList<Boolean> skills_bool;
-    private ArrayList<String> jobs;
     private ArrayList<Boolean> jobs_bool;
-    private boolean skillsInit;
-    private boolean jobsInit;
 
     private JSONArray userSkills;
     private JSONArray userJobs;
@@ -134,6 +131,10 @@ public class PerfilEditActivity extends NotifiableActivity {
             }
         });
 
+        tvSkills = (TextView) findViewById(R.id.tvSkills);
+        tvExperiencia = (TextView) findViewById(R.id.tvExperiencia);
+        userSkills = new JSONArray();
+        userJobs = new JSONArray();
 
         Intent i = getIntent();
         String jsonPerfil = (String) i.getExtras().get("perfil");
@@ -141,7 +142,11 @@ public class PerfilEditActivity extends NotifiableActivity {
         try {
             JSONObject jsonObjPerfil = new JSONObject(jsonPerfil);
             perfil.cargarDesdeJSON(jsonObjPerfil);
+            userSkills = jsonObjPerfil.getJSONArray(SKILLS);
+            userJobs = jsonObjPerfil.getJSONArray(JOB_POSITIONS);
         } catch (JSONException e) {}
+        setTextViewSkill(tvSkills, userSkills);
+        setTextViewJobs(tvExperiencia, userJobs);
 
         etNombre = (EditText) findViewById(R.id.campo_nombre);
         etNombre.setText(perfil.getNombre());
@@ -185,9 +190,7 @@ public class PerfilEditActivity extends NotifiableActivity {
             }
         });
 
-
         btnSkills = (Button) findViewById(R.id.btnSkills);
-        tvSkills = (TextView) findViewById(R.id.tvSkills);
         btnSkills.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,7 +199,6 @@ public class PerfilEditActivity extends NotifiableActivity {
         });
 
         btnExperiencia = (Button) findViewById(R.id.btnExperiencia);
-        tvExperiencia = (TextView) findViewById(R.id.tvExperiencia);
         btnExperiencia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,14 +206,10 @@ public class PerfilEditActivity extends NotifiableActivity {
             }
         });
 
-        userSkills = new JSONArray();
-        userJobs = new JSONArray();
-
-        skillsInit = false;
-        jobsInit = false;
-        inicializarSkills();
-        inicializarJobs();
-
+        isInitDict.put(SKILLS,false);
+        isInitDict.put(JOB_POSITIONS,false);
+        inicializarLista(SKILLS, JobifyAPI.getSkillsURL());
+        inicializarLista(JOB_POSITIONS, JobifyAPI.getJobsURL());
     }
 
     private void apretarBotonEditarFoto(){
@@ -225,52 +223,44 @@ public class PerfilEditActivity extends NotifiableActivity {
     }
 
     private void apretarBotonEditarSkills(){
-        if (skillsInit) {
+        if (isInitDict.get(SKILLS)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(PerfilEditActivity.this);
-
-        /*String[] items = new String[]{
-
-                "C",
-                "Java",
-                "SmallTalk",
-        };
-
-        final boolean[] checkedItems = new boolean[]{
-                false,
-                false,
-                false
-        };*/
-
-            String[] items = skills.toArray(new String[skills.size()]);
-            boolean[] checkedItems = toPrimitiveArray(skills_bool);
-
-            final List<String> itemsList = Arrays.asList(items);
-
+            String[] items = listDictDesc.get(SKILLS);
+            final List<String> itemsList = Arrays.asList(listDict.get(SKILLS));
+            boolean[] checkedItems = new boolean[items.length];
+            Arrays.fill(checkedItems,false);
+            for (int i = 0; i < checkedItems.length; ++i) {
+                String skill = itemsList.get(i);
+                for (int j = 0; j < userSkills.length(); ++j) {
+                    try {
+                        if (skill.equals(userSkills.get(j))) checkedItems[i] = true;
+                    }
+                    catch (JSONException e) { }
+                }
+            }
             crearCheckListSkills(items, checkedItems, itemsList, builder, tvSkills);
         }
     }
 
 
-    private void apretarBotonEditarExperiencia(){
-        if (jobsInit) {
+    private void apretarBotonEditarExperiencia() {
+        if (isInitDict.get(JOB_POSITIONS)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(PerfilEditActivity.this);
-
-            String[] items = jobs.toArray(new String[jobs.size()]);
-            boolean[] checkedItems = toPrimitiveArray(jobs_bool);
-
-            final List<String> itemsList = Arrays.asList(items);
-
+            String[] items = listDictDesc.get(JOB_POSITIONS);
+            final List<String> itemsList = Arrays.asList(listDict.get(JOB_POSITIONS));
+            boolean[] checkedItems = new boolean[items.length];
+            Arrays.fill(checkedItems, false);
+            for (int i = 0; i < checkedItems.length; ++i) {
+                String skill = itemsList.get(i);
+                for (int j = 0; j < userJobs.length(); ++j) {
+                    try {
+                        if (skill.equals(((JSONObject)userJobs.get(j)).getString("name"))) checkedItems[i] = true;
+                    }
+                    catch (JSONException e) { }
+                }
+            }
             crearCheckListJobs(items, checkedItems, itemsList, builder, tvExperiencia);
         }
-    }
-
-    private boolean[] toPrimitiveArray(final ArrayList<Boolean> booleanList) {
-        final boolean[] primitives = new boolean[booleanList.size()];
-        int index = 0;
-        for (Boolean object : booleanList) {
-            primitives[index++] = object;
-        }
-        return primitives;
     }
 
     private void crearCheckListJobs(String[] items, final boolean[] checkedItems, final List<String> itemsList, AlertDialog.Builder builder, final TextView tv){
@@ -294,7 +284,6 @@ public class PerfilEditActivity extends NotifiableActivity {
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                tv.setText("Ha seleccionado: \n");
                 userJobs = new JSONArray();
                 for (int i = 0; i<checkedItems.length; i++){
                     boolean checked = checkedItems[i];
@@ -305,11 +294,12 @@ public class PerfilEditActivity extends NotifiableActivity {
                             job.putOpt("start", "11/11/1111"); // Hardcodeo para no modificar el server
                             job.putOpt("end", "11/11/1111"); // Idem
                             userJobs.put(job);
-                            tv.setText(tv.getText() + itemsList.get(i) + "\n");
                         }
                         catch (JSONException e) { e.printStackTrace(); }
                     }
                 }
+                setTextViewJobs(tvExperiencia, userJobs);
+
             }
         });
 
@@ -331,16 +321,33 @@ public class PerfilEditActivity extends NotifiableActivity {
 
     }
 
+    /**
+     * Dado una text view y data, llena la text view con una lista
+     */
+    private static void setTextViewSkill(TextView tv, JSONArray data) {
+        tv.setText("");
+        for (int i = 0; i < data.length(); ++i) {
+            try {
+                tv.setText(tv.getText() + (String)data.get(i) + "\n");
+            } catch (JSONException e) { }
+        }
+    }
+
+    private static void setTextViewJobs(TextView tv, JSONArray data) {
+        tv.setText("");
+        for (int i = 0; i < data.length(); ++i) {
+            try {
+                tv.setText(tv.getText() + ((JSONObject)data.get(i)).getString("name") + "\n");
+            } catch (JSONException e) { }
+        }
+    }
 
     private void crearCheckListSkills(String[] items, final boolean[] checkedItems, final List<String> itemsList, AlertDialog.Builder builder, final TextView tv){
         builder.setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-
                 checkedItems[which] = isChecked;
-
                 String currentItem = itemsList.get(which);
-
                 /*Toast.makeText(getApplicationContext(),
                         currentItem + " " + isChecked, Toast.LENGTH_SHORT).show();*/
             }
@@ -353,15 +360,14 @@ public class PerfilEditActivity extends NotifiableActivity {
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                tv.setText("Ha seleccionado: \n");
                 userSkills = new JSONArray();
                 for (int i = 0; i<checkedItems.length; i++){
                     boolean checked = checkedItems[i];
                     if (checked) {
                         userSkills.put(itemsList.get(i));
-                        tv.setText(tv.getText() + itemsList.get(i) + "\n");
                     }
                 }
+                setTextViewSkill(tvSkills, userSkills);
             }
         });
 
@@ -416,113 +422,6 @@ public class PerfilEditActivity extends NotifiableActivity {
         }
         return ok;
     }
-
-
-
-    private void guardarSkills(JSONObject jsonSkills) {
-        try {
-            skills = new ArrayList<String>();
-            skills_bool = new ArrayList<Boolean>();
-            JSONArray jsonArray = jsonSkills.getJSONArray("skills");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject skill = jsonArray.getJSONObject(i);
-                String strSkill = skill.getString("name") + " - " + skill.getString("description") + " - " + skill.getString("category");
-                skills.add(strSkill);
-                skills_bool.add(false);
-                Log.d("TEST", "Skills guardadas: " + skills.size());
-            }
-            skillsInit = true;
-        } catch(JSONException e) {e.printStackTrace();}
-    }
-
-
-    private void inicializarSkills(){
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getSkillsURL(), null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        if (statusCode == HttpURLConnection.HTTP_OK){
-                            Log.d("TEST", "Skills obtenidas del server");
-                            guardarSkills(response);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(PerfilEditActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
-                            Toast.makeText(PerfilEditActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
-                    }
-                }){
-
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
-                statusCode = response.statusCode;
-                return super.parseNetworkResponse(response);
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
-    }
-
-    private void guardarJobs(JSONObject jsonJobs) {
-        try {
-            jobs = new ArrayList<String>();
-            jobs_bool = new ArrayList<Boolean>();
-            JSONArray jsonArray = jsonJobs.getJSONArray("job_positions");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject job = jsonArray.getJSONObject(i);
-                String strJob = job.getString("name") + " - " + job.getString("description") + " - " + job.getString("category");
-                jobs.add(strJob);
-                jobs_bool.add(false);
-                Log.d("TEST", "Jobs guardadas: " + jobs.size());
-            }
-            jobsInit = true;
-        } catch(JSONException e) {e.printStackTrace();}
-    }
-
-
-    private void inicializarJobs(){
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, JobifyAPI.getJobsURL(), null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        if (statusCode == HttpURLConnection.HTTP_OK){
-                            Log.d("TEST", "Jobs obtenidas del server");
-                            guardarJobs(response);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                            Toast.makeText(PerfilEditActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
-                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
-                            Toast.makeText(PerfilEditActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
-                        }
-                    }
-                }){
-
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response){
-                statusCode = response.statusCode;
-                return super.parseNetworkResponse(response);
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
-    }
-
 
     private void enviarDatosAlServer(final String nombre, final String edad, final String correo, final String resumen){
 

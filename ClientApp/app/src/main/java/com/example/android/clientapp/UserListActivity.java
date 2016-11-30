@@ -32,7 +32,6 @@ import java.util.ArrayList;
  * Clase que muestra una lista de usuarios
  * Se espera se pasen los siguientes parametros como extras
  * "userIDs" ArrayList de strings, ids de usuario
- * TODO: Merge con la activity de amigos
  */
 public class UserListActivity extends NotifiableActivity {
 

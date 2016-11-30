@@ -88,6 +88,7 @@
             android:name=".NotificacionesActivity"
             android:theme="@style/PerfilTheme" />
         <activity android:name=".NotifiableActivity" />
+        <activity android:name=".SkillJobActivity"></activity>
     </application>
 
 </manifest>

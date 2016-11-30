@@ -135,7 +135,7 @@ public class Perfil {
 
             JSONArray arrayExp = new JSONArray();
             for (int i = 0; i < expLaboral.size(); i++ ){
-                arraySkills.put(expLaboral.get(i));
+                arrayExp.put(expLaboral.get(i));
             }
             jsonPerfil.putOpt(JOB_POSITIONS, arrayExp);
 

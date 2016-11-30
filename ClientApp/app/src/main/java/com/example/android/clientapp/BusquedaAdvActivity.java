@@ -30,7 +30,7 @@ import java.util.ArrayList;
 /**
  * Activity para las busquedas altamente parametrizables
  */
-public class BusquedaAdvActivity extends NotifiableActivity {
+public class BusquedaAdvActivity extends SkillJobActivity {
 
     private int statusCode;
     private ProgressBar bar;
