@@ -116,7 +116,7 @@ public class JobifyAPI {
         }
         result += "&geolocation=";
         if (origenLatitud != "" && origenLongitud != "")
-            result += origenLongitud + ";" + origenLatitud;
+            result += origenLatitud + ";" + origenLongitud;
         result += "&distance=" + maxDist;
         result += "&popsort=";
         if (popSort) result += "true";
