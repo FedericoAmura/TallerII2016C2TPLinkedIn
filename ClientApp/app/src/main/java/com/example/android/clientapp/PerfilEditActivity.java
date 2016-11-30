@@ -512,8 +512,9 @@ public class PerfilEditActivity extends SkillJobActivity {
                 if(resultCode == RESULT_OK){
                     try {
                         Uri selectedImage = imageReturnedIntent.getData();
+                        Bitmap imageSelected = decodeUri(selectedImage);
                         InputStream imageStream = getContentResolver().openInputStream(selectedImage);
-                        Bitmap imageSelected = BitmapFactory.decodeStream(imageStream);
+                        //Bitmap imageSelected = BitmapFactory.decodeStream(imageStream);
                         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
                         imageSelected.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOS);
                         strFoto = Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
@@ -524,5 +525,30 @@ public class PerfilEditActivity extends SkillJobActivity {
                     catch (FileNotFoundException e) {e.printStackTrace();}
                 }
         }
+    }
+
+    private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o);
+
+        final int REQUIRED_SIZE = 140;
+
+        int width_tmp = o.outWidth, height_tmp = o.outHeight;
+        int scale = 1;
+        while (true) {
+            if (width_tmp / 2 < REQUIRED_SIZE
+                    || height_tmp / 2 < REQUIRED_SIZE) {
+                break;
+            }
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+        
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o2);
+
     }
 }
