@@ -1,6 +1,6 @@
 Herramientas
 ============
-Herramientas utilizadas para el desarrollo del Application Server
+Las herramientas principales utilizadas para el desarrollo del Application Server son:
 
 ==================================
 
@@ -12,7 +12,7 @@ Contenidos:
 
 Moongose (Web Server)
 ^^^^^^^^^^^^^^^^^^^^^
-saraza
+Para los requests y su procesamiento se utilizó `Mongoose Web Server <https://docs.cesanta.com/mongoose/master/>`_
 
 LevelDB
 ^^^^^^^

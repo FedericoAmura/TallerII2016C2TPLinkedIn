@@ -14,7 +14,7 @@ Contenidos:
    :maxdepth: 1
 
    docker
-   instalacion
+   build_sin_docker
    herramientas
    implementacion
    API

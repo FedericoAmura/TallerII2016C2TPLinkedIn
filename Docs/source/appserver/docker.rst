@@ -11,18 +11,19 @@ Contenidos:
 Instalación de Docker
 ^^^^^^^^^^^^^^^^^^^^^
 Se deberá contar con la instalación de Docker. En caso de no tenerlo instalado,
-se puede instalar siguiendo las instrucciones de instalación desde su página aqui.
+se puede instalar siguiendo las instrucciones de instalación desde su página
+`aqui <https://docs.docker.com/engine/installation/>`_.
 
-Creación de imagen Docker
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Una vez instalado Docker, deberá contar con el archivo Dockerfile (que contiene las
-instrucciones para la creación de la imagen Docker del servidor, puede descargarlo
-desde aqui) y los fuentes del proyecto y posicionarse en el mismo directorio donde se encuentre.
+Creación de la imagen Docker
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Una vez instalado Docker, se deberá contar con el `proyecto <https://github.com/FedericoAmura/TallerII2016C2TPLinkedIn/tree/master/AppServer>`_
+descargado y posicionarse en el directorio raíz del proyecto, que cuenta con el archivo Dockerfile (que contiene las
+instrucciones para la creación de la imagen Docker del servidor).
 Para generar la imagen Docker del servidor, se deberá ejecutar el siguiente comando:
 
 .. code-block:: bash
 
-	docker build -t docker-appserver .
+	$ docker build -t docker-appserver .
 
 Corriendo el Servidor
 ^^^^^^^^^^^^^^^^^^^^^
@@ -31,7 +32,7 @@ comando:
 
 .. code-block:: bash
 
- 	docker run -i -t -p 8888:8888 docker-appserver
+ 	$ docker run -i -t -p 8888:8888 docker-appserver
 
 Los flags -i -t permiten ejecutar una terminal interactiva dentro del contenedor, con lo
 cual si se desea detener el servidor puede ejecutar Ctrl + C y detenerlo.
