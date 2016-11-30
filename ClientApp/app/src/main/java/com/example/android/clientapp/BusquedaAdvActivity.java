@@ -26,8 +26,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.utils.GPS;
 import com.example.android.clientapp.utils.JsonUtil;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;

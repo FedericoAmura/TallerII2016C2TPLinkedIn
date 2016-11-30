@@ -92,12 +92,12 @@ public class JobifyAPI {
         return APPSERVER_URL+ USERS + POPULAR;
     }
 
-    public static String getTopTenPopSkillURL(String skill) {
-        return getTopTenPopURL()+"/skill/"+skill.replaceAll(" ","%20");
+    public static String getTopTenPopSkillURL() {
+        return getTopTenPopURL()+"/skill/";
     }
 
-    public static String getTopTenPopPuestoURL(String puesto) {
-        return getTopTenPopURL()+"/position/"+puesto.replaceAll(" ","%20");
+    public static String getTopTenPopPuestoURL() {
+        return getTopTenPopURL()+"/position/";
     }
 
     public static String getAdvBuscquedaURL(ArrayList<String> skills, ArrayList<String> puestos,

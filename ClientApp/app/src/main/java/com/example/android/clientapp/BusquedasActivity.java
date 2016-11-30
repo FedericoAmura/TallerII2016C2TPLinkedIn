@@ -1,7 +1,9 @@
 package com.example.android.clientapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,11 +24,14 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BusquedasActivity extends SkillJobActivity {
 
     private int statusCode;
     private ProgressBar bar;
+    private int selected = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,7 @@ public class BusquedasActivity extends SkillJobActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                botonSkill();
             }
         });
 
@@ -53,7 +58,7 @@ public class BusquedasActivity extends SkillJobActivity {
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                botonPos();
             }
         });
 
@@ -70,6 +75,10 @@ public class BusquedasActivity extends SkillJobActivity {
         bar = (ProgressBar) findViewById(R.id.progressBar);
 
         setToolbar();
+        isInitDict.put(SKILLS,false);
+        isInitDict.put(JOB_POSITIONS,false);
+        inicializarLista(SKILLS, JobifyAPI.getSkillsURL());
+        inicializarLista(JOB_POSITIONS, JobifyAPI.getJobsURL());
     }
 
     protected void setToolbar() {
@@ -132,4 +141,66 @@ public class BusquedasActivity extends SkillJobActivity {
         requestQueue.add(jsonRequest);
     }
 
+
+    /**
+     * Método llama al apretar el boton para agregar skills
+     */
+    private void botonSkill() {
+        botonJobSkill(SKILLS, JobifyAPI.getTopTenPopSkillURL());
+    }
+
+    /**
+     * Método llamado al apretar el boton para agregar job positions
+     */
+    private void botonPos() {
+        botonJobSkill(JOB_POSITIONS, JobifyAPI.getTopTenPopPuestoURL());
+    }
+
+    /**
+     * Metodo usado al apretar los botones de posicion y skill
+     * @param id            String que identifica el tipo (SKILL, JOB_POSITION, etc)
+     * @param toAppendUrl       URL a la cual agregarle la eleccion
+     */
+    private void botonJobSkill(String id, String toAppendUrl) {
+        if (isInitDict.get(id)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(BusquedasActivity.this);
+            String[] items = listDictDesc.get(id);
+            final List<String> itemsList = Arrays.asList(listDict.get(id));
+            crearCheckList(items, itemsList, toAppendUrl, builder);
+        }
+    }
+
+    /**
+     * Crea un menu estilo checklist
+     * @param items             Items que se mostraran para seleccion (display textual)
+     * @param itemsList         Items que seran efectivamente selectos y devueltos
+     * @param toAppendUrl       URL a la cual agregarle la eleccion
+     * @param builder           Builder para la ventana
+     */
+    private void crearCheckList(String[] items, final List<String> itemsList,
+                                final String toAppendUrl, AlertDialog.Builder builder) {
+        builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selected = which;
+            }
+        });
+        builder.setCancelable(false);
+        builder.setTitle("Seleccione la opcion correspondiente:");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (selected != -1)
+                    buscarYCambiarActivity(toAppendUrl
+                            + itemsList.get(selected).replaceAll(" ","%20"));
+            }
+        });
+        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }
