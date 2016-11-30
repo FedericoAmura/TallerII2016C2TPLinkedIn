@@ -275,27 +275,26 @@ class ClientTest(unittest.TestCase):
 
 ### GET
     #checked
-    def test_21_search_for_users(self):
+    def test_21_user_search(self):
         params = {} # query_string
         params["job_position"] = "job1;job2"
         params["skill"] = "skill1;skill2"
         params["distance"] = 2.4
         params["geolocation"] = "2.5;5.8"
         params["popsort"] = True
-        res = client1.search_for_users(params)
+        res = client1.user_search(params)
         self.assertEquals(400, res.status_code)
         params.clear()
         params["job_position"] = "Tester"
         params["skill"] = "Android"
-        res = client1.search_for_users(params)
+        res = client1.user_search(params)
         self.assertEquals(200, res.status_code)
         data = json.loads(res.text)
-        print res.text
-        self.assertEquals(len(data['users']), 2)
+        self.assertEquals(len(data['users']), 1)
 
     #checked
     def test_210_search_all_users(self):
-        res = client1.search_for_users({})
+        res = client1.user_search({})
         data = json.loads(res.text)
         self.assertEquals(200, res.status_code)
         self.assertEquals(len(data['users']), 5)

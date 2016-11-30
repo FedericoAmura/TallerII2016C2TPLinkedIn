@@ -133,7 +133,7 @@ class Client:
 
 ### GET     (params es un hash para agregar los parámetros que se desean mandar en la url)
 ###         (en algunos casos se necesitará agregar la autenticación en el header Authorization)
-    def search_for_users(self, params):
+    def user_search(self, params):
         url = self.url_base + "/users/"
         return self.makeRequest_GET(url, params, {})
 

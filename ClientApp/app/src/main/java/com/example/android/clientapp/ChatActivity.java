@@ -94,6 +94,7 @@ public class ChatActivity extends AppCompatActivity {
         PreferenceHandler.removeNotificationsFromSender(amigoUserID, Constants.NOTIFICATION_TYPE_NEW_MESSAGE, this);
 
         updateConversation();
+        NotifyMessageSeen();
     }
 
     private void updateConversation() {

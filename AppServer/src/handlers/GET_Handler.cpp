@@ -130,7 +130,7 @@ void GET_Handler::validate_user_features(const Json &json) {
 	if (!json["positions"].is_null()) {
 		Json data_shd = SharedServerConnector::get_job_positions();
 		std::string err;
-		bool intersected = intersect(json["positions"], data_shd["positions"], err);
+		bool intersected = intersect(json["positions"], data_shd["job_positions"], err);
 		if (!intersected)
 			throw NonexistentPosition(err);
 	}
