@@ -58,8 +58,11 @@ public class NotifAdapter extends RecyclerView.Adapter<NotifAdapter.PersonViewHo
 
         int statusCode;
 
+        View itemView;
+
         PersonViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
             cv = (CardView)itemView.findViewById(R.id.cv);
             personName = (TextView)itemView.findViewById(R.id.person_name);
             personCity = (TextView)itemView.findViewById(R.id.person_city);
@@ -99,6 +102,7 @@ public class NotifAdapter extends RecyclerView.Adapter<NotifAdapter.PersonViewHo
                         public void onResponse(JSONObject response) {
                             if (statusCode == HttpURLConnection.HTTP_OK){
                                 Toast.makeText(getApplicationContext(),"Peticion aceptada.",Toast.LENGTH_LONG).show();
+                                itemView.setVisibility(View.GONE);
                             }
                         }
                     },
@@ -140,6 +144,7 @@ public class NotifAdapter extends RecyclerView.Adapter<NotifAdapter.PersonViewHo
                         public void onResponse(JSONObject response) {
                             if (statusCode == HttpURLConnection.HTTP_OK){
                                 Toast.makeText(getApplicationContext(),"Peticion declinada.",Toast.LENGTH_LONG).show();
+                                itemView.setVisibility(View.GONE);
                             }
                         }
                     },
