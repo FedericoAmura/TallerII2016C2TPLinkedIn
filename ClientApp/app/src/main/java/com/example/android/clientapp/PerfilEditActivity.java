@@ -57,8 +57,7 @@ import java.util.Map;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class PerfilEditActivity extends AppCompatActivity {
-    private EventBus bus = EventBus.getDefault();
+public class PerfilEditActivity extends NotifiableActivity {
 
     private static final String DEBUG_TAG = "EDITAR_PERFIL";
     private static final String NAME = "name";
@@ -214,25 +213,6 @@ public class PerfilEditActivity extends AppCompatActivity {
         inicializarJobs();
 
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        bus.register(this);
-    }
-
-    // Permite recibir notificaciones mientras está corriendo en esta activity
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(AppServerNotification notification) {
-        NotificationLauncher.launch(this, notification);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        bus.unregister(this);
-    }
-
 
     private void apretarBotonEditarFoto(){
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
@@ -444,7 +424,7 @@ public class PerfilEditActivity extends AppCompatActivity {
             skills = new ArrayList<String>();
             skills_bool = new ArrayList<Boolean>();
             JSONArray jsonArray = jsonSkills.getJSONArray("skills");
-            for (int i = 0; i < jsonSkills.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject skill = jsonArray.getJSONObject(i);
                 String strSkill = skill.getString("name") + " - " + skill.getString("description") + " - " + skill.getString("category");
                 skills.add(strSkill);
@@ -496,7 +476,7 @@ public class PerfilEditActivity extends AppCompatActivity {
             jobs = new ArrayList<String>();
             jobs_bool = new ArrayList<Boolean>();
             JSONArray jsonArray = jsonJobs.getJSONArray("job_positions");
-            for (int i = 0; i < jsonJobs.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject job = jsonArray.getJSONObject(i);
                 String strJob = job.getString("name") + " - " + job.getString("description") + " - " + job.getString("category");
                 jobs.add(strJob);
