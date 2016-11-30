@@ -35,7 +35,7 @@
             </android.support.design.widget.AppBarLayout>
 
             <Button
-                android:text="Agregar skill"
+                android:text="Seleccionar skills"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/butSkill" />
@@ -47,10 +47,15 @@
                 android:layout_marginLeft="32dp"
                 android:layout_marginRight="32dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvSkills"
+                    android:visibility="gone" />
             </FrameLayout>
 
             <Button
-                android:text="Agregar Position"
+                android:text="Seleccionar puestos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/butPos" />
@@ -68,6 +73,11 @@
                 android:layout_marginLeft="32dp"
                 android:layout_marginRight="32dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvPos"
+                    android:visibility="gone" />
             </FrameLayout>
 
             <FrameLayout

@@ -27,7 +27,8 @@ import java.util.Hashtable;
 public class SkillJobActivity extends NotifiableActivity {
 
     protected int statusCode;
-
+    protected static final String SKILLS = "skills";
+    protected static final String JOB_POSITIONS = "job_positions";
     protected Hashtable<String, String[] > listDictDesc;
     protected Hashtable<String, String[] > listDict;
     protected Hashtable<String, Boolean> isInitDict;

@@ -93,11 +93,11 @@ public class JobifyAPI {
     }
 
     public static String getTopTenPopSkillURL(String skill) {
-        return getTopTenPopURL()+"/skill/"+skill;
+        return getTopTenPopURL()+"/skill/"+skill.replaceAll(" ","%20");
     }
 
     public static String getTopTenPopPuestoURL(String puesto) {
-        return getTopTenPopURL()+"/position/"+puesto;
+        return getTopTenPopURL()+"/position/"+puesto.replaceAll(" ","%20");
     }
 
     public static String getAdvBuscquedaURL(ArrayList<String> skills, ArrayList<String> puestos,
@@ -121,6 +121,7 @@ public class JobifyAPI {
         result += "&popsort=";
         if (popSort) result += "true";
         else result += "false";
+        result = result.replaceAll(" ", "%20");
         return result;
     }
 
