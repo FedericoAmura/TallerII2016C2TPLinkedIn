@@ -8,7 +8,7 @@ Para el desarrollo de pruebas unitarias se utilizó `Google Test <https://github
 Se desarrollaron pruebas para la mayoría de las funcionalidades de la aplicación.
 
 Tests de Integración
-===============
+====================
 
 Se provee el script de python tester/ClientTest.py.
 
@@ -18,7 +18,7 @@ Tests Unitarios
 ===============
 
 Compilacion y ejecución
-===========
+=======================
 
 Al ejecutar buildServer.sh se generará en la carpeta bin el ejecutable UnitTests.
 
