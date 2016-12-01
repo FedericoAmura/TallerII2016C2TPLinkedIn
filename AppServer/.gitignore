@@ -12,3 +12,4 @@ UnitTest
 include/jpeg/jconfig.h
 *.deb
 /bin
+*.log

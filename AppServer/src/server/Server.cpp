@@ -8,6 +8,8 @@
 #include "../../include/server/Server.h"
 
 Server::Server(bool gcm_mode) {
+	Logger::log(INFO, "Application Server");
+	Logger::log(INFO, "init");
 	try {
 		db_json = new DBJSON(new DBRaw("/tmp/db_users", &std::cout), gcm_mode);
 	} catch (LevelDBException &e) {
@@ -15,6 +17,7 @@ Server::Server(bool gcm_mode) {
 		return;
 	} catch (const std::ios_base::failure &e) {
 		std::cout << "[ERROR] Default photo for DBRaw not found. Check the path where the application is running." << std::endl;
+		Logger::log(ERROR, "Default photo for DBRaw not found. Check the path where the application is running.");
 		init_ok = false;
 		return;
 	}
@@ -34,9 +37,11 @@ Server::~Server() {
 }
 
 void Server::run() {
+	Logger::log(INFO, "...starting server on port 8888...");
 	std::cout << "...starting server on port 8888..." << std::endl;
 	std::cout << "...to stop the server press Ctrl+C ..." << std::endl;
 	connectionsHandler->run();
+	Logger::log(INFO, "...shutting down server...");
 	std::cout << "...shutting down server..." << std::endl;
 	sleep(2);
 }

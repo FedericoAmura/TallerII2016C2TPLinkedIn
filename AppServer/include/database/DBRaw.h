@@ -12,6 +12,7 @@
 #include "Geolocacion.h"
 #include "Puesto.h"
 #include "DBConstants.h"
+#include "../common/Logger.h"
 
 using std::string;
 using std::vector;
