@@ -17,7 +17,7 @@ TEST(LibTest, TestCrearUnaBaseDeDatos) {
 /**
  * Test de log4cpp correctamente integrado
  */
-#include "../include/log4cpp/Category.hh"
+/*#include "../include/log4cpp/Category.hh"
 #include "../include/log4cpp/Appender.hh"
 #include "../include/log4cpp/OstreamAppender.hh"
 #include "../include/log4cpp/Layout.hh"
@@ -36,7 +36,7 @@ TEST(LibTest, TestLogger) {
 
 	root.error(mensaje);
 	EXPECT_TRUE(sstream.str().find(mensaje) != std::string::npos);
-}
+}*/
 
 /**
  * Test de libreria de JSon y ejemplo de uso
