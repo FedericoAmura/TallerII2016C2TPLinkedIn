@@ -27,7 +27,7 @@ http_response DELETE_Handler::handleRequest() {
 			res = handle_delete_contact();
 			break;
 		default:
-			std::cout << "[WARN] Method Not Allowed" << std::endl;
+			//std::cout << "[WARN] Method Not Allowed" << std::endl;
 			Logger::log(WARN, "Method not allowed.");
 			return http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
@@ -40,7 +40,7 @@ http_response DELETE_Handler::handle_logout() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[WARN] Token not found. User unauthorized. Logout failed." << std::endl;
+		//std::cout << "[WARN] Token not found. User unauthorized. Logout failed." << std::endl;
 		Logger::log(WARN, "Token not found. User unauthorized. Logout failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
@@ -48,11 +48,11 @@ http_response DELETE_Handler::handle_logout() {
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[WARN] Invalid token. Non existent token. Logout failed." << std::endl;
+		//std::cout << "[WARN] Invalid token. Non existent token. Logout failed." << std::endl;
 		Logger::log(WARN, "Invalid token. Non existent token. Logout failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[WARN] Invalid token. Token has expired. Logout failed." << std::endl;
+		//std::cout << "[WARN] Invalid token. Token has expired. Logout failed." << std::endl;
 		Logger::log(WARN, "Invalid token. Token has expired. Logout failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
@@ -70,7 +70,7 @@ http_response DELETE_Handler::handle_reject_contact_request() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[WARN] Token not found. User unauthorized. Reject contact request failed." << std::endl;
+		//std::cout << "[WARN] Token not found. User unauthorized. Reject contact request failed." << std::endl;
 		Logger::log(WARN, "Token not found. User unauthorized. Reject contact request failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
@@ -78,11 +78,11 @@ http_response DELETE_Handler::handle_reject_contact_request() {
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[WARN] Invalid token. Non existent token. Reject contact request failed." << std::endl;
+		//std::cout << "[WARN] Invalid token. Non existent token. Reject contact request failed." << std::endl;
 		Logger::log(WARN, "Invalid token. Non existent token. Reject contact request failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[WARN] Invalid token. Token has expired. Reject contact request failed." << std::endl;
+		//std::cout << "[WARN] Invalid token. Token has expired. Reject contact request failed." << std::endl;
 		Logger::log(WARN, "Invalid token. Token has expired. Reject contact request failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
@@ -90,7 +90,7 @@ http_response DELETE_Handler::handle_reject_contact_request() {
 	try {
 		db_json->declinarPeticion(userID2, userID1);
 	} catch (NonexistentRequest &e) {
-		std::cout << "[WARN] Nonexistent Request. Reject contact request failed." << std::endl;
+		//std::cout << "[WARN] Nonexistent Request. Reject contact request failed." << std::endl;
 		Logger::log(WARN, "Nonexistent Request. Reject contact request failed." );
 		return http_response("", STATUS_NOT_FOUND);
 	}
@@ -106,7 +106,7 @@ http_response DELETE_Handler::handle_delete_contact() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[WARN] Token not found. User unauthorized. Reject contact request failed." << std::endl;
+		//std::cout << "[WARN] Token not found. User unauthorized. Reject contact request failed." << std::endl;
 		Logger::log(WARN, "Token not found. User unauthorized. Reject contact request failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
@@ -114,11 +114,11 @@ http_response DELETE_Handler::handle_delete_contact() {
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[WARN] Invalid token. Non existent token. Reject contact request failed." << std::endl;
+		//std::cout << "[WARN] Invalid token. Non existent token. Reject contact request failed." << std::endl;
 		Logger::log(WARN, "Invalid token. Non existent token. Reject contact request failed." );
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[WARN] Invalid token. Token has expired. Reject contact request failed." << std::endl;
+		//std::cout << "[WARN] Invalid token. Token has expired. Reject contact request failed." << std::endl;
 		Logger::log(WARN, "Invalid token. Token has expired. Reject contact request failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
@@ -126,11 +126,11 @@ http_response DELETE_Handler::handle_delete_contact() {
 	try {
 		db_json->eliminarContacto(userID1, userID2);
 	} catch (NonexistentContact &e) {
-		std::cout << "[WARN] Nonexistent Contact. Delete contact failed." << std::endl;
+		//std::cout << "[WARN] Nonexistent Contact. Delete contact failed." << std::endl;
 		Logger::log(WARN, "Nonexistent Contact. Delete contact failed." );
 		return http_response("", STATUS_NOT_FOUND);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[WARN] Nonexistent userID. Delete contact failed." << std::endl;
+		//std::cout << "[WARN] Nonexistent userID. Delete contact failed." << std::endl;
 		Logger::log(WARN, "Nonexistent userID. Delete contact failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
