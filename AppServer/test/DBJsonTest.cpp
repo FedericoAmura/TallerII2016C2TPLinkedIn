@@ -31,7 +31,7 @@ class DBJsonTest : public ::testing::Test {
 	{
 		leveldb::Status status = leveldb::DestroyDB(dbPath, leveldb::Options());
 		if(!status.ok()) std::cout << "Error elminando DB: " << status.ToString() << std::endl;
-		DBRaw *db = new DBRaw(dbPath, &std::cout);
+		DBRaw *db = new DBRaw(dbPath);
 		dbj = new DBJSON(db);
 	}
 	~DBJsonTest() {

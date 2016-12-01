@@ -11,7 +11,7 @@ Server::Server(bool gcm_mode) {
 	Logger::log(INFO, "Application Server");
 	Logger::log(INFO, "init");
 	try {
-		db_json = new DBJSON(new DBRaw("/tmp/db_users", &std::cout), gcm_mode);
+		db_json = new DBJSON(new DBRaw("./db_users"), gcm_mode);
 	} catch (LevelDBException &e) {
 		Logger::log(ERROR, "Error in database initialization.");
 		init_ok = false;

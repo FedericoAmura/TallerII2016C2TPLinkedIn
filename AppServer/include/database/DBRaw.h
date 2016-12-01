@@ -3,8 +3,6 @@
 
 #include "../leveldb/db.h"
 #include "../leveldb/write_batch.h"
-#include "../log4cpp/Appender.hh"
-#include "../log4cpp/Category.hh"
 #include "DBExceptions.h"
 #include "DatosUsuario.h"
 #include "Foto.h"
@@ -33,9 +31,6 @@ enum KeyCode : uint8_t;
 class DBRaw {
  private:
 	leveldb::DB* db;
-	log4cpp::Appender *dbLogAppender;
-	log4cpp::Category *dbLog;
-	std::ostream *logStream;
 
 	/**
 	 * Inicializa un contador en caso de no estar inicializado
@@ -197,11 +192,9 @@ class DBRaw {
 	/**
 	 * Constructor
 	 * @param rutaArchivo				Ruta al archivo de base de datos, si no existe se crea
-	 * @param logStream					Stream al cual logear, se elimina al eliminarse
-	 * 									El logstream se autoelimina al eliminar esta instancia
 	 * @exception LevelDBException		Si falla algo al abrir la base de datos
 	 */
-	DBRaw(const string &rutaArchivo, std::ostream *logStream);
+	DBRaw(const string &rutaArchivo);
 
 	virtual ~DBRaw();
 
