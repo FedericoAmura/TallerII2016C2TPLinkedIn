@@ -13,6 +13,7 @@ Server::Server(bool gcm_mode) {
 	try {
 		db_json = new DBJSON(new DBRaw("/tmp/db_users", &std::cout), gcm_mode);
 	} catch (LevelDBException &e) {
+		Logger::log(ERROR, "Error in database initialization.");
 		init_ok = false;
 		return;
 	} catch (const std::ios_base::failure &e) {

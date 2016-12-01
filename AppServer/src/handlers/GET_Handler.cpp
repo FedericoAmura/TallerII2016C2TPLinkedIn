@@ -119,7 +119,8 @@ http_response GET_Handler::handleRequest() {
 			res = handle_get_skill();
 			break;
 		default:
-			std::cout << "[Error] Method Not Allowed" << std::endl;
+			std::cout << "[WARN] Method Not Allowed" << std::endl;
+			Logger::log(WARN, "Method not allowed.");
 			return http_response("", STATUS_MET_NOT_ALLOWED);
 			break;
 	}
@@ -177,19 +178,23 @@ http_response GET_Handler::handle_get_user_search() {
 
 	} catch (NonexistentSkill &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_SKILL}, {"description", ERR_DESC_NONEXISTENT_SKILL}};
-		std::cout << "[Error] Nonexistent Skill: " << e.what() << ". Search for users failed."<< std::endl;
+		std::cout << "[WARN] Nonexistent Skill: " << e.what() << ". User search failed."<< std::endl;
+		Logger::log(WARN, "Nonexistent Skill: " + std::string(e.what()) + ". User Search failed.");
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
 	} catch (NonexistentPosition &e) {
 		error = Json::object { {"error_code", ERR_CODE_NONEXISTENT_JOB}, {"description", ERR_DESC_NONEXISTENT_JOB}};
-		std::cout << "[Error] Nonexistent Job Position: " << e.what() << ". Search for users failed."<< std::endl;
+		std::cout << "[WARN] Nonexistent Job Position: " << e.what() << ". User Search failed."<< std::endl;
+		Logger::log(WARN, "Nonexistent Job Position: " + std::string(e.what()) + ". User Search failed.");
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
 	} catch (BadInputException &e) {
 		error = Json::object { {"error_code", ERR_CODE_INV_DATA_FORMAT}, {"description", ERR_DESC_INV_DATA_FORMAT}};
-		std::cout << "[Error] Bad Input: " << e.what() << ". Search for users failed."<< std::endl;
+		std::cout << "[WARN] Bad Input: " << e.what() << ". User search failed."<< std::endl;
+		Logger::log(WARN, "Bad Input: " + std::string(e.what()) + ". User search failed.");
 		return http_response(error.dump(), STATUS_BAD_REQUEST);
 	} catch (CurlGetException &e) {
 		error = Json::object { {"error_code", 8}, {"description", ERR_DESC_OPERATION_FAILED}};
-		std::cout << "[Error] Internal Server Error. " << ". Search for users failed."<< std::endl;
+		std::cout << "[WARN] Internal Server Error. User search failed."<< std::endl;
+		Logger::log(WARN, "Internal Server Error . User search failed.");
 		return http_response(error.dump(), STATUS_INT_SERVER_ERR);
 	}
 	return http_response(results.dump(), STATUS_OK);
@@ -204,7 +209,8 @@ http_response GET_Handler::handle_get_user_profile() {
 	try {
 		data = db_json->getDatos(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent user. Query (Profile) failed." << std::endl;
+		std::cout << "[WARN] Nonexistent user. Query (Profile) failed." << std::endl;
+		Logger::log(WARN, "Nonexistent user. Query (Profile) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 
@@ -220,7 +226,8 @@ http_response GET_Handler::handle_get_user_resume() {
 	try {
 		data = db_json->getResumen(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent user. Query (Resume) failed." << std::endl;
+		std::cout << "[WARN] Nonexistent user. Query (Resume) failed." << std::endl;
+		Logger::log(WARN, "Nonexistent user. Query (Resume) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -235,10 +242,12 @@ http_response GET_Handler::handle_get_user_photo() {
 	try {
 		data = db_json->getFoto(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent user. Query (Photo) failed." << std::endl;
+		std::cout << "[WARN] Nonexistent user. Query (Photo) failed." << std::endl;
+		Logger::log(WARN, "Nonexistent user. Query (Photo) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	} catch (LevelDBException &e) {
-		std::cout << "[Error] User without photo. Query (Photo) failed." << std::endl;
+		std::cout << "[WARN] User without photo. Query (Photo) failed." << std::endl;
+		Logger::log(WARN, "User without photo. Query (Photo) failed.");
 		return http_response("{}", STATUS_NO_CONTENT);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -253,10 +262,12 @@ http_response GET_Handler::handle_get_user_thumb() {
 	try {
 		data = db_json->getFotoThumbnail(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent user. Query (Thumbnail) failed." << std::endl;
+		std::cout << "[WARN] Non existent user. Query (Thumbnail) failed." << std::endl;
+		Logger::log(WARN, "Non existent user. Query (Thumbnail) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	} catch (LevelDBException &e) {
-		std::cout << "[Error] User without thumbail photo. Query (Thumbnail) failed." << std::endl;
+		std::cout << "[WARN] User without thumbail photo. Query (Thumbnail) failed." << std::endl;
+		Logger::log(WARN, "User without thumbail photo. Query (Thumbnail) failed.");
 		return http_response("{}", STATUS_NO_CONTENT);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -271,7 +282,8 @@ http_response GET_Handler::handle_get_user_brief() {
 	try {
 		data = db_json->getDatosBrief(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent user. Query (Brief) failed." << std::endl;
+		std::cout << "[WARN] Nonexistent user. Query (Brief) failed." << std::endl;
+		Logger::log(WARN, "Nonexistent user. Query (Brief) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -285,17 +297,20 @@ http_response GET_Handler::handle_get_pending_contact_requests() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Pending requests) failed." );
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Pending requests) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Pending requests) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -303,7 +318,8 @@ http_response GET_Handler::handle_get_pending_contact_requests() {
 	try {
 		data = db_json->getPeticionesPendientes(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent user. Query (Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Non existent user. Query (Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Non existent user. Query (Pending requests) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -317,17 +333,20 @@ http_response GET_Handler::handle_get_number_pending_requests() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Number Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Number Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Number Pending requests) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Number Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Number Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Number Pending requests) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Number Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Number Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Number Pending requests) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -335,7 +354,8 @@ http_response GET_Handler::handle_get_number_pending_requests() {
 	try {
 		data = db_json->getNumPeticionesPendientes(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent user. Query (Number Pending requests) failed." << std::endl;
+		std::cout << "[WARN] Nonexistent user. Query (Number Pending requests) failed." << std::endl;
+		Logger::log(WARN, "Nonexistent user. Query (Number Pending requests) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -350,17 +370,20 @@ http_response GET_Handler::handle_get_particular_request() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Particular request) failed." );
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Particular request) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Particular request) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Particular request) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Particular request) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Particular request) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Particular request) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -368,7 +391,8 @@ http_response GET_Handler::handle_get_particular_request() {
 	try {
 		data = db_json->getPeticion(userID2, userID1);
 	} catch (NonexistentRequest &e) {
-		std::cout << "[Error] Non existent request. Query (Particular request) failed." << std::endl;
+		std::cout << "[WARN] Non existent request. Query (Particular request) failed." << std::endl;
+		Logger::log(WARN, "Non existent request. Query (Particular request) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -382,17 +406,20 @@ http_response GET_Handler::handle_get_user_contacts() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Particular request) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Contacts) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Contacts) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -400,7 +427,8 @@ http_response GET_Handler::handle_get_user_contacts() {
 	try {
 		data = db_json->getContactos(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID. Query (Contacts) failed." << std::endl;
+		std::cout << "[WARN] Non existent userID. Query (Contacts) failed." << std::endl;
+		Logger::log(WARN, "Non existent userID. Query (Contacts) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -415,17 +443,20 @@ http_response GET_Handler::handle_get_are_they_connected() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Particular request) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Contacts) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Contacts) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -433,7 +464,8 @@ http_response GET_Handler::handle_get_are_they_connected() {
 	try {
 		connected = db_json->esContacto(userID1, userID2);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID. Query (Are They Connected?) failed." << std::endl;
+		std::cout << "[WARN] Non existent userID. Query (Are They Connected?) failed." << std::endl;
+		Logger::log(WARN, "Non existent userID. Query (Are They Connected?) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	if (!connected)
@@ -451,7 +483,8 @@ http_response GET_Handler::handle_get_user_recommendations() {
 	try {
 		data = db_json->esRecomendado(userID1, userID2);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID. Query (user recommended) failed." << std::endl;
+		std::cout << "[WARN] Non existent userID. Query (user recommended) failed." << std::endl;
+		Logger::log(WARN, "Non existent userID. Query (user recommended) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -466,17 +499,20 @@ http_response GET_Handler::handle_get_brief_chat_data() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Particular request) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Particular request) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Contacts) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Contacts) failed." );
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Contacts) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Contacts) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -484,7 +520,8 @@ http_response GET_Handler::handle_get_brief_chat_data() {
 	try {
 		data = db_json->getDatosChatBrief(userID1, userID2);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID. Query (Brief Chat Data) failed." << std::endl;
+		std::cout << "[WARN] Non existent userID. Query (Brief Chat Data) failed." << std::endl;
+		Logger::log(WARN, "Non existent userID. Query (Brief Chat Data) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -520,17 +557,20 @@ http_response GET_Handler::handle_get_number_new_messages() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Number New Messages) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Number New Messages) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Number New Messages) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Number New Messages) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Number New Messages) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Number New Messages) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Number New Messages) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Number New Messages) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Number New Messages) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -538,7 +578,8 @@ http_response GET_Handler::handle_get_number_new_messages() {
 	try {
 		data = db_json->getChatNuevos(userID);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID. Query (Number New Messages) failed." << std::endl;
+		std::cout << "[WARN] Non existent userID. Query (Number New Messages) failed." << std::endl;
+		Logger::log(WARN, "Non existent userID. Query (Number New Messages) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -553,17 +594,20 @@ http_response GET_Handler::handle_get_id_last_message() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Number Last Message) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Number Last Message) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Number Last Message) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Number Last Message) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Number Last Message) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Number Last Message) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Number Last Message) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Number Last Message) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Number Last Message) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -571,7 +615,8 @@ http_response GET_Handler::handle_get_id_last_message() {
 	try {
 		data = db_json->getNumLastMensaje(userID1, userID2);
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID. Query (Number Last Message) failed." << std::endl;
+		std::cout << "[WARN] Non existent userID. Query (Number Last Message) failed." << std::endl;
+		Logger::log(WARN, "Non existent userID. Query (Number Last Message) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -589,22 +634,26 @@ http_response GET_Handler::handle_get_including_messages() {
 	std::string token;
 	bool parsed = HttpParser::parse_variable_from_authorization_header(request->message, TOKEN, token);
 	if (!parsed) {
-		std::cout << "[Error] Token not found. User unauthorized. Query (Including Messages) failed." << std::endl;
+		std::cout << "[WARN] Token not found. User unauthorized. Query (Including Messages) failed." << std::endl;
+		Logger::log(WARN, "Token not found. User unauthorized. Query (Including Messages) failed." );
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
 	if (ini_s.empty() || fin_s.empty()) {
-		std::cout << "[Error] Bad Request. Query (Including Messages) failed." << std::endl;
+		std::cout << "[WARN] Bad Request. Query (Including Messages) failed." << std::endl;
+		Logger::log(WARN, "Bad Request. Query (Including Messages) failed." );
 		return http_response("", STATUS_BAD_REQUEST);
 	}
 
 	try {
 		db_json->validar_token(token);
 	} catch (NonexistentToken &e) {
-		std::cout << "[Error] Invalid token. Non existent token. Query (Including Messages) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Non existent token. Query (Including Messages) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Non existent token. Query (Including Messages) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}catch (TokenHasExpired &e) {
-		std::cout << "[Error] Invalid token. Token has expired. Query (Including Messages) failed." << std::endl;
+		std::cout << "[WARN] Invalid token. Token has expired. Query (Including Messages) failed." << std::endl;
+		Logger::log(WARN, "Invalid token. Token has expired. Query (Including Messages) failed.");
 		return http_response("", STATUS_FORBIDDEN);
 	}
 
@@ -612,7 +661,8 @@ http_response GET_Handler::handle_get_including_messages() {
 	try {
 		data = db_json->getMensajes(userID1, userID2, std::stoi(ini_s), std::stoi(fin_s));
 	} catch (NonexistentUserID &e) {
-		std::cout << "[Error] Non existent userID. Query (Number Last Message) failed." << std::endl;
+		std::cout << "[WARN] Nonexistent userID. Query (Number Last Message) failed." << std::endl;
+		Logger::log(WARN, "Nonexistent userID. Query (Number Last Message) failed.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -623,10 +673,12 @@ http_response GET_Handler::handle_get_categories() {
 	try {
 		data = SharedServerConnector::get_categories();
 	} catch (CurlGetException &e) {
-		std::cout << "[Error] Curl: GET failed. Query (categories) failed." << std::endl;
+		std::cout << "[WARN] Curl: GET failed. Query (categories) failed." << std::endl;
+		Logger::log(WARN, "Curl: GET failed. Query (categories) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid data received from Shared Server. Query (categories) failed." << std::endl;
+		std::cout << "[WARN] Invalid data received from Shared Server. Query (categories) failed." << std::endl;
+		Logger::log(WARN, "Invalid data received from Shared Server. Query (categories) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -637,10 +689,12 @@ http_response GET_Handler::handle_get_jobpositions() {
 	try {
 		data = SharedServerConnector::get_job_positions();
 	} catch (CurlGetException &e) {
-		std::cout << "[Error] Curl: GET failed. Query (job_positions) failed." << std::endl;
+		std::cout << "[WARN] Curl: GET failed. Query (job_positions) failed." << std::endl;
+		Logger::log(WARN, "Curl: GET failed. Query (job_positions) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid data received from Shared Server. Query (job_positions) failed." << std::endl;
+		std::cout << "[WARN] Invalid data received from Shared Server. Query (job_positions) failed." << std::endl;
+		Logger::log(WARN, "Invalid data received from Shared Server. Query (job_positions) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -651,10 +705,12 @@ http_response GET_Handler::handle_get_skills() {
 	try {
 		data = SharedServerConnector::get_skills();
 	} catch (CurlGetException &e) {
-		std::cout << "[Error] Curl: GET failed. Query (skills) failed." << std::endl;
+		std::cout << "[WARN] Curl: GET failed. Query (skills) failed." << std::endl;
+		Logger::log(WARN, "Curl: GET failed. Query (skills) failed." );
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid data received from Shared Server. Query (skills) failed." << std::endl;
+		std::cout << "[WARN] Invalid data received from Shared Server. Query (skills) failed." << std::endl;
+		Logger::log(WARN, "Invalid data received from Shared Server. Query (skills) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 	return http_response(data.dump(), STATUS_OK);
@@ -668,10 +724,12 @@ http_response GET_Handler::handle_get_jobpositions_by_category() {
 	try {
 		data = SharedServerConnector::get_job_positions();
 	} catch (CurlGetException &e) {
-		std::cout << "[Error] Curl: GET failed. Query (particular job position) failed." << std::endl;
+		std::cout << "[WARN] Curl: GET failed. Query (particular job position) failed." << std::endl;
+		Logger::log(WARN, "Curl: GET failed. Query (particular job position) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid data received from Shared Server. Query (particular job position) failed." << std::endl;
+		std::cout << "[WARN] Invalid data received from Shared Server. Query (particular job position) failed." << std::endl;
+		Logger::log(WARN, "Invalid data received from Shared Server. Query (particular job position) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 
@@ -694,10 +752,12 @@ http_response GET_Handler::handle_get_jobposition() {
 	try {
 		data = SharedServerConnector::get_job_positions();
 	} catch (CurlGetException &e) {
-		std::cout << "[Error] Curl: GET failed. Query (job position) failed." << std::endl;
+		std::cout << "[WARN] Curl: GET failed. Query (job position) failed." << std::endl;
+		Logger::log(WARN, "Curl: GET failed. Query (job position) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid data received from Shared Server. Query (job position) failed." << std::endl;
+		std::cout << "[WARN] Invalid data received from Shared Server. Query (job position) failed." << std::endl;
+		Logger::log(WARN, "Invalid data received from Shared Server. Query (job position) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 
@@ -716,10 +776,12 @@ http_response GET_Handler::handle_get_skills_by_category() {
 	try {
 		data = SharedServerConnector::get_skills();
 	} catch (CurlGetException &e) {
-		std::cout << "[Error] Curl: GET failed. Query (particular skill) failed." << std::endl;
+		std::cout << "[WARN] Curl: GET failed. Query (particular skill) failed." << std::endl;
+		Logger::log(WARN, "Curl: GET failed. Query (particular skill) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid data received from Shared Server. Query (particular skill) failed." << std::endl;
+		std::cout << "[WARN] Invalid data received from Shared Server. Query (particular skill) failed." << std::endl;
+		Logger::log(WARN, "Invalid data received from Shared Server. Query (particular skill) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 
@@ -742,10 +804,12 @@ http_response GET_Handler::handle_get_skill() {
 	try {
 		data = SharedServerConnector::get_skills();
 	} catch (CurlGetException &e) {
-		std::cout << "[Error] Curl: GET failed. Query (particular skill) failed." << std::endl;
+		std::cout << "[WARN] Curl: GET failed. Query (particular skill) failed." << std::endl;
+		Logger::log(WARN, "Curl: GET failed. Query (particular skill) failed.");
 		return http_response("", STATUS_INT_SERVER_ERR);
 	} catch (InvalidJsonException &e) {
-		std::cout << "[Error] Invalid data received from Shared Server. Query (particular skill) failed." << std::endl;
+		std::cout << "[WARN] Invalid data received from Shared Server. Query (particular skill) failed." << std::endl;
+		Logger::log(WARN, "Invalid data received from Shared Server. Query (particular skill) failed." );
 		return http_response("", STATUS_INT_SERVER_ERR);
 	}
 
