@@ -16,9 +16,12 @@ se puede instalar siguiendo las instrucciones de instalación desde su página
 
 Creación de la imagen Docker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Una vez instalado Docker, se deberá contar con el `proyecto <https://github.com/FedericoAmura/TallerII2016C2TPLinkedIn/tree/master/AppServer>`_
-descargado y posicionarse en el directorio raíz del proyecto, que cuenta con el archivo Dockerfile (que contiene las
-instrucciones para la creación de la imagen Docker del servidor).
+Una vez instalado Docker, se deberá contar con el `proyecto <https://github.com/FedericoAmura/TallerII2016C2TPLinkedIn/tree/master/AppServer>`_ 
+descargado y luego proceder a la instalación de dependencias (mediante el script
+install-dependencies.sh) ya que el Dockerfile realiza una copia del directorio
+raíz del proyecto. Luego, posicionarse en el directorio raíz del proyecto, que
+cuenta con el archivo Dockerfile (que contiene las instrucciones para la
+creación de la imagen Docker del servidor).
 Para generar la imagen Docker del servidor, se deberá ejecutar el siguiente comando:
 
 .. code-block:: bash

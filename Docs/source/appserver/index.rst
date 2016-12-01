@@ -15,7 +15,8 @@ Contenidos:
 
    docker
    build_sin_docker
-   herramientas
+   funcionalidades
    implementacion
+   tests
    API
    modelodatosbdd
