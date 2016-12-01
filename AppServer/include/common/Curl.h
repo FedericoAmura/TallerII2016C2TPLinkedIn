@@ -4,6 +4,9 @@
 #include <curl/curl.h>
 #include <string>
 
+/**
+ * Wrapper de curl para realizar peticiones HTTP
+ */
 class Curl {
 private:
 	CURL* curl;
@@ -16,8 +19,18 @@ private:
 public:
 	Curl();
 
+	/**
+	 * Get Buffer
+	 * @return		buffer con datos en caso de que se haya utilizado para realizar un petición HTTP
+	 */
 	std::string get_buffer();
 
+	/**
+	 * Add header
+	 * @param header	Cabecera que se desea agregar a la petición HTTP
+	 * @param value		valor de la cabecera que se desea agregar		
+	 * @return			buffer con datos en caso de que se haya utilizado para realizar un petición HTTP
+	 */
 	void add_header(std::string header, std::string value);
 
 	int get(std::string url);

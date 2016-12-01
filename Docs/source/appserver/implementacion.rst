@@ -108,3 +108,13 @@ Contenidos:
     :maxdepth: 1
 
     ./clases/JsonChecker
+
+.. toctree::
+    :maxdepth: 1
+
+    ./clases/GCM_Connector
+
+.. toctree::
+    :maxdepth: 1
+
+    ./clases/logger
