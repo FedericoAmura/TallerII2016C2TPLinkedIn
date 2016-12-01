@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <time.h>
+#include <iostream>
 
 enum LogType { ERROR, WARN, INFO, DEBUG };
 

@@ -13,7 +13,8 @@ RequestHandler::RequestHandler(http_request* req) : HTTPRequestHandler(req) {
 
 http_response RequestHandler::handleRequest() {
 	if (uri == _INVALID_URI) {
-		std::cout << "ERROR >> Invalid uri " << std::endl;
+		//std::cout << "ERROR >> Invalid uri " << std::endl;
+		Logger::log(WARN, "Invalid uri.");
 		return http_response("", STATUS_NOT_FOUND);
 	}
 

@@ -29,6 +29,8 @@ void Logger::log(LogType type, std::string output) {
     strftime(buffer,80,"%Y-%m-%d %I:%M:%S",timeinfo);
     std::string timestamp(buffer);
     logfile.open(LOGFILE, std::ofstream::app);
-    logfile << "[" << timestamp << "]" << '\t' << type_s << '\t' << output << '\n';
+    std::string line = "[" + timestamp + "]" + '\t' + type_s + '\t' + output + '\n';
+    logfile << line;//"[" << timestamp << "]" << '\t' << type_s << '\t' << output << '\n';
+    std::cout << line << '\n';
     logfile.close();
 }
