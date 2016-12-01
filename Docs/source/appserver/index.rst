@@ -15,6 +15,7 @@ Contenidos:
 
    docker
    build_sin_docker
+   funcionalidades
    implementacion
    tests
    API
