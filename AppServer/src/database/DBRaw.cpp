@@ -1,7 +1,5 @@
 #include "../../include/database/DBRaw.h"
 #include "../../include/database/DBExceptions.h"
-#include "../../include/log4cpp/OstreamAppender.hh"
-#include "../../include/log4cpp/BasicLayout.hh"
 #include <fstream>
 #include <algorithm>
 
@@ -81,16 +79,8 @@ public:
  }
 };
 
-DBRaw::DBRaw(const string &rutaArchivo, std::ostream *logStream)
-	: logStream(logStream) {
-	/*TODO es temporal el siguiente Destroy */
-	leveldb::DestroyDB(rutaArchivo, leveldb::Options());
+DBRaw::DBRaw(const string &rutaArchivo) {
 	Logger::log(DEBUG, "...starting the database...");
-	dbLogAppender = new log4cpp::OstreamAppender("dbAppender", logStream);
-	dbLogAppender->setLayout(new log4cpp::BasicLayout());
-	dbLog = &log4cpp::Category::getInstance(string("dbLog"));
-	dbLog->addAppender(dbLogAppender);
-
 	leveldb::Options options;
 	options.create_if_missing = true;
 	Status status = leveldb::DB::Open(options, rutaArchivo, &db);
@@ -101,7 +91,6 @@ DBRaw::DBRaw(const string &rutaArchivo, std::ostream *logStream)
 }
 
 DBRaw::~DBRaw() {
-	dbLog->shutdown();
 	delete db;
 }
 
@@ -901,7 +890,6 @@ void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 {
 	if (!status.ok()) {
 		if (log) {
-			dbLog->errorStream() << mensajeError << ": " << status.ToString();
 			Logger::log(ERROR, mensajeError+status.ToString());
 		}
 		throw LevelDBException(status.ToString());

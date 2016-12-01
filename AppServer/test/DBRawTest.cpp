@@ -53,7 +53,7 @@ class DBRawTest : public ::testing::Test {
 	{
 		leveldb::Status status = leveldb::DestroyDB(dbPath, leveldb::Options());
 		if(!status.ok()) std::cout << "Error elminando DB: " << status.ToString() << std::endl;
-		db = new DBRaw(dbPath, &std::cout);
+		db = new DBRaw(dbPath);
 	}
 	~DBRawTest() {
 		delete db;

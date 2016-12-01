@@ -45,19 +45,19 @@ then
 fi
 
 #log4cpp
-if [ ! -r ./lib/liblog4cpp.a ]
-then
-	if [ ! -d ./log4cppsrc ]; then mkdir log4cppsrc; fi
-	cd log4cppsrc
-	git clone --depth=1 git://git.code.sf.net/p/log4cpp/codegit log4cpp
-	cd log4cpp
-	./autogen.sh
-	./configure --enable-doxyen=no
-	make
-	mv ./src/.libs/liblog4cpp.a ../../lib/liblog4cpp.a
-	cd ../..
-	rm -f -r ./log4cppsrc	
-fi
+#if [ ! -r ./lib/liblog4cpp.a ]
+#then
+#	if [ ! -d ./log4cppsrc ]; then mkdir log4cppsrc; fi
+#	cd log4cppsrc
+#	git clone --depth=1 git://git.code.sf.net/p/log4cpp/codegit log4cpp
+#	cd log4cpp
+#	./autogen.sh
+#	./configure --enable-doxyen=no
+#	make
+#	mv ./src/.libs/liblog4cpp.a ../../lib/liblog4cpp.a
+#	cd ../..
+#	rm -f -r ./log4cppsrc	
+#fi
 
 #libjpeg
 if [ ! -r ./lib/libjpeg.a ]  || [ ! -r ./include/jpeg/jconfig.h ]

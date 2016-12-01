@@ -2,7 +2,14 @@
 
 std::ofstream Logger::logfile;
 
+LogType Logger::logLevel = DEBUG;
+
+void Logger::setLevel(LogType type) {
+	logLevel = type;
+}
+
 void Logger::log(LogType type, std::string output) {
+	if ( (type & logLevel) != type) return;
     time_t rawtime;
     std::string type_s = "";
     switch (type) {
