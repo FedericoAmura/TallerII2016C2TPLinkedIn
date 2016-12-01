@@ -900,7 +900,10 @@ std::vector<std::pair<uint32_t, string> > DBRaw::getMensajes(uint32_t uID1,
 void DBRaw::verificarEstadoDB(Status status, const char *mensajeError, bool log)
 {
 	if (!status.ok()) {
-		if (log) dbLog->errorStream() << mensajeError << ": " << status.ToString();
+		if (log) {
+			dbLog->errorStream() << mensajeError << ": " << status.ToString();
+			Logger::log(ERROR, mensajeError+status.ToString());
+		}
 		throw LevelDBException(status.ToString());
 	}
 }

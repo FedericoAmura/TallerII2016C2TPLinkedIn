@@ -7,7 +7,7 @@
 
 /**
  * Clase que representa la información de una foto
- * Hay un máximo arbitrario de 4MB
+ * Hay un máximo arbitrario definido en DBConstants
  */
 class Foto
 {
