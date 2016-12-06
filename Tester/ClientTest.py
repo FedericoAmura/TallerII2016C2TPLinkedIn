@@ -118,6 +118,11 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(404, res.status_code)
 
     #checked
+    def test_050_make_bad_request_with_json(self):
+        res = client1.makeBadRequestWithJson_POST()
+        self.assertEquals(422, res.status_code)
+
+    #checked
     def test_06_create_contact_request_to_non_existent_user(self):
         data = {}
         data["targetID"] = 999999999
@@ -257,7 +262,7 @@ class ClientTest(unittest.TestCase):
 
     #checked
     def test_18_delete_nonexistent_contact(self):
-        res = client1.delete_contact(99999)
+        res = client1.delete_contact(client3.get_user_id())
         self.assertEquals(404, res.status_code)
 
     #checked
@@ -291,6 +296,10 @@ class ClientTest(unittest.TestCase):
         self.assertEquals(200, res.status_code)
         data = json.loads(res.text)
         self.assertEquals(len(data['users']), 1)
+        params.clear()
+        params["skill"] = "skill1"
+        res = client1.user_search(params)
+        self.assertEquals(400, res.status_code)
 
     #checked
     def test_210_search_all_users(self):
@@ -306,6 +315,11 @@ class ClientTest(unittest.TestCase):
         self.assertTrue('name' in data)
         self.assertTrue('city' in data)
         self.assertEquals(200, res.status_code)
+
+    #checked
+    def test_220_get_profile_from_nonexistent_user(self):
+        res = client1.get_profile_from(111)
+        self.assertEquals(404, res.status_code)
 
     #checked
     def test_23_get_resume_from_user(self):

@@ -25,8 +25,19 @@ class ConnectionsHandler {
 
  public:
 	ConnectionsHandler(DBJSON* db_json);
+
+    /**
+     * Verificación de inicialización de recursos
+     * @return  true si todos los recursos fueron inicializados correctamente
+     *          sino false
+     */
 	bool initialized();
+
+    /**
+     * Escuchar conexiones
+     */
 	void run();
+
 	virtual ~ConnectionsHandler();
 };
 

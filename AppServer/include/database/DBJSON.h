@@ -24,6 +24,7 @@ class DBJSON {
     std::map<string,string> tokens;
     std::map<uint32_t,string> registration_ids; // Para el servicio de Google Cloud Messaging
     bool gcm_mode;
+    double EXPIRATION_TIME_SEC = 86400; // 86400 sec == 1 día
 
  public:
 	DBJSON(DBRaw *db, bool gcm_mode = false);
@@ -33,6 +34,12 @@ class DBJSON {
      * Modo (test ó gcm)
      */
     bool in_gcm_mode() {return gcm_mode;};
+
+    /**
+     * Actualización de tiempo de expiración de tokens
+     * @param new_value                 Nuevo tiempo en segundos
+     */
+    void setTiempoDeExpiracionDeTokens(double new_value) {EXPIRATION_TIME_SEC = new_value;};
 
     /**
      * Generar token

@@ -14,25 +14,25 @@ class PUT_Handler : public HTTPRequestHandler {
 private:
 	/*
 	 * Actualización de perfil
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_update_profile();
 
 	/*
 	 * Actualización de Resumen de usuario
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_update_resume();
 
 	/*
 	 * Actualización de Foto
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_update_photo();
 
 	/*
 	 * Recomendar usuario
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_recommend_user();
 

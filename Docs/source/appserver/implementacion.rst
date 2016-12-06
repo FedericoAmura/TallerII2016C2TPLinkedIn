@@ -52,11 +52,6 @@ Contenidos:
 .. toctree::
     :maxdepth: 1
 
-    ./clases/DB_Handler
-
-.. toctree::
-    :maxdepth: 1
-
     ./clases/HttpParser
 
 .. toctree::

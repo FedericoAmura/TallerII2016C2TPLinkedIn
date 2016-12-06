@@ -1,7 +1,8 @@
-#include "../include/test/SharedServerConnectorTest.h"
+#include "../include/gtest/gtest.h"
 #include "../include/handlers/SharedServerConnector.h"
 
-SharedServerConnectorTest::SharedServerConnectorTest() {}
+class SharedServerConnectorTest : public ::testing::Test {
+};
 
 TEST_F(SharedServerConnectorTest, get_categories) {
 	try {
@@ -25,4 +26,8 @@ TEST_F(SharedServerConnectorTest, get_skills) {
 		EXPECT_FALSE(data["skills"].is_null());
 	} catch (CurlGetException &e) {}
 	catch (InvalidJsonException &e) {}
+}
+
+TEST_F(SharedServerConnectorTest, invalid_uri) {
+	EXPECT_THROW(SharedServerConnector::get(SHARED_SERVER_URL + "/dada"), CurlGetException);
 }

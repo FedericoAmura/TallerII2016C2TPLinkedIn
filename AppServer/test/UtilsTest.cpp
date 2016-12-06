@@ -1,7 +1,8 @@
-#include "../include/test/UtilsTest.h"
+#include "../include/gtest/gtest.h"
 #include "../include/common/Utils.h"
 
-UtilsTest::UtilsTest() {}
+class UtilsTest : public ::testing::Test {
+};
 
 TEST_F(UtilsTest, ValidacionDeUriValida) {
 	std::string uri_s = "/users/1234567";

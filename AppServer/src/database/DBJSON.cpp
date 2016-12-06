@@ -21,7 +21,6 @@ string DBJSON::generarToken(const Json &json) {
 }
 
 bool DBJSON::validar_token(const string &token) {
-	double EXPIRATION_TIME_SEC = 86400; // 86400 sec == 1 día
 	if (tokens.count(token) > 0) {
 		string timestamp = tokens[token];
 		double diff = time_difference_seconds(timestamp);

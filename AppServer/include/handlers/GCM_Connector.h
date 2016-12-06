@@ -14,6 +14,12 @@
 
 class GCM_Connector {
 public:
+    /**
+     * Push Notification
+     * Se envía una notificación a GMC
+     * @RequestRejected     si la respuesta http de FCM es distinta a 200
+     * @return	            1 si el envío de información es correcto, sino 0 
+     */
     static int notify(std::string data);
 };
 

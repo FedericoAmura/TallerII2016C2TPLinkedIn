@@ -14,19 +14,19 @@ class DELETE_Handler : public HTTPRequestHandler {
 private:
 	/*
 	 * Cerrar sesión
-	 * @return
+	 * @return	@return	(Ver documencatión REST API)
 	 * */
 	http_response handle_logout();
 
 	/*
 	 * Rechazar solicitud de contacto
-	 * @return
+	 * @return	@return	(Ver documencatión REST API)
 	 * */
 	http_response handle_reject_contact_request();
 
 	/*
 	 * Eliminar contacto
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_delete_contact();
 

@@ -14,13 +14,17 @@ static const std::string SHARED_SERVER_SKILLS_URL       = SHARED_SERVER_URL + "/
 
 
 class SharedServerConnector {
- private:
-    static Json get(std::string url);
-
  public:
      /**
+      * Obtener recurso específicado en la uri
+      * @exception CurlGetException      Error al hacer un pedido GET
+      * @exception InvalidJsonException  Datos recibidos en formato inválido
+      * @return                          Ver documentacion API
+      */
+     static Json get(std::string url);
+
+     /**
       * Obtener categorías
-      * @exception CurlInitException     Error al iniciar cURL
       * @exception CurlGetException      Error al hacer un pedido GET
       * @exception InvalidJsonException  Datos recibidos en formato inválido
       * @return                          Ver documentacion API
@@ -29,7 +33,6 @@ class SharedServerConnector {
 
     /**
      * Obtener posiciones de trabajo
-     * @exception CurlInitException     Error al iniciar cURL
      * @exception CurlGetException      Error al hacer un pedido GET
      * @exception InvalidJsonException  Datos recibidos en formato inválido
      * @return                          Ver documentacion API
@@ -38,7 +41,6 @@ class SharedServerConnector {
 
     /**
      * Obtener skills
-     * @exception CurlInitException     Error al iniciar cURL
      * @exception CurlGetException      Error al hacer un pedido GET
      * @exception InvalidJsonException  Datos recibidos en formato inválido
      * @return                          Ver documentacion API

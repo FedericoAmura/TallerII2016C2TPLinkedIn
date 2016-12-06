@@ -28,25 +28,25 @@ private:
 
 	/*
 	 * Aceptar una solicitud de contacto
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_accept_contact_request();
 
 	/*
 	 * Solicitud para agregar un contacto
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_create_contact_request();
 
 	/*
 	 * Notificar que el mensaje fue visto
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_notify_message_seen();
 
 	/*
 	 * Enviar un mensaje a un chat
-	 * @return
+	 * @return	(Ver documencatión REST API)
 	 * */
 	http_response handle_send_message();
 

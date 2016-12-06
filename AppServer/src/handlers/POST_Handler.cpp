@@ -247,6 +247,10 @@ http_response POST_Handler::handle_create_contact_request() {
 		//std::cout << "[WARN] Bad Input: " << e.what() << ". Create contact request failed."<< std::endl;
 		Logger::log(WARN, "Bad Input: " + std::string(e.what()) + ". Create contact request failed.");
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
+	} catch (RequestRejected &e) {
+		error = Json::object { {"error_code", 8}, {"description", ERR_DESC_OPERATION_FAILED}};
+		Logger::log(WARN, "An internal server problem has ocurred (Google Cloud Messaging). Create contact request failed.");
+		return http_response(error.dump(), STATUS_INT_SERVER_ERR);
 	}
 	return http_response("{}", STATUS_OK);
 }
@@ -350,6 +354,10 @@ http_response POST_Handler::handle_send_message() {
 		//std::cout << "[WARN] Bad Input: " << e.what() << ". Send Message failed."<< std::endl;
 		Logger::log(WARN, "Bad Input: " + std::string(e.what()) + ". Send Message failed.");
 		return http_response(error.dump(), STATUS_UNPROCESSABLE);
+	} catch (RequestRejected &e) {
+		error = Json::object { {"error_code", 8}, {"description", ERR_DESC_OPERATION_FAILED}};
+		Logger::log(WARN, "An internal server problem has ocurred (Google Cloud Messaging). Send M	essage failed.");
+		return http_response(error.dump(), STATUS_INT_SERVER_ERR);
 	}
 	return http_response("{}", STATUS_CREATED);
 }

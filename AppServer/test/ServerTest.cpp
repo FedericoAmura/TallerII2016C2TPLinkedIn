@@ -1,7 +1,8 @@
-#include "../include/test/ServerTest.h"
+#include "../include/gtest/gtest.h"
 #include "../include/server/Server.h"
 
-ServerTest::ServerTest() {}
+class ServerTest : public ::testing::Test {
+};
 
 TEST_F(ServerTest, IntegrationTests) {
 	Server server(false);

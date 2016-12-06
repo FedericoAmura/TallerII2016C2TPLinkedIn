@@ -99,6 +99,21 @@ TEST_F(DBJsonTest, testRegistroYLogin)
 	EXPECT_THROW(dbj->login(loginJson4),BadPassword);
 }
 
+TEST_F(DBJsonTest, testExpiracionDeToken)
+{
+	string userName("Username");
+	uint32_t uid = registrarTest(userName, 1.0, 0.5);
+	Json loginJson = Json::object {
+				{ "username", userName },
+				{ "password", defaultBase64PassHash },
+	};
+	EXPECT_EQ(dbj->login(loginJson),0);
+	string token = dbj->generarToken(loginJson);
+	dbj->setTiempoDeExpiracionDeTokens(1.0); // 1 segundo
+	sleep(2);
+	EXPECT_THROW(dbj->validar_token(token), TokenHasExpired);
+}
+
 TEST_F(DBJsonTest, testGetSetResumen)
 {
 	string userName("Username");

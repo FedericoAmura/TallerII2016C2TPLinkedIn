@@ -53,6 +53,12 @@ class Client:
     def makeRequest_DELETE(self, url, data, headers):
         return requests.delete(url, data= json.dumps(data), headers=headers)
 
+    def makeBadRequestWithJson_POST(self, ):
+        url = self.url_base + "/users/" + str(self.userID) + "/notif/" + str(6)
+        data = "{\"userID\":}"
+        headers = self.getAuthHeaderToken()
+        return requests.post(url, data=data, headers=headers)
+
 #### POST   (data es un json, luego makeRequest_*** hace un dump del json)
     def login(self):
         url = self.url_base + "/login"
