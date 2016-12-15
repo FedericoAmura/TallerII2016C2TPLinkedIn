@@ -29,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.CircleBitmap;
 import com.example.android.clientapp.utils.NotificationLauncher;
@@ -306,6 +307,9 @@ public class PerfilAmigoActivity extends AppCompatActivity {
                         }
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                             Toast.makeText(PerfilAmigoActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
                         }
                         else {
                             int rec = Integer.parseInt(perfil.getCantRecomendaciones());
@@ -369,6 +373,9 @@ public class PerfilAmigoActivity extends AppCompatActivity {
                         }
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                             Toast.makeText(PerfilAmigoActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
                         }
                         else {
                             Toast.makeText(PerfilAmigoActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje

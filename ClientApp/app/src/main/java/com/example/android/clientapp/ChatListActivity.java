@@ -20,6 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.ChatRVAdapter;
 import com.example.android.clientapp.Modelo.chat.Chat;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationLauncher;
@@ -165,6 +166,15 @@ public class ChatListActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        NetworkResponse netResp = error.networkResponse;
+                        if ( netResp != null)
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatListActivity.this, "token de sesión inválido." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
+                            }
                     }
                 }) {
             @Override
@@ -202,10 +212,17 @@ public class ChatListActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null)
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                 Toast.makeText(ChatListActivity.this, "No pudo obtener los nuevos chats." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatListActivity.this, "token de sesión inválido." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
                             }
                     }
                 }){
@@ -249,10 +266,17 @@ public class ChatListActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null)
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                 Toast.makeText(ChatListActivity.this, "No pudo obtener los datos breves de chat con el usuario." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatListActivity.this, "token de sesión inválido." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
                             }
                     }
                 }){

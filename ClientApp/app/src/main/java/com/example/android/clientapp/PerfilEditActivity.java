@@ -30,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.GPS;
 import com.example.android.clientapp.utils.NotificationLauncher;
@@ -473,6 +474,9 @@ public class PerfilEditActivity extends SkillJobActivity {
                         }
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                             Toast.makeText(PerfilEditActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
                         }
                         if (netResp == null) {
                             Toast.makeText(PerfilEditActivity.this,"Perfil actualizado exitosamente.",Toast.LENGTH_LONG).show();

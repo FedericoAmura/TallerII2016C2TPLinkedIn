@@ -21,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.JsonUtil;
 import com.example.android.clientapp.utils.NotificationLauncher;
@@ -96,6 +97,9 @@ public class AmigosActivity extends UserListActivity {
                         }
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                             Toast.makeText(AmigosActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
                         }
                     }
                 }){

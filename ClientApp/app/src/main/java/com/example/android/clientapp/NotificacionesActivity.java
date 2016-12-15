@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Amigo;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
@@ -166,6 +167,13 @@ public class NotificacionesActivity extends AppCompatActivity {
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
                             Toast.makeText(NotificacionesActivity.this, "UserID inexistente. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                         }
+
+                        if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                            Toast.makeText(NotificacionesActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
+                        }
                     }
                 }){
 
@@ -209,6 +217,9 @@ public class NotificacionesActivity extends AppCompatActivity {
                         }
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                             Toast.makeText(NotificacionesActivity.this, "Usuario no autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
                         }
                     }
                 }){

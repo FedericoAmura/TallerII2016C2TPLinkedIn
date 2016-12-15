@@ -24,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.ArrayAdapters.MessageArrayAdapter;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.CircleBitmap;
 import com.example.android.clientapp.utils.Constants;
@@ -109,6 +110,8 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(nombreAmigo);
         if (thumbnail != null) {
             BitmapDrawable iconThumb = new BitmapDrawable(getResources(), CircleBitmap.resize_thumbnail(thumbnail, 60, 60));
@@ -205,10 +208,17 @@ public class ChatActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null)
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                 netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                     Toast.makeText(ChatActivity.this, "No pudo enviarse el mensaje." +
                                             " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatActivity.this, "No pudo enviarse el mensaje." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
                             }
                     }
                 }){
@@ -248,10 +258,17 @@ public class ChatActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null)
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                 Toast.makeText(ChatActivity.this, "No pudo clavar visto." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatActivity.this, "No pudo clavar visto." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
                             }
                     }
                 }){
@@ -291,10 +308,17 @@ public class ChatActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null)
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                 Toast.makeText(ChatActivity.this, "No pudo obtener el id del ultimo mensaje." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatActivity.this, "No se pudo obtener el id del último mensaje." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
                             }
                     }
                 }){
@@ -340,10 +364,17 @@ public class ChatActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null)
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
-                                Toast.makeText(ChatActivity.this, "No pudo obtener los mensajes comprendidos en un rango." +
+                                Toast.makeText(ChatActivity.this, "No pudo obtener los mensajes de un rango." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatActivity.this, "No se pudo obtener mensajes." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
                             }
                     }
                 }){
@@ -383,10 +414,17 @@ public class ChatActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null)
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                    netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN ||
                                     netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
                                 Toast.makeText(ChatActivity.this, "No pudo obtener el thumbnail del amigo." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            }
+
+                            if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                                Toast.makeText(ChatActivity.this, "No pudo obtener el thumbnail del amigo." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
+                                ActivityHandler.launchLoginActivity(getApplicationContext());
+                                PreferenceHandler.removeCredentials(getApplicationContext());
+                                finish();
                             }
                     }
                 }){

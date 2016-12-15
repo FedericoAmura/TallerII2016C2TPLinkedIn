@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Perfil;
@@ -66,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         credentials = PreferenceHandler.loadUserCredentials(this);
         if (credentials == null) {
-            Intent intentLogin = new Intent(this, LoginActivity.class);
-            startActivity(intentLogin);
+            ActivityHandler.launchLoginActivity(getApplicationContext());
             finish();
             return;
         }
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                        // if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
                        //}
                         Toast.makeText(getApplicationContext(),"No hay conexión con el Servidor.",Toast.LENGTH_LONG).show();
-                        volverLogin();
+                        ActivityHandler.launchLoginActivity(getApplicationContext());
                         finish();
                     }
                 }){
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
-                            volverLogin();
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
                             Toast.makeText(MainActivity.this, "Sesion cerrada.",Toast.LENGTH_LONG).show();
                             finish();
                         }
@@ -255,6 +255,9 @@ public class MainActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                             Toast.makeText(MainActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
                         }
                     }
                 }){
@@ -276,12 +279,6 @@ public class MainActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonRequest);
-    }
-
-    private void volverLogin(){
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
     private void apretarBotonNotificaciones(){

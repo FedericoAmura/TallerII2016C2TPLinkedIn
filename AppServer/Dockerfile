@@ -2,7 +2,7 @@ FROM ubuntu
 
 RUN apt-get update
 
-RUN apt-get install -y gcc-4.9 g++-4.9 make cmake autoconf git wget libcurl3 libcurl4-openssl-dev
+RUN apt-get install -y gcc-4.9 g++-4.9 make cmake libcurl3 libcurl4-openssl-dev
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

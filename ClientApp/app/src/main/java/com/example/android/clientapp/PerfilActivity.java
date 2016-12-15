@@ -29,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Perfil;
+import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
@@ -257,8 +258,9 @@ public class PerfilActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         if (statusCode == HttpURLConnection.HTTP_OK){
                             PreferenceHandler.removeCredentials(getApplicationContext());
-                            volverLogin();
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
                             Toast.makeText(PerfilActivity.this, "Sesion cerrada.",Toast.LENGTH_LONG).show();
+                            finish();
                         }
                     }
                 },
@@ -268,6 +270,9 @@ public class PerfilActivity extends AppCompatActivity {
                         NetworkResponse netResp = error.networkResponse;
                         if ( netResp != null && netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                             Toast.makeText(PerfilActivity.this, "No autorizado. CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                            ActivityHandler.launchLoginActivity(getApplicationContext());
+                            PreferenceHandler.removeCredentials(getApplicationContext());
+                            finish();
                         }
                     }
                 }){
@@ -289,12 +294,6 @@ public class PerfilActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonRequest);
-    }
-
-    private void volverLogin(){
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
     //Funcion a llamar al clickear boton Editar Perfil.
