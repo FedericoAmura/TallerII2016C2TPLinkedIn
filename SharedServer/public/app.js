@@ -2,6 +2,10 @@ $(document).ready(function() {
 	$(".dropdown-button").dropdown();
 });
 
+if ('serviceWorker' in navigator) {
+	navigator.serviceWorker.register('./service-worker.js').then(function() {console.log('Service worker registered')});
+}
+
 function stopEventPropagation() {
 	var e = window.event;
 	e.cancelBubble = true;

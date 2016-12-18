@@ -6,11 +6,23 @@
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
 	<link rel="stylesheet" href="style.css">
+	
+	<!-- Add to home screen for Chrome and Opera -->
+	<link rel="manifest" href="/manifest.json">
+	<!-- Add to home screen for Safari on iOS -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Weather PWA">
+	<link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
+	<!-- Add to home screen for Windows -->
+	<meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
+	<meta name="msapplication-TileColor" content="#2F3BA2">
+	
 </head>
 
 <body class="centered container green lighten-5">
   <div class="centered card-panel green darken-1 z-depth-4">
-	<img src="logojobify.png" alt="Jobify" width="40%">
+	<img src="/images/icons/icon-256x256.png" alt="Jobify" width="40%">
 	<h2>Welcome to Jobify</h2>
 		
 	<form method="post" action="/" class="centered form-signin">
