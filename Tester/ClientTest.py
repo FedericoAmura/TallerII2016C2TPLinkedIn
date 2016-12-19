@@ -290,8 +290,8 @@ class ClientTest(unittest.TestCase):
         res = client1.user_search(params)
         self.assertEquals(400, res.status_code)
         params.clear()
-        params["job_position"] = "Tester"
-        params["skill"] = "Android"
+        params["job_position"] = "Android developer"#"Tester"
+#        params["skill"] = "Android"
         res = client1.user_search(params)
         self.assertEquals(200, res.status_code)
         data = json.loads(res.text)

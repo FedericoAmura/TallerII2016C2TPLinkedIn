@@ -121,7 +121,7 @@ public class JobifyAPI {
         result += "&popsort=";
         if (popSort) result += "true";
         else result += "false";
-        result = result.replaceAll(" ", "%20");
+//        result = result.replaceAll(" ", "%20");
         return result;
     }
 

@@ -22,7 +22,7 @@ private:
 	/*
 	 * Registrarse
 	 * @return	en caso de que los datos administrados sean correctos, se devolverá
-	 * 			un token de sesión, sino se devolverá un código de error en el http_response
+	 * 			un código HTTP 201, sino se devolverá un código de error en el http_response
 	 * */
 	http_response handle_signup();
 

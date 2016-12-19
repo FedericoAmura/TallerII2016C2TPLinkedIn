@@ -21,10 +21,10 @@ void HTTPRequestHandler::sendReply(http_response* res) {
 								   "%s",
 								   (unsigned)res->res_code, (unsigned)res->message.size(), res->message.c_str());
 	if (res->message.size() < 30)
-		Logger::log(INFO, "Res Code: " + std::to_string(res->res_code) + ". Response: " + res->message);
+		Logger::log(INFO, "Status Code: " + std::to_string(res->res_code) + ". Response: " + res->message);
 	else {
 		std::string json = res->message;
-		Logger::log(INFO, "Res Code: " + std::to_string(res->res_code) + ". Response: " + json.substr(0,29) + "...");
+		Logger::log(INFO, "Status Code: " + std::to_string(res->res_code) + ". Response: " + json.substr(0,29) + "...");
 	}
 }
 

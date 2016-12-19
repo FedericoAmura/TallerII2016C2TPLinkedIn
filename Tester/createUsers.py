@@ -61,11 +61,11 @@ user5_data["city"] = "CABA"
 user5_data["longitude"] = 2.5
 user5_data["latitude"] = 2.5
 
-user6_data["first_name"] = "Chistian"
+user6_data["first_name"] = "Christian"
 user6_data["last_name"] = "Calónico"
 user6_data["birth"] =  "1/2/2000"
 user6_data["email"] = "ccalonico@gmail.com"
-user6_data["username"] = "chistian"
+user6_data["username"] = "christian"
 user6_data["password"] = base64.b64encode(hashlib.sha256("123456").digest())
 user6_data["city"] = "CABA"
 user6_data["longitude"] = 2.5
