@@ -206,13 +206,12 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null)
+                        if ( netResp != null) {
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
-                                    Toast.makeText(ChatActivity.this, "No pudo enviarse el mensaje." +
-                                            " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE) {
+                                Toast.makeText(ChatActivity.this, "No pudo enviarse el mensaje." +
+                                        " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                             }
-
                             if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                                 Toast.makeText(ChatActivity.this, "No pudo enviarse el mensaje." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
@@ -220,6 +219,7 @@ public class ChatActivity extends AppCompatActivity {
                                 PreferenceHandler.removeCredentials(getApplicationContext());
                                 finish();
                             }
+                        }
                     }
                 }){
 
@@ -256,13 +256,12 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse netResp = error.networkResponse;
-                        if ( netResp != null)
+                        if ( netResp != null) {
                             if (netResp.statusCode == HttpURLConnection.HTTP_NOT_FOUND ||
-                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE ) {
+                                    netResp.statusCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE) {
                                 Toast.makeText(ChatActivity.this, "No pudo clavar visto." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show(); //Todo: cambiar mensaje
                             }
-
                             if (netResp.statusCode == HttpURLConnection.HTTP_FORBIDDEN) {
                                 Toast.makeText(ChatActivity.this, "No pudo clavar visto." +
                                         " CODE: " + netResp.statusCode, Toast.LENGTH_LONG).show();
@@ -270,6 +269,7 @@ public class ChatActivity extends AppCompatActivity {
                                 PreferenceHandler.removeCredentials(getApplicationContext());
                                 finish();
                             }
+                        }
                     }
                 }){
 
