@@ -242,24 +242,25 @@ public class PerfilAmigoActivity extends AppCompatActivity {
         // Tv dinamicos de ExpLaboral:
         LinearLayout llExpLaboral = (LinearLayout) findViewById(R.id.llExpLaboral);
         for (int i = 0; i < perfil.getSizeExp(); i++ ) {
-            for (int j = 0; j < 3; j++) {
-                TextView tvExpLaboral = new TextView(this);
-                tvExpLaboral.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                switch (j) {
-                    case (0):
-                        tvExpLaboral.setText("- Lugar: " + perfil.getExpLaboralNombre(i));
-                        break;
-                    case (1):
+            //for (int j = 0; j < 3; j++) {
+            TextView tvExpLaboral = new TextView(this);
+            tvExpLaboral.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            //  switch (j) {
+            //      case (0):
+            tvExpLaboral.setText("+" + perfil.getExpLaboralNombre(i));
+            //          break;
+                 /*   case (1):
                         tvExpLaboral.setText("     Desde: " + perfil.getExpLaboralInicio(i));
                         break;
                     case (2):
                         tvExpLaboral.setText("     Hasta: " + perfil.getExpLaboralFin(i));
                         break;
-                }
-                tvExpLaboral.setTextColor(Color.GRAY);
-                llExpLaboral.addView(tvExpLaboral);
-            }
+                */
+            //  }
+            tvExpLaboral.setTextColor(Color.GRAY);
+            llExpLaboral.addView(tvExpLaboral);
+            //}
         }
 
         tvResumen = (TextView) findViewById(R.id.tvResumen);
