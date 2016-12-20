@@ -13,7 +13,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class JobifyAPI {
 
-    private static String APPSERVER_IP = "192.168.1.37";
+    private static String APPSERVER_IP = "192.168.1.36";
     private static String APPSERVER_PUERTO = "8888";
     private static String APPSERVER_URL = "http://" + APPSERVER_IP + ":" + APPSERVER_PUERTO;
 
@@ -121,7 +121,7 @@ public class JobifyAPI {
         result += "&popsort=";
         if (popSort) result += "true";
         else result += "false";
-//        result = result.replaceAll(" ", "%20");
+        result = result.replaceAll(" ", "%20");
         return result;
     }
 

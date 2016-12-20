@@ -533,10 +533,15 @@ http_response GET_Handler::handle_get_popular() {
 	return http_response(data.dump(), STATUS_OK);
 }
 
+#include <regex>
+
+
 http_response GET_Handler::handle_get_popular_by_position() {
 	// /users/popular/position/<position>
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	std::string position = vec_uri[3];
+	std::regex reg("%20");
+	position = std::regex_replace(position, reg, " ");
 	Json data = db_json->getPopularesPorPosition(position);
 	return http_response(data.dump(), STATUS_OK);
 }
@@ -545,6 +550,8 @@ http_response GET_Handler::handle_get_popular_by_skill() {
 	// /users/popular/skill/<skill>
 	std::vector<std::string> vec_uri = split(request->uri(), "/");
 	std::string skill = vec_uri[3];
+	std::regex reg("%20");
+	skill = std::regex_replace(skill, reg, " ");
 	Json data = db_json->getPopularesPorSkill(skill);
 	return http_response(data.dump(), STATUS_OK);
 }

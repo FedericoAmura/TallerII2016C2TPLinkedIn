@@ -20,7 +20,7 @@ static const std::string GOOGLE_API_KEY_APPSERVER =  "AIzaSyCbDM4pvsecoAb4tvZwQz
 /* URIs */
 /* User */
 static const std::string USER_ID = "\\d{1,}";
-static const std::string DESCRIPTION = "[a-zA-Z]{1,}";
+static const std::string DESCRIPTION = "([a-zA-Z]|%20){1,}";
 
 static const std::string LOGIN_URI				= "/login";
 static const std::string SIGNUP_URI				= "/signup";

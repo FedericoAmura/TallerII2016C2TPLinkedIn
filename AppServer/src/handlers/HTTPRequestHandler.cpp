@@ -6,6 +6,7 @@
  */
 
 #include "../../include/handlers/HTTPRequestHandler.h"
+#include <algorithm>
 
 HTTPRequestHandler::HTTPRequestHandler(http_request* req){
 	this->request = req;
