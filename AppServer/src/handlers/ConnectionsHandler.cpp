@@ -35,7 +35,7 @@ ConnectionsHandler::ConnectionsHandler(DBJSON* db_json) {
 	if (!connection)
 		return;
 	mg_set_protocol_http_websocket(connection);
-	mg_enable_multithreading(connection);
+//	mg_enable_multithreading(connection);
 	running = true;
 	connection->user_data = db_json;
 	signal(SIGINT, SIGINT_Handler);

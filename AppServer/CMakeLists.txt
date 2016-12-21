@@ -6,7 +6,7 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.9")
 
 project(AppServer)
 
-add_definitions(-DMG_ENABLE_THREADS)
+#add_definitions(-DMG_ENABLE_THREADS)
 
 file(GLOB_RECURSE COMMONSRC "src/*.cpp" "src/*.c" )
 list(REMOVE_ITEM COMMONSRC ${CMAKE_CURRENT_SOURCE_DIR}/src/AppServer.cpp)
