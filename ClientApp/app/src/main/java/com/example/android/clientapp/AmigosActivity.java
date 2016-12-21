@@ -27,6 +27,7 @@ import com.example.android.clientapp.utils.JsonUtil;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AmigosActivity extends UserListActivity {
-
+    private final String LOG_TAG = "AMIGOS_ACTIVITY";
     private static final String CONTACTS = "contacts";
     private static final String USER_ID = "userID";
     private static final String TOKEN = "token";
@@ -64,6 +65,12 @@ public class AmigosActivity extends UserListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_amigos, menu);
         return true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     private void showSnackBar(String msg) {
@@ -117,8 +124,10 @@ public class AmigosActivity extends UserListActivity {
                 return params;
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
 }

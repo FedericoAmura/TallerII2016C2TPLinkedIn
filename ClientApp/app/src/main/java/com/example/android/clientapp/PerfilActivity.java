@@ -33,6 +33,7 @@ import com.example.android.clientapp.utils.ActivityHandler;
 import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PerfilActivity extends AppCompatActivity {
+    private final String LOG_TAG = "PERFIL_ACTIVITY";
     private EventBus bus = EventBus.getDefault();
     public Perfil perfil;
 
@@ -90,6 +92,7 @@ public class PerfilActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         bus.unregister(this);
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     private void cargarBarra(){
@@ -174,9 +177,10 @@ public class PerfilActivity extends AppCompatActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     public void cargarPerfil(Perfil perfil){
@@ -291,9 +295,10 @@ public class PerfilActivity extends AppCompatActivity {
             }
 
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     //Funcion a llamar al clickear boton Editar Perfil.

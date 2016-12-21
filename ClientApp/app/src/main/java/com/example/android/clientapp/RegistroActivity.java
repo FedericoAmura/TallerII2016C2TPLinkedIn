@@ -19,6 +19,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.utils.Cripto;
 import com.example.android.clientapp.utils.GPS;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -37,7 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class RegistroActivity extends AppCompatActivity {
-
+    private final String LOG_TAG = "PESTANIAS_ACTIVITY";
     private static final String DEBUG_TAG = "REGISTRO";
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
@@ -166,6 +167,11 @@ public class RegistroActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -277,8 +283,9 @@ public class RegistroActivity extends AppCompatActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 }

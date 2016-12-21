@@ -27,6 +27,7 @@ import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.Perfil;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    private final String LOG_TAG = "MAIN_ACTIVITY";
     private EventBus bus = EventBus.getDefault();
     private UserCredentials credentials;
     public Perfil perfil;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        cargarDatosDelServer(String.valueOf(credentials.getUserID()));
+//        cargarDatosDelServer(String.valueOf(credentials.getUserID()));
 
         cvPerfil = (CardView) findViewById(R.id.cvInfo);
         cvPerfil.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         bus.unregister(this);
         super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     private void verChats() {
@@ -181,9 +184,10 @@ public class MainActivity extends AppCompatActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     public void cargarPerfil(Perfil perfil){
@@ -278,9 +282,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     private void apretarBotonNotificaciones(){

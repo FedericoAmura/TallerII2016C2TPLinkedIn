@@ -25,6 +25,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.utils.GPS;
 import com.example.android.clientapp.utils.JsonUtil;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 
 import org.json.JSONObject;
 
@@ -37,7 +38,7 @@ import java.util.List;
  * Activity para las busquedas altamente parametrizables
  */
 public class BusquedaAdvActivity extends SkillJobActivity {
-
+    private final String LOG_TAG = "BUSQUEDA_ADV_ACTIVITY";
     private int statusCode;
     private ProgressBar bar;
     private Switch geoSwitch;
@@ -125,6 +126,12 @@ public class BusquedaAdvActivity extends SkillJobActivity {
         inicializarLista(JOB_POSITIONS, JobifyAPI.getJobsURL());
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
+    }
+
     protected void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -202,8 +209,10 @@ public class BusquedaAdvActivity extends SkillJobActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     /**

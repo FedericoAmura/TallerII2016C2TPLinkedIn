@@ -25,6 +25,7 @@ import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.Constants;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatListActivity extends AppCompatActivity {
+    private final String LOG_TAG = "CHATLIST_ACTIVITY";
     private EventBus bus = EventBus.getDefault();
     private UserCredentials credentials;
 
@@ -111,6 +113,7 @@ public class ChatListActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         bus.unregister(this);
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     private void setToolbar() {
@@ -183,8 +186,10 @@ public class ChatListActivity extends AppCompatActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     /** Chequea si hay chat pendientes/nuevos **/
@@ -235,9 +240,10 @@ public class ChatListActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     /** Agrega el nuevo chat a ChatList **/
@@ -289,8 +295,9 @@ public class ChatListActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 }

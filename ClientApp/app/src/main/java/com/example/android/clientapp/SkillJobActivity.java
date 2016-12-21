@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +26,7 @@ import java.util.Hashtable;
  * skills o puestos de trabajo
  */
 public class SkillJobActivity extends NotifiableActivity {
-
+    private final String LOG_TAG = "SKILLJOB_ACTIVITY";
     protected int statusCode;
     protected static final String SKILLS = "skills";
     protected static final String JOB_POSITIONS = "job_positions";
@@ -40,6 +41,12 @@ public class SkillJobActivity extends NotifiableActivity {
         listDict = new Hashtable<String, String[] >();
         isInitDict = new Hashtable<String, Boolean>();
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     protected void guardarLista(final String jsonFieldName, JSONObject jsonLista) {
@@ -88,8 +95,10 @@ public class SkillJobActivity extends NotifiableActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
 }

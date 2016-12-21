@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.utils.JsonUtil;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 
 import org.json.JSONObject;
 
@@ -28,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BusquedasActivity extends SkillJobActivity {
-
+    private final String LOG_TAG = "BUSQUEDAS_ACTIVITY";
     private int statusCode;
     private ProgressBar bar;
     private int selected = -1;
@@ -79,6 +80,12 @@ public class BusquedasActivity extends SkillJobActivity {
         isInitDict.put(JOB_POSITIONS,false);
         inicializarLista(SKILLS, JobifyAPI.getSkillsURL());
         inicializarLista(JOB_POSITIONS, JobifyAPI.getJobsURL());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     protected void setToolbar() {
@@ -137,8 +144,10 @@ public class BusquedasActivity extends SkillJobActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
 

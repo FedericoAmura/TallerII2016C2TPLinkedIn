@@ -34,6 +34,7 @@ import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.CircleBitmap;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,6 +48,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PerfilAmigoActivity extends AppCompatActivity {
+    private final String LOG_TAG = "PERFILAMIGO_ACTIVITY";
     private EventBus bus = EventBus.getDefault();
 
     private Perfil perfil;
@@ -95,6 +97,7 @@ public class PerfilAmigoActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         bus.unregister(this);
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
 
@@ -202,9 +205,10 @@ public class PerfilAmigoActivity extends AppCompatActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     public void cargarPerfil(Perfil perfil){
@@ -338,9 +342,10 @@ public class PerfilAmigoActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
 
     }
 
@@ -397,13 +402,10 @@ public class PerfilAmigoActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
 
     }
-
-
-
-
 }

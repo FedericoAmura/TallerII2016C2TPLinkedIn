@@ -20,6 +20,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.android.clientapp.Modelo.Amigo;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
+import com.facebook.internal.LockOnGetVariable;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -34,7 +36,7 @@ import java.util.ArrayList;
  * "userIDs" ArrayList de strings, ids de usuario
  */
 public class UserListActivity extends NotifiableActivity {
-
+    private final String LOG_TAG = "USERLIST_ACTIVITY";
     protected int statusCode;
     protected int count = 0;
     protected ArrayList<Amigo> usuarios;
@@ -64,6 +66,12 @@ public class UserListActivity extends NotifiableActivity {
         }
 
         setToolbar();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     protected String getToolbarTitle() { return "Resultados"; };
@@ -134,8 +142,10 @@ public class UserListActivity extends NotifiableActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     protected void inicializarAdapter(){

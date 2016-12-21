@@ -32,6 +32,7 @@ import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.Modelo.chat.Chat;
 import com.example.android.clientapp.Modelo.chat.Message;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.example.android.clientapp.utils.UserCredentials;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -48,6 +49,7 @@ import java.util.Map;
 import org.greenrobot.eventbus.EventBus;
 
 public class ChatActivity extends AppCompatActivity {
+    private final static String LOG_TAG = "CHAT_ACTIVITY";
     private MessageArrayAdapter messageArrayAdapter;
     private ListView msglist;
     private Button buttonSend;
@@ -95,7 +97,7 @@ public class ChatActivity extends AppCompatActivity {
         PreferenceHandler.removeNotificationsFromSender(amigoUserID, Constants.NOTIFICATION_TYPE_NEW_MESSAGE, this);
 
         updateConversation();
-        NotifyMessageSeen();
+//        NotifyMessageSeen();
     }
 
     private void updateConversation() {
@@ -135,6 +137,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     // Permite recibir notificaciones mientras está corriendo en esta activity
@@ -232,9 +235,10 @@ public class ChatActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     /** Notificar mensajes vistos (clavar visto) **/
@@ -283,9 +287,10 @@ public class ChatActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     /** Chequeo for mensajes no leídos **/
@@ -333,9 +338,10 @@ public class ChatActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     /** Obtener mensajes no leídos **/
@@ -389,9 +395,10 @@ public class ChatActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
     /** Update thumbnail **/
@@ -439,9 +446,10 @@ public class ChatActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
 }

@@ -35,6 +35,7 @@ import com.example.android.clientapp.utils.AppServerNotification;
 import com.example.android.clientapp.utils.GPS;
 import com.example.android.clientapp.utils.NotificationLauncher;
 import com.example.android.clientapp.utils.PreferenceHandler;
+import com.example.android.clientapp.utils.RequestQueueSingleton;
 import com.example.android.clientapp.utils.UserCredentials;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -60,7 +61,7 @@ import java.util.Map;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class PerfilEditActivity extends SkillJobActivity {
-
+    private final String LOG_TAG = "PERFILEDIT_ACTIVITY";
     private static final String DEBUG_TAG = "EDITAR_PERFIL";
     private static final String NAME = "name";
     private static final String BIRTHDAY = "birth";
@@ -211,6 +212,12 @@ public class PerfilEditActivity extends SkillJobActivity {
         isInitDict.put(JOB_POSITIONS,false);
         inicializarLista(SKILLS, JobifyAPI.getSkillsURL());
         inicializarLista(JOB_POSITIONS, JobifyAPI.getJobsURL());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        RequestQueueSingleton.getInstance(this).cancelPendingRequests(LOG_TAG);
     }
 
     private void apretarBotonEditarFoto(){
@@ -501,9 +508,10 @@ public class PerfilEditActivity extends SkillJobActivity {
                 return params;
             }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonRequest);
+        jsonRequest.setTag(LOG_TAG);
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        requestQueue.add(jsonRequest);
     }
 
 
