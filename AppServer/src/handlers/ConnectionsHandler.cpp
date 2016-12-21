@@ -47,7 +47,7 @@ bool ConnectionsHandler::initialized() {
 
 void ConnectionsHandler::run() {
 	while(running) {
-		mg_mgr_poll(&mgr, 500);
+		mg_mgr_poll(&mgr, 1000);
 	}
 }
 
