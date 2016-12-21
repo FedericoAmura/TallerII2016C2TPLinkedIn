@@ -186,7 +186,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void sendMessageToServer(Message message) {
+    private void sendMessageToServer(final Message message) {
         JSONObject data = new JSONObject();
         try {
             data.put("receiverID", amigoUserID);
@@ -200,6 +200,7 @@ public class ChatActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d("TAG_MESSAGE_SENT", message.getMessage());
                     }
                 },
                 new Response.ErrorListener() {
@@ -240,8 +241,8 @@ public class ChatActivity extends AppCompatActivity {
     private void NotifyMessageSeen() {
         JSONObject data = new JSONObject();
         try {
-            data.put("targetID", amigoUserID);
-            data.put("userID", credentials.getUserID());
+            data.put("targetID", credentials.getUserID());
+            data.put("userID", amigoUserID);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -250,6 +251,7 @@ public class ChatActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d("TAG_MESSAGE_SEEN", "Clavando visto");
                     }
                 },
                 new Response.ErrorListener() {

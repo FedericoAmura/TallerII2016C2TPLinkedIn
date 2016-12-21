@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if (credentials != null)
+            cargarDatosDelServer(String.valueOf(credentials.getUserID()));
         bus.register(this);
     }
 
