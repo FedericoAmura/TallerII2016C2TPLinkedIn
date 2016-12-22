@@ -123,10 +123,12 @@ jobify.controller('SkillsController', function($scope, $http) {
   			$scope.getSkills();
 			$scope.skillname = '';
 			$scope.skilldescription = '';
+			$scope.skillcategory = '';
   		}, function () {
 			Materialize.toast('Could not create skill '+$scope.skillname, 3000, 'rounded');
 			$scope.skillname = '';
 			$scope.skilldescription = '';
+			$scope.skillcategory = '';
   		});
 	};
 });
@@ -156,10 +158,12 @@ jobify.controller('JobsController', function($scope, $http) {
   			$scope.getJobs();
 			$scope.jobname = '';
 			$scope.jobdescription = '';
+			$scope.jobcategory = '';
   		}, function () {
 			Materialize.toast('Could not create job '+$scope.jobname, 3000, 'rounded');
 			$scope.jobname = '';
 			$scope.jobdescription = '';
+			$scope.jobcategory = '';
   		});
 	};
 });

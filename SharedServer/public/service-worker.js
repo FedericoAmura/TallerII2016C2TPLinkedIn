@@ -1,5 +1,5 @@
-var dataCacheName = 'jobifyData-v1';
-var cacheName = 'jobifyPWA-1';
+var dataCacheName = 'jobifyData-v2.5';
+var cacheName = 'jobifyPWA-2.5';
 var filesToCache = [
   '/',
   '/app.html',
@@ -7,6 +7,11 @@ var filesToCache = [
   '/components.js',
   '/index.html',
   '/style.css',
+  '/images/icons/icon-128x128.png',
+  '/images/icons/icon-144x144.png',
+  '/images/icons/icon-152x152.png',
+  '/images/icons/icon-192x192.png',
+  '/images/icons/icon-256x256.png'
 ];
 
 self.addEventListener('install', function(e) {
@@ -36,7 +41,7 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   console.log('[ServiceWorker] Fetch', e.request.url);
-  var dataUrl = 'http://jobifyg2.herokuapp.com/';
+  var dataUrl = 'jobifyg2.herokuapp.com/';
   if (e.request.url.indexOf(dataUrl) > -1) {
     e.respondWith(
       caches.open(dataCacheName).then(function(cache) {
