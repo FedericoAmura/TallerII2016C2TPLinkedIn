@@ -95,10 +95,10 @@ public class SkillJobActivity extends NotifiableActivity {
                 return super.parseNetworkResponse(response);
             }
         };
-        jsonRequest.setTag(LOG_TAG);
-        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
-//        RequestQueue requestQueue = Volley.newRequestQueue(this);
-//        requestQueue.add(jsonRequest);
+//        jsonRequest.setTag(LOG_TAG);
+//        RequestQueueSingleton.getInstance(this).addToRequestQueue(jsonRequest);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonRequest);
     }
 
 }
